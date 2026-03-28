@@ -1,0 +1,21 @@
+[
+  {
+    "userId": "u_2",
+    "background": "Computer science graduate with internship in web development.",
+    "yearsInTech": 1,
+    "knownTechnologies": [
+      {
+        "name": "HTML/CSS",
+        "level": "advanced"
+      },
+      {
+        "name": "JavaScript",
+        "level": "intermediate"
+      },
+      {
+        "name": "React",
+        "level": "beginner"
+      }
+    ]
+  }
+]

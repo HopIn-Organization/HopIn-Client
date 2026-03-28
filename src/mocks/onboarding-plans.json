@@ -1,0 +1,67 @@
+[
+  {
+    "id": "plan_1",
+    "employeeName": "Sarah Connor",
+    "trackName": "Fullstack Developer Track",
+    "progressPercent": 40,
+    "tasks": [
+      {
+        "id": "task_1",
+        "title": "Setup development environment",
+        "description": "Install Node.js, VS Code, and configure git credentials.",
+        "completed": true
+      },
+      {
+        "id": "task_2",
+        "title": "Read engineering handbook",
+        "description": "Review coding standards, PR process, and deployment workflows.",
+        "completed": true
+      },
+      {
+        "id": "task_3",
+        "title": "Learn React",
+        "description": "Complete React fundamentals and assignments.",
+        "completed": false,
+        "links": [
+          {
+            "label": "React documentation",
+            "url": "https://react.dev"
+          },
+          {
+            "label": "Scrimba free course",
+            "url": "https://scrimba.com/learn/learnreact"
+          }
+        ],
+        "subtasks": [
+          {
+            "id": "st_1",
+            "label": "Read docs",
+            "completed": true
+          },
+          {
+            "id": "st_2",
+            "label": "Finish course",
+            "completed": false
+          },
+          {
+            "id": "st_3",
+            "label": "Mini project",
+            "completed": false
+          }
+        ]
+      },
+      {
+        "id": "task_4",
+        "title": "Complete first PR",
+        "description": "Pick a good first issue and submit your first pull request.",
+        "completed": false
+      },
+      {
+        "id": "task_5",
+        "title": "Sign contract",
+        "description": "Review and sign the contract and NDA.",
+        "completed": false
+      }
+    ]
+  }
+]

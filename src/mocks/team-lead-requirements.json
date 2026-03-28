@@ -1,0 +1,22 @@
+[
+  {
+    "id": "req_1",
+    "projectId": "p_1",
+    "roleTitle": "Fullstack Developer",
+    "desiredTechnologies": [
+      {
+        "name": "React",
+        "minimumLevel": "Intermediate"
+      },
+      {
+        "name": "PostgreSQL",
+        "minimumLevel": "Beginner"
+      },
+      {
+        "name": "Node.js",
+        "minimumLevel": "Intermediate"
+      }
+    ],
+    "expectations": "Comfortable reading existing code, writing clean PRs, and collaborating with product and design."
+  }
+]

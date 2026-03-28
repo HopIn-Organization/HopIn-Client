@@ -1,0 +1,65 @@
+import { BarChart3, LogOut, FolderKanban } from "lucide-react";
+import { NavLink } from "react-router-dom";
+import { LogoMark } from "@/components/brand/LogoMark";
+import { useAuthStore } from "@/store/auth.store";
+import { cn } from "@/utils/cn";
+
+const navItems = [
+  { to: "/projects", label: "My Projects", icon: FolderKanban },
+  { to: "/statistics", label: "Statistics", icon: BarChart3 },
+];
+
+export function Sidebar() {
+  const signOut = useAuthStore((state) => state.signOut);
+
+  return (
+    <aside className="flex h-screen w-[236px] flex-col border-r border-border bg-surface">
+      <div className="flex items-center gap-2 border-b border-border px-6 py-8">
+        <LogoMark className="h-8 w-8 rounded-lg" iconClassName="h-5 w-5" />
+        <span className="text-2xl font-semibold text-text-primary">HopIn</span>
+      </div>
+
+      <nav className="space-y-1 px-4 py-6">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                cn(
+                  "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-text-secondary transition",
+                  isActive && "bg-primary-soft text-primary",
+                )
+              }
+            >
+              <Icon size={16} />
+              {item.label}
+            </NavLink>
+          );
+        })}
+      </nav>
+
+      <div className="mt-auto border-t border-border p-6">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="grid h-9 w-9 place-items-center rounded-full bg-[#1F1B4D] text-sm font-semibold text-white">
+            MI
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-text-primary">Moshe Israeli</p>
+            <p className="text-xs text-text-secondary">google-user@example.com</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={signOut}
+          className="inline-flex items-center gap-2 text-sm text-text-secondary transition hover:text-text-primary"
+        >
+          <LogOut size={14} />
+          Sign out
+        </button>
+      </div>
+    </aside>
+  );
+}

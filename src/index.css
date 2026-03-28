@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 247 247 247;
+  --surface: 255 255 255;
+  --surface-muted: 252 252 252;
+  --text-primary: 34 34 34;
+  --text-secondary: 111 111 111;
+  --border: 236 236 236;
+  --primary: 255 102 102;
+  --primary-soft: 255 241 241;
+  --success: 53 208 194;
+  --ring: 255 196 196;
+}
+
+* {
+  @apply border-border;
+}
+
+body {
+  @apply bg-bg text-text-primary antialiased;
+  margin: 0;
+  font-family: "Inter", "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+}

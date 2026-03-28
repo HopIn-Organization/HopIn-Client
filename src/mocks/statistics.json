@@ -1,0 +1,14 @@
+[
+  {
+    "projectId": "p_1",
+    "teamMembers": 8,
+    "averageProgress": 65,
+    "completionRate": 85
+  },
+  {
+    "projectId": "p_2",
+    "teamMembers": 4,
+    "averageProgress": 42,
+    "completionRate": 70
+  }
+]

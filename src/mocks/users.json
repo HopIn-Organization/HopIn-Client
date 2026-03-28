@@ -1,0 +1,16 @@
+[
+  {
+    "id": "u_1",
+    "fullName": "Moshe Israeli",
+    "email": "google-user@example.com",
+    "role": "teamLead",
+    "avatarInitials": "MI"
+  },
+  {
+    "id": "u_2",
+    "fullName": "Sarah Connor",
+    "email": "sarah.connor@example.com",
+    "role": "employee",
+    "avatarInitials": "SC"
+  }
+]
