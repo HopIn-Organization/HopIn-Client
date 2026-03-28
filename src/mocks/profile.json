@@ -1,0 +1,20 @@
+{
+  "id": "u_1",
+  "fullName": "Moshe Israeli",
+  "email": "google-user@example.com",
+  "birthDate": "2002-03-23",
+  "avatarInitials": "MI",
+  "keySkills": ["React", "PostgreSQL", "Node.js"],
+  "workExperience": [
+    {
+      "id": "we_1",
+      "title": "FullStack Developer",
+      "years": 3
+    },
+    {
+      "id": "we_2",
+      "title": "Product Manager",
+      "years": 1
+    }
+  ]
+}

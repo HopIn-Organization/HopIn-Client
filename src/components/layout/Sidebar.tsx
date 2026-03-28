@@ -41,15 +41,22 @@ export function Sidebar() {
       </nav>
 
       <div className="mt-auto border-t border-border p-6">
-        <div className="mb-6 flex items-center gap-3">
-          <div className="grid h-9 w-9 place-items-center rounded-full bg-[#1F1B4D] text-sm font-semibold text-white">
-            MI
-          </div>
+        <NavLink
+          to="/profile"
+          className={({ isActive }) =>
+            cn(
+              "mb-6 flex items-center gap-3 rounded-xl p-2 transition",
+              isActive ? "bg-primary-soft" : "hover:bg-surface-muted",
+            )
+          }
+        >
+          <div className="grid h-9 w-9 place-items-center rounded-full bg-primary-soft text-sm font-semibold text-primary">MI</div>
           <div>
             <p className="text-sm font-semibold text-text-primary">Moshe Israeli</p>
             <p className="text-xs text-text-secondary">google-user@example.com</p>
           </div>
-        </div>
+        </NavLink>
+
         <button
           type="button"
           onClick={signOut}

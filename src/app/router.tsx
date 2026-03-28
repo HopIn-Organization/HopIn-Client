@@ -10,6 +10,7 @@ import { VerifyEmailPage } from "@/pages/auth/VerifyEmailPage";
 import { OnboardingPlanPage } from "@/pages/onboarding/OnboardingPlanPage";
 import { OnboardingReviewPage } from "@/pages/onboarding/OnboardingReviewPage";
 import { OnboardingStartPage } from "@/pages/onboarding/OnboardingStartPage";
+import { ProfilePage } from "@/pages/profile/ProfilePage";
 import { CreateProjectPage } from "@/pages/projects/CreateProjectPage";
 import { ProjectsPage } from "@/pages/projects/ProjectsPage";
 import { StatisticsPage } from "@/pages/projects/StatisticsPage";
@@ -37,6 +38,7 @@ export function AppRouter() {
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/projects/new" element={<CreateProjectPage />} />
           <Route path="/statistics" element={<StatisticsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/onboarding/start" element={<OnboardingStartPage />} />
           <Route path="/onboarding/review" element={<OnboardingReviewPage />} />
           <Route path="/onboarding/plan" element={<OnboardingPlanPage />} />
