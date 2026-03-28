@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { LogoMark } from "@/components/brand/LogoMark";
+import { LogoLockup } from "@/components/brand/LogoLockup";
 import { cn } from "@/utils/cn";
 
 interface AuthLayoutProps {
@@ -28,7 +28,7 @@ export function AuthLayout({
 
       <section className={cn("w-full max-w-[520px] text-center", compact && "max-w-[420px]")}>
         <div className="mb-6 flex justify-center">
-          <LogoMark />
+          <LogoLockup className="w-[180px]" />
         </div>
 
         <h1 className="text-[46px] font-semibold leading-tight text-text-primary md:text-[52px]">{title}</h1>

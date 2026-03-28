@@ -1,6 +1,6 @@
 import { BarChart3, LogOut, FolderKanban } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import { LogoMark } from "@/components/brand/LogoMark";
+import { LogoLockup } from "@/components/brand/LogoLockup";
 import { useAuthStore } from "@/store/auth.store";
 import { cn } from "@/utils/cn";
 
@@ -14,9 +14,8 @@ export function Sidebar() {
 
   return (
     <aside className="flex h-screen w-[236px] flex-col border-r border-border bg-surface">
-      <div className="flex items-center gap-2 border-b border-border px-6 py-8">
-        <LogoMark className="h-8 w-8 rounded-lg" iconClassName="h-5 w-5" />
-        <span className="text-2xl font-semibold text-text-primary">HopIn</span>
+      <div className="flex items-center border-b border-border px-6 py-8">
+        <LogoLockup compact />
       </div>
 
       <nav className="space-y-1 px-4 py-6">
