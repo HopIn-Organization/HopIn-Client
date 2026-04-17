@@ -1,12 +1,6 @@
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
 import { ProtectedRoute } from "@/app/protected-route";
-import { CompleteProfilePage } from "@/pages/auth/CompleteProfilePage";
-import { LoginPage } from "@/pages/auth/LoginPage";
-import { SetPasswordPage } from "@/pages/auth/SetPasswordPage";
-import { SignUpChoicePage } from "@/pages/auth/SignUpChoicePage";
-import { SignUpEmailPage } from "@/pages/auth/SignUpEmailPage";
-import { VerifyEmailPage } from "@/pages/auth/VerifyEmailPage";
 import { OnboardingPlanPage } from "@/pages/onboarding/OnboardingPlanPage";
 import { OnboardingReviewPage } from "@/pages/onboarding/OnboardingReviewPage";
 import { OnboardingStartPage } from "@/pages/onboarding/OnboardingStartPage";
