@@ -19,12 +19,12 @@ export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
+        {/* <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<SignUpChoicePage />} />
         <Route path="/register/email" element={<SignUpEmailPage />} />
         <Route path="/register/verify" element={<VerifyEmailPage />} />
         <Route path="/register/password" element={<SetPasswordPage />} />
-        <Route path="/register/profile" element={<CompleteProfilePage />} />
+        <Route path="/register/profile" element={<CompleteProfilePage />} /> */}
 
         <Route
           element={
@@ -45,7 +45,7 @@ export function AppRouter() {
           <Route path="*" element={<Navigate to="/projects" replace />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/projects" replace />} />
       </Routes>
     </BrowserRouter>
   );
