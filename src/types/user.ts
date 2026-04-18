@@ -1,5 +1,5 @@
-import { ProjectMembership } from "./ProjectMember";
-import { Skill } from "./skill";
+import type { ProjectMember } from "./projectMember";
+import type { Skill } from "./skill";
 
 export interface User {
   id: number;
@@ -7,7 +7,7 @@ export interface User {
   email: string | null;
   experienceYears: number | null;
   skills: Skill[];
-  projectMemberships: ProjectMembership[];
+  projectMemberships: ProjectMember[];
 }
 
 export interface EmployeeProfile {
