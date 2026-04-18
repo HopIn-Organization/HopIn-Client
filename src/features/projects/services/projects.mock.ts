@@ -12,16 +12,29 @@ export const projectsMockGateway: ProjectsGateway = {
     await mockDelay();
     return projects;
   },
+  async getProjectById(id: string) {
+    await mockDelay();
+
+    const project = projects.find((item) => item.id === id);
+
+    if (!project) {
+      throw new Error(`Project ${id} not found`);
+    }
+
+    return project;
+  },
   async createProject(payload) {
     await mockDelay();
 
     const newProject: Project = {
       id: `p_${projects.length + 1}`,
       name: payload.name,
-      description: payload.description,
       membersCount: 1,
-      role: "Admin",
     };
+
+    if (payload.description) {
+      newProject.description = payload.description;
+    }
 
     projects.unshift(newProject);
     return newProject;
