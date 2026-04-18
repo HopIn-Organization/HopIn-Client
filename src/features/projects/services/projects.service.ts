@@ -6,6 +6,8 @@ const gateway = env.dataSource === "api" ? projectsApiGateway : projectsMockGate
 
 export const projectsService = {
   getProjects: () => gateway.getProjects(),
-  createProject: (payload: Parameters<typeof gateway.createProject>[0]) => gateway.createProject(payload),
+  getProjectById: (id: string) => gateway.getProjectById(id),
+  createProject: (payload: Parameters<typeof gateway.createProject>[0]) =>
+    gateway.createProject(payload),
   getProjectStatistics: () => gateway.getProjectStatistics(),
 };

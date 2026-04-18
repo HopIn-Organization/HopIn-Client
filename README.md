@@ -55,7 +55,7 @@ All page and feature code uses service abstractions only. Components do not impo
 
 ```bash
 VITE_DATA_SOURCE=mock
-VITE_API_BASE_URL=http://localhost:3000/api
+VITE_API_BASE_URL=http://localhost:3000/
 ```
 
 3. Switch to backend later by setting:

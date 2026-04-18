@@ -12,7 +12,9 @@ export function ProjectsPage() {
       <header className="flex items-start justify-between">
         <div>
           <h1 className="text-5xl font-semibold text-text-primary">My Projects</h1>
-          <p className="mt-2 text-xl text-text-secondary">Manage all of your projects’ onboarding and progress</p>
+          <p className="mt-2 text-xl text-text-secondary">
+            Manage all of your projects’ onboarding and progress
+          </p>
         </div>
 
         <Link
