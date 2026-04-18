@@ -2,7 +2,7 @@ import usersData from "@/mocks/users.json";
 import skillsData from "@/mocks/skills.json";
 import { Navigate, useParams } from "react-router-dom";
 import { useAuthStore } from "@/store/auth.store";
-import { ProjectMemberRoles } from "@/types/ProjectMember";
+import { ProjectMemberRoles } from "@/types/projectMember";
 import { Skill } from "@/types/skill";
 import { User } from "@/types/user";
 import { ProjectDetailsPage } from "./ProjectDetailsPage";
