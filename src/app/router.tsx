@@ -6,6 +6,8 @@ import { OnboardingReviewPage } from "@/pages/onboarding/OnboardingReviewPage";
 import { OnboardingStartPage } from "@/pages/onboarding/OnboardingStartPage";
 import { ProfilePage } from "@/pages/profile/ProfilePage";
 import { CreateProjectPage } from "@/pages/projects/CreateProjectPage";
+import { ProjectAccessPage } from "@/pages/projects/ProjectAccessPage";
+import { ProjectDetailsPage } from "@/pages/projects/ProjectDetailsPage";
 import { ProjectsPage } from "@/pages/projects/ProjectsPage";
 import { StatisticsPage } from "@/pages/projects/StatisticsPage";
 
@@ -31,6 +33,8 @@ export function AppRouter() {
         >
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/projects/new" element={<CreateProjectPage />} />
+          <Route path="/projects/:projectId" element={<ProjectAccessPage />} />
+          <Route path="/projects/:projectId/details" element={<ProjectDetailsPage />} />
           <Route path="/statistics" element={<StatisticsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/onboarding/start" element={<OnboardingStartPage />} />
