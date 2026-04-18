@@ -1,3 +1,4 @@
+import { Job } from "@/types/job";
 import { Project, ProjectStatistics } from "@/types/project";
 
 export interface ProjectsGateway {
@@ -5,10 +6,9 @@ export interface ProjectsGateway {
   getProjectById(id: string): Promise<Project>;
   createProject(payload: {
     name: string;
-    description: string;
+    description?: string;
     repositoryUrl?: string;
-    roleTitle?: string;
-    technologies?: string[];
+    jobs?: Job[];
   }): Promise<Project>;
   getProjectStatistics(): Promise<ProjectStatistics[]>;
 }

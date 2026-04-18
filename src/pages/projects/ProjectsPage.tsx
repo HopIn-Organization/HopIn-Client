@@ -7,8 +7,6 @@ import { Grid } from "@/ui/Layout";
 export function ProjectsPage() {
   const { data: projects = [], isLoading, isError } = useProjectsQuery();
 
-  console.log({ projects });
-
   return (
     <section className="space-y-8">
       <header className="flex items-start justify-between">
