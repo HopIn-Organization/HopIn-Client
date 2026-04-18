@@ -1,5 +1,5 @@
 import { InputHTMLAttributes } from "react";
-import { cn } from "@/utils/cn";
+import { classNames } from "@/utils/className";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -11,7 +11,7 @@ export function Input({ label, className, id, ...props }: InputProps) {
       {label && <span className="text-xs font-medium text-text-secondary">{label}</span>}
       <input
         id={id}
-        className={cn(
+        className={classNames(
           "h-11 w-full rounded-xl border border-border bg-surface px-3 text-sm text-text-primary outline-none transition placeholder:text-text-secondary/60 focus:border-primary",
           className,
         )}
