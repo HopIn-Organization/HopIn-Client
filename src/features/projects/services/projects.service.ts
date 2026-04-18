@@ -4,8 +4,6 @@ import { projectsMockGateway } from "./projects.mock";
 
 const gateway = env.dataSource === "api" ? projectsApiGateway : projectsMockGateway;
 
-console.log(env.dataSource);
-
 export const projectsService = {
   getProjects: () => gateway.getProjects(),
   getProjectById: (id: string) => gateway.getProjectById(id),
