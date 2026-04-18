@@ -1,11 +1,26 @@
-export type UserRole = "employee" | "teamLead";
+import { Skill } from "./skill";
+
+export const ProjectMemberRoles = {
+  ADMIN: "admin",
+  TRAINEE: "trainee",
+} as const;
+
+export type ProjectMemberRole = (typeof ProjectMemberRoles)[keyof typeof ProjectMemberRoles];
+
+export interface ProjectMember {
+  id: number;
+  projectId: string;
+  role: ProjectMemberRole;
+  progress?: number;
+}
 
 export interface User {
-  id: string;
-  fullName: string;
-  email: string;
-  role: UserRole;
-  avatarInitials: string;
+  id: number;
+  name: string;
+  email: string | null;
+  experienceYears: number | null;
+  skills: Skill[];
+  projectMemberships: ProjectMember[];
 }
 
 export interface EmployeeProfile {

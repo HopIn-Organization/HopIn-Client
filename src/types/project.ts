@@ -1,13 +1,12 @@
 import { Job } from "./job";
 
-export type ProjectRole = "Admin" | "Trainee";
-
 export interface Project {
   id: string;
   name: string;
   description?: string;
   repositoryUrl?: string;
   job?: Job[];
+  membersCount?: number;
 }
 
 export interface ProjectStatistics {

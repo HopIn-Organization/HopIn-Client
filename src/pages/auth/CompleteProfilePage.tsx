@@ -54,7 +54,7 @@ export function CompleteProfilePage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    await completeProfileMutation.mutateAsync({
+    const user = await completeProfileMutation.mutateAsync({
       email,
       fullName,
       birthDate,
@@ -62,7 +62,7 @@ export function CompleteProfilePage() {
       workExperience,
     });
 
-    signIn();
+    signIn(user);
     reset();
     navigate("/projects");
   }

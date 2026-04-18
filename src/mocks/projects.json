@@ -3,14 +3,12 @@
     "id": "p_1",
     "name": "E-commerce Platform",
     "description": "Modernizing the main shopping experience with React and Next.js",
-    "membersCount": 8,
-    "role": "Admin"
+    "membersCount": 8
   },
   {
     "id": "p_2",
     "name": "Analytics Project",
     "description": "Building a new data visualization tool",
-    "membersCount": 4,
-    "role": "Trainee"
+    "membersCount": 4
   }
 ]
