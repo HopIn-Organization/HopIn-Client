@@ -8,6 +8,14 @@ export function useProjectsQuery() {
   });
 }
 
+export function useProjectQuery(id: string) {
+  return useQuery({
+    queryKey: ["projects", id],
+    queryFn: () => projectsService.getProjectById(id),
+    enabled: Boolean(id),
+  });
+}
+
 export function useCreateProjectMutation() {
   const queryClient = useQueryClient();
 

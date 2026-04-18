@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { LogoLockup } from "@/components/brand/LogoLockup";
-import { cn } from "@/utils/cn";
+import { classNames } from "@/utils/className";
 
 interface AuthLayoutProps {
   title: string;
@@ -26,7 +26,7 @@ export function AuthLayout({
     <main className="relative grid min-h-screen place-items-center bg-bg px-4 py-12">
       <div className="pointer-events-none absolute right-0 top-4 h-px w-[270px] bg-border" />
 
-      <section className={cn("w-full max-w-[520px] text-center", compact && "max-w-[420px]")}>
+      <section className={classNames("w-full max-w-[520px] text-center", compact && "max-w-[420px]")}>
         <div className="mb-6 flex justify-center">
           <LogoLockup className="w-[180px]" />
         </div>

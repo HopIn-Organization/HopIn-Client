@@ -2,7 +2,7 @@ import { BarChart3, LogOut, FolderKanban } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { LogoLockup } from "@/components/brand/LogoLockup";
 import { useAuthStore } from "@/store/auth.store";
-import { cn } from "@/utils/cn";
+import { classNames } from "@/utils/className";
 
 const navItems = [
   { to: "/projects", label: "My Projects", icon: FolderKanban },
@@ -27,7 +27,7 @@ export function Sidebar() {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                cn(
+                classNames(
                   "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-text-secondary transition",
                   isActive && "bg-primary-soft text-primary",
                 )
@@ -44,7 +44,7 @@ export function Sidebar() {
         <NavLink
           to="/profile"
           className={({ isActive }) =>
-            cn(
+            classNames(
               "mb-6 flex items-center gap-3 rounded-xl p-2 transition",
               isActive ? "bg-primary-soft" : "hover:bg-surface-muted",
             )

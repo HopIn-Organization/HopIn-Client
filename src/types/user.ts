@@ -1,11 +1,13 @@
-export type UserRole = "employee" | "teamLead";
+import type { ProjectMember } from "./projectMember";
+import type { Skill } from "./skill";
 
 export interface User {
-  id: string;
-  fullName: string;
-  email: string;
-  role: UserRole;
-  avatarInitials: string;
+  id: number;
+  name: string;
+  email: string | null;
+  experienceYears: number | null;
+  skills: Skill[];
+  projectMemberships: ProjectMember[];
 }
 
 export interface EmployeeProfile {

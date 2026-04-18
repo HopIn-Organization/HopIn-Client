@@ -1,16 +1,53 @@
 [
   {
-    "id": "u_1",
-    "fullName": "Moshe Israeli",
+    "id": 1,
+    "name": "Moshe Israeli",
     "email": "google-user@example.com",
-    "role": "teamLead",
-    "avatarInitials": "MI"
+    "experienceYears": 10,
+    "skillIds": [1, 2, 3],
+    "projectMemberships": [
+      { "id": 1, "projectId": "p_1", "role": "admin", "progress": 72 }
+    ]
   },
   {
-    "id": "u_2",
-    "fullName": "Sarah Connor",
+    "id": 2,
+    "name": "Sarah Connor",
     "email": "sarah.connor@example.com",
-    "role": "employee",
-    "avatarInitials": "SC"
+    "experienceYears": 5,
+    "skillIds": [3, 4, 5],
+    "projectMemberships": [
+      { "id": 2, "projectId": "p_1", "role": "trainee", "progress": 45 }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "experienceYears": 8,
+    "skillIds": [6, 7, 8],
+    "projectMemberships": [
+      { "id": 3, "projectId": "p_1", "role": "trainee", "progress": 18 }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Mike Ross",
+    "email": "mike@example.com",
+    "experienceYears": 1,
+    "skillIds": [9, 10, 11],
+    "projectMemberships": [
+      { "id": 4, "projectId": "p_1", "role": "trainee", "progress": 0 }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Rachel Zane",
+    "email": "rachel@example.com",
+    "experienceYears": 3,
+    "skillIds": [12, 13, 14],
+    "projectMemberships": [
+      { "id": 5, "projectId": "p_1", "role": "trainee", "progress": 88 },
+      { "id": 6, "projectId": "p_2", "role": "trainee", "progress": 54 }
+    ]
   }
 ]
