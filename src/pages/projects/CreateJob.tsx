@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { TechnologyChips } from "@/features/onboarding/components/TechnologyChips";
 import { Button } from "@/ui/Button";
 import { Input } from "@/ui/Input";
@@ -9,9 +9,16 @@ interface CreateJobProps {
   onJobTitleChange: (value: string) => void;
   skills: string[];
   onSkillsChange: (skills: string[]) => void;
+  onRemove?: () => void;
 }
 
-export function CreateJob({ jobTitle, onJobTitleChange, skills, onSkillsChange }: CreateJobProps) {
+export function CreateJob({
+  jobTitle,
+  onJobTitleChange,
+  skills,
+  onSkillsChange,
+  onRemove,
+}: CreateJobProps) {
   const [skillInput, setSkillInput] = useState("");
 
   function handleAddSkill() {
@@ -33,14 +40,34 @@ export function CreateJob({ jobTitle, onJobTitleChange, skills, onSkillsChange }
       handleAddSkill();
     }
   }
+
+  function handleJobTitleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+    }
+  }
+
   return (
     <div className="rounded-xl border border-border bg-surface-muted p-4">
+      <div className="mb-4 flex justify-end">
+        {onRemove && (
+          <button
+            type="button"
+            onClick={onRemove}
+            className="grid h-8 w-8 place-items-center rounded-full border border-border bg-surface text-text-secondary transition hover:text-text-primary"
+            aria-label="Remove job"
+          >
+            <Trash2 size={14} />
+          </button>
+        )}
+      </div>
       <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
         <div className="space-y-3">
           <Input
             id="jobTitle"
             value={jobTitle}
             onChange={(e) => onJobTitleChange(e.currentTarget.value)}
+            onKeyDown={handleJobTitleKeyDown}
             label="Job Title"
             placeholder="e.g Fullstack Developer"
           />

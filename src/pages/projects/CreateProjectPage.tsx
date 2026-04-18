@@ -38,6 +38,10 @@ export function CreateProjectPage() {
     setJobs(updatedJobs);
   }
 
+  function handleRemoveJob(index: number) {
+    setJobs((currentJobs) => currentJobs.filter((_, currentIndex) => currentIndex !== index));
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -142,6 +146,7 @@ export function CreateProjectPage() {
                 onJobTitleChange={(title) => handleUpdateJobTitle(index, title)}
                 skills={job.skills}
                 onSkillsChange={(skills) => handleUpdateJobSkills(index, skills)}
+                onRemove={() => handleRemoveJob(index)}
               />
             ))}
           </div>
