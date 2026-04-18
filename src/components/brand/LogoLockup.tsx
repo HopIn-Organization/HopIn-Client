@@ -1,4 +1,4 @@
-import { cn } from "@/utils/cn";
+import { classNames } from "@/utils/className";
 import { primaryLogoSrc } from "@/components/brand/logoSource";
 
 interface LogoLockupProps {
@@ -11,7 +11,7 @@ export function LogoLockup({ className, compact = false }: LogoLockupProps) {
     <img
       src={primaryLogoSrc}
       alt="HopIn logo"
-      className={cn("h-auto object-contain", compact ? "w-[96px]" : "w-[230px]", className)}
+      className={classNames("h-auto object-contain", compact ? "w-[96px]" : "w-[230px]", className)}
       aria-label="HopIn logo"
     />
   );

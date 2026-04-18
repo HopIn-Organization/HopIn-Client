@@ -12,8 +12,8 @@ export function SignUpChoicePage() {
   const googleMutation = useLoginWithGoogleMutation();
 
   async function handleGoogleSignUp() {
-    await googleMutation.mutateAsync();
-    signIn();
+    const user = await googleMutation.mutateAsync();
+    signIn(user);
     navigate("/projects");
   }
 

@@ -17,18 +17,18 @@ export function LoginPage() {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
 
-    await loginMutation.mutateAsync({
+    const user = await loginMutation.mutateAsync({
       email: String(formData.get("email") ?? ""),
       password: String(formData.get("password") ?? ""),
     });
 
-    signIn();
+    signIn(user);
     navigate("/projects");
   }
 
   async function handleGoogleSignIn() {
-    await googleMutation.mutateAsync();
-    signIn();
+    const user = await googleMutation.mutateAsync();
+    signIn(user);
     navigate("/projects");
   }
 
