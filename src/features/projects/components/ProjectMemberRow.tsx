@@ -34,12 +34,12 @@ export function ProjectMemberRow({ member }: ProjectMemberRowProps) {
     <div className="grid gap-4 px-5 py-5 md:grid-cols-[240px_120px_minmax(260px,1fr)_210px] md:px-7">
       <div className="flex items-center gap-4">
         <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#1F1B4D] text-sm font-semibold text-white">
-          {getInitials(member.name)}
+          {getInitials(member.user.name)}
         </div>
         <div className="min-w-0">
-          <p className="truncate font-medium text-text-primary">{member.name}</p>
+          <p className="truncate font-medium text-text-primary">{member.user.name}</p>
           <p className="truncate text-sm text-text-secondary">
-            {member.email ?? "No email provided"}
+            {member.user.email ?? "No email provided"}
           </p>
         </div>
       </div>
@@ -69,7 +69,7 @@ export function ProjectMemberRow({ member }: ProjectMemberRowProps) {
             type="button"
             onClick={() => setIsMenuOpen((currentState) => !currentState)}
             className="grid h-9 w-9 place-items-center rounded-xl text-text-secondary transition hover:bg-surface-muted hover:text-text-primary"
-            aria-label={`Open actions for ${member.name}`}
+            aria-label={`Open actions for ${member.user.name}`}
           >
             <MoreVertical size={16} />
           </button>

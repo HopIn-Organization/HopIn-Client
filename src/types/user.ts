@@ -6,8 +6,8 @@ export interface User {
   name: string;
   email: string | null;
   experienceYears: number | null;
-  skills: Skill[];
-  projectMemberships: ProjectMember[];
+  skills?: Skill[];
+  projectMemberships?: ProjectMember[];
 }
 
 export interface EmployeeProfile {

@@ -17,9 +17,9 @@ export function ProjectMembersTable({ searchValue, projectMembers }: ProjectMemb
     }
 
     return projectMembers.filter((employee) => {
-      const email = employee.email ?? "";
+      const email = employee.user.email ?? "";
       return (
-        employee.name.toLowerCase().includes(normalizedSearch) ||
+        employee.user.name.toLowerCase().includes(normalizedSearch) ||
         email.toLowerCase().includes(normalizedSearch)
       );
     });
@@ -36,7 +36,7 @@ export function ProjectMembersTable({ searchValue, projectMembers }: ProjectMemb
 
       <div className="divide-y divide-border">
         {filteredEmployees.map((employee) => (
-          <ProjectMemberRow key={employee.id} member={employee} />
+          <ProjectMemberRow key={employee.user.id} member={employee} />
         ))}
       </div>
 

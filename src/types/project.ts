@@ -1,4 +1,5 @@
 import { Job } from "./job";
+import { ProjectMember } from "./projectMember";
 
 export interface Project {
   id: string;
@@ -6,7 +7,7 @@ export interface Project {
   description?: string;
   repositoryUrl?: string;
   job?: Job[];
-  membersCount?: number;
+  members?: ProjectMember[];
 }
 
 export interface ProjectStatistics {
