@@ -10,4 +10,6 @@ export const projectsService = {
   createProject: (payload: Parameters<typeof gateway.createProject>[0]) =>
     gateway.createProject(payload),
   getProjectStatistics: () => gateway.getProjectStatistics(),
+  updateMemberRole: (projectId: string, memberId: string, role: string) =>
+    gateway.updateMemberRole(projectId, memberId, role),
 };

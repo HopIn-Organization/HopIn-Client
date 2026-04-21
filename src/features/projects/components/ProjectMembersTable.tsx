@@ -26,7 +26,7 @@ export function ProjectMembersTable({ searchValue, projectMembers }: ProjectMemb
   }, [projectMembers, searchValue]);
 
   return (
-    <Card className="overflow-hidden shadow-soft">
+    <Card className=" shadow-soft">
       <div className="hidden grid-cols-[240px_120px_minmax(320px,1fr)_180px] gap-4 border-b border-border bg-surface-muted px-7 py-4 text-xs font-medium text-text-secondary md:grid">
         <span>Employee</span>
         <span>Role</span>

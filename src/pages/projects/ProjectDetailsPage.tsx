@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { ArrowLeft, Search, Settings, Sparkles } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
-import { useProjectQuery } from "@/features/projects/hooks";
+import { useProjectQuery } from "@/features/projects/hooks/hooks";
 import usersData from "@/mocks/users.json";
 import skillsData from "@/mocks/skills.json";
 import { FullProjectMember } from "@/types/projectMember";

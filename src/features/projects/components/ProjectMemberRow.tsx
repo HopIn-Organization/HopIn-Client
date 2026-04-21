@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { Check, MoreVertical, Trash2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, Loader2, MoreVertical, Trash2 } from "lucide-react";
 import { FullProjectMember, ProjectMemberRole, ProjectMemberRoles } from "@/types/projectMember";
 import { classNames } from "@/utils/className";
 import { MemberBoardButton } from "./MemberBoardButton";
+import { useUpdateMemberRoleMutation } from "../hooks/hooks";
 
 interface ProjectMemberRowProps {
   member: FullProjectMember;
@@ -29,6 +30,38 @@ function formatProjectRole(role: ProjectMemberRole) {
 
 export function ProjectMemberRow({ member }: ProjectMemberRowProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { mutate: updateRole, isPending } = useUpdateMemberRoleMutation();
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
+  const updateMemberRole = () => {
+    setIsMenuOpen(false);
+
+    const nextRole =
+      member.role === ProjectMemberRoles.ADMIN
+        ? ProjectMemberRoles.TRAINEE
+        : ProjectMemberRoles.ADMIN;
+
+    updateRole({
+      projectId: member.projectId,
+      memberId: String(member.id),
+      role: nextRole,
+    });
+  };
 
   return (
     <div className="grid gap-4 px-5 py-5 md:grid-cols-[240px_120px_minmax(260px,1fr)_210px] md:px-7">
@@ -64,7 +97,7 @@ export function ProjectMemberRow({ member }: ProjectMemberRowProps) {
       <div className="flex items-center justify-end gap-2 justify-self-end">
         <MemberBoardButton progress={member.progress} />
 
-        <div className="relative">
+        <div className="relative" ref={menuRef}>
           <button
             type="button"
             onClick={() => setIsMenuOpen((currentState) => !currentState)}
@@ -86,10 +119,11 @@ export function ProjectMemberRow({ member }: ProjectMemberRowProps) {
               </button>
               <button
                 type="button"
-                onClick={() => setIsMenuOpen(false)}
                 className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-text-primary transition hover:bg-surface-muted"
+                disabled={isPending}
+                onClick={updateMemberRole}
               >
-                <Check size={14} />
+                {isPending ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
                 Change role to{" "}
                 {member.role === ProjectMemberRoles.ADMIN
                   ? ProjectMemberRoles.TRAINEE

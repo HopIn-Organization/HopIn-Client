@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react";
 import { ArrowLeft, Link2, Plus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useCreateProjectMutation } from "@/features/projects/hooks";
+import { useCreateProjectMutation } from "@/features/projects/hooks/hooks";
 import { CreateJob } from "./CreateJob";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
