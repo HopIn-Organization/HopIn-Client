@@ -27,8 +27,8 @@ export const projectsApiGateway: ProjectsGateway = {
 
     return data;
   },
-  async removeMember(projectId: string, memberId: string) {
-    const { data } = await apiClient.delete(`projects/${projectId}/members/${memberId}`);
+  async removeMember(memberId: string) {
+    const { data } = await apiClient.delete(`projects/members/${memberId}`);
 
     return data;
   },
