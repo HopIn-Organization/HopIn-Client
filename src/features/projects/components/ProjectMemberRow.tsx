@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Check, Loader2, MoreVertical, Trash2 } from "lucide-react";
 import { FullProjectMember, ProjectMemberRole, ProjectMemberRoles } from "@/types/projectMember";
 import { classNames } from "@/utils/className";
 import { MemberBoardButton } from "./MemberBoardButton";
 import { useUpdateMemberRoleMutation, useRemoveMemberMutation } from "../hooks/members";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 interface ProjectMemberRowProps {
   member: FullProjectMember;
@@ -34,20 +35,7 @@ export function ProjectMemberRow({ member }: ProjectMemberRowProps) {
   const { mutate: removeMember, isPending: isRemoving } = useRemoveMemberMutation();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!isMenuOpen) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isMenuOpen]);
+  useClickOutside(menuRef, () => setIsMenuOpen(false), isMenuOpen);
 
   const updateMemberRole = () => {
     setIsMenuOpen(false);
@@ -73,7 +61,7 @@ export function ProjectMemberRow({ member }: ProjectMemberRowProps) {
   };
 
   return (
-    <div className="grid gap-4 px-5 py-5 md:grid-cols-[240px_120px_minmax(260px,1fr)_210px] md:px-7">
+    <div className="grid gap-4 px-5 py-5 md:grid-cols-[240px_120px_160px_minmax(260px,1fr)_210px] md:px-7">
       <div className="flex items-center gap-4">
         <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#1F1B4D] text-sm font-semibold text-white">
           {getInitials(member.user.name)}
@@ -85,11 +73,12 @@ export function ProjectMemberRow({ member }: ProjectMemberRowProps) {
           </p>
         </div>
       </div>
-
       <div className="flex items-center text-sm text-text-primary">
         {formatProjectRole(member.role)}
       </div>
-
+      <div className="flex items-center text-sm text-text-secondary truncate">
+        {member.job.title}
+      </div>
       <div className="space-y-2">
         <div className="h-2.5 max-w-[700px] rounded-full bg-surface-muted">
           <div
@@ -102,7 +91,6 @@ export function ProjectMemberRow({ member }: ProjectMemberRowProps) {
         </div>
         <div className="text-xs text-text-secondary">{member.progress}%</div>
       </div>
-
       <div className="flex items-center justify-end gap-2 justify-self-end">
         <MemberBoardButton progress={member.progress} />
 

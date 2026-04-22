@@ -13,7 +13,7 @@ export interface ProjectMember {
   user: User;
   projectId: string;
   role: ProjectMemberRole;
-  jobs: Job[];
+  job: Job;
   progress?: number;
 }
 
