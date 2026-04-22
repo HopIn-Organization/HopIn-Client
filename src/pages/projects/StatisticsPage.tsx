@@ -1,5 +1,5 @@
 import { StatisticsCard } from "@/features/statistics/components/StatisticsCard";
-import { useProjectStatisticsQuery, useProjectsQuery } from "@/features/projects/hooks/hooks";
+import { useProjectStatisticsQuery, useProjectsQuery } from "@/features/projects/hooks";
 
 export function StatisticsPage() {
   const { data: projects = [] } = useProjectsQuery();

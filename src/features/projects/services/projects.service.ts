@@ -12,4 +12,5 @@ export const projectsService = {
   getProjectStatistics: () => gateway.getProjectStatistics(),
   updateMemberRole: (projectId: string, memberId: string, role: string) =>
     gateway.updateMemberRole(projectId, memberId, role),
+  removeMember: (projectId: string, memberId: string) => gateway.removeMember(projectId, memberId),
 };

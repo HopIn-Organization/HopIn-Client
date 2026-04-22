@@ -3,7 +3,7 @@ import { Check, Loader2, MoreVertical, Trash2 } from "lucide-react";
 import { FullProjectMember, ProjectMemberRole, ProjectMemberRoles } from "@/types/projectMember";
 import { classNames } from "@/utils/className";
 import { MemberBoardButton } from "./MemberBoardButton";
-import { useUpdateMemberRoleMutation } from "../hooks/hooks";
+import { useUpdateMemberRoleMutation, useRemoveMemberMutation } from "../hooks/members";
 
 interface ProjectMemberRowProps {
   member: FullProjectMember;
@@ -31,6 +31,7 @@ function formatProjectRole(role: ProjectMemberRole) {
 export function ProjectMemberRow({ member }: ProjectMemberRowProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { mutate: updateRole, isPending } = useUpdateMemberRoleMutation();
+  const { mutate: removeMember, isPending: isRemoving } = useRemoveMemberMutation();
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -60,6 +61,14 @@ export function ProjectMemberRow({ member }: ProjectMemberRowProps) {
       projectId: member.projectId,
       memberId: String(member.id),
       role: nextRole,
+    });
+  };
+
+  const handleRemoveMember = () => {
+    setIsMenuOpen(false);
+    removeMember({
+      projectId: member.projectId,
+      memberId: String(member.id),
     });
   };
 
@@ -111,10 +120,11 @@ export function ProjectMemberRow({ member }: ProjectMemberRowProps) {
             <div className="absolute right-0 top-11 z-10 w-48 rounded-xl border border-border bg-surface p-2 shadow-soft">
               <button
                 type="button"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={handleRemoveMember}
+                disabled={isRemoving}
                 className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-red-500 transition hover:bg-surface-muted"
               >
-                <Trash2 size={14} />
+                {isRemoving ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
                 Remove Member
               </button>
               <button

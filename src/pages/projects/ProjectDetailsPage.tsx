@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { ArrowLeft, Search, Settings, Sparkles } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
-import { useProjectQuery } from "@/features/projects/hooks/hooks";
 import usersData from "@/mocks/users.json";
 import skillsData from "@/mocks/skills.json";
 import { FullProjectMember } from "@/types/projectMember";
@@ -11,6 +10,7 @@ import { Button } from "@/ui/Button";
 import { Tabs } from "@/ui/Tabs";
 import { ProjectMembersTable } from "@/features/projects/components/ProjectMembersTable";
 import { env } from "@/utils/env";
+import { useProjectQuery } from "@/features/projects/hooks";
 
 interface StoredUser extends Omit<User, "skills"> {
   skillIds: number[];

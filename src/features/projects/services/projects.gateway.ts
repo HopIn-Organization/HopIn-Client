@@ -13,4 +13,5 @@ export interface ProjectsGateway {
   }): Promise<Project>;
   getProjectStatistics(): Promise<ProjectStatistics[]>;
   updateMemberRole(projectId: string, memberId: string, role: string): Promise<ProjectMember>;
+  removeMember(projectId: string, memberId: string): Promise<void>;
 }
