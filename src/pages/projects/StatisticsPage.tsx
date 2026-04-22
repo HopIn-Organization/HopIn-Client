@@ -17,12 +17,18 @@ export function StatisticsPage() {
     <section className="space-y-8">
       <header>
         <h1 className="text-5xl font-semibold text-text-primary">Statistics</h1>
-        <p className="mt-2 text-xl text-text-secondary">View detailed analytics for each project.</p>
+        <p className="mt-2 text-xl text-text-secondary">
+          View detailed analytics for each project.
+        </p>
       </header>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         {cards.map((card) => (
-          <StatisticsCard key={card.project.id} project={card.project} statistics={card.statistics} />
+          <StatisticsCard
+            key={card.project.id}
+            project={card.project}
+            statistics={card.statistics}
+          />
         ))}
       </div>
     </section>

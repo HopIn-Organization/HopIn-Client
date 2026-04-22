@@ -24,13 +24,14 @@ export function ProjectAccessPage() {
   const currentUserEmail = useAuthStore((state) => state.currentUserEmail);
 
   const currentUser = users.find((user) => user.email === currentUserEmail);
+
   const membership = currentUser?.projectMemberships.find(
     (projectMembership) => projectMembership.projectId === projectId,
   );
 
-  if (membership?.role === ProjectMemberRoles.ADMIN) {
-    return <ProjectDetailsPage />;
-  }
+  // if (membership?.role === ProjectMemberRoles.ADMIN) {
+  return <ProjectDetailsPage />;
+  // }
 
-  return <Navigate to="/onboarding/plan" replace />;
+  // return <Navigate to="/onboarding/plan" replace />;
 }

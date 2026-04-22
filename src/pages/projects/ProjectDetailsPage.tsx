@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, Plus, Search, Settings, Sparkles } from "lucide-react";
+import { ArrowLeft, Search, Settings, Sparkles } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
-import { useProjectQuery } from "@/features/projects/hooks";
 import usersData from "@/mocks/users.json";
 import skillsData from "@/mocks/skills.json";
 import { FullProjectMember } from "@/types/projectMember";
@@ -10,6 +9,8 @@ import { User } from "@/types/user";
 import { Button } from "@/ui/Button";
 import { Tabs } from "@/ui/Tabs";
 import { ProjectMembersTable } from "@/features/projects/components/ProjectMembersTable";
+import { env } from "@/utils/env";
+import { useProjectQuery } from "@/features/projects/hooks";
 
 interface StoredUser extends Omit<User, "skills"> {
   skillIds: number[];
@@ -36,18 +37,23 @@ export function ProjectDetailsPage() {
   const [activeTab, setActiveTab] = useState<ProjectTab>("members");
   const [searchValue, setSearchValue] = useState("");
 
-  const projectMembers = useMemo<FullProjectMember[]>(
+  const projectMembers = useMemo<FullProjectMember[] | undefined>(
     () =>
-      users.flatMap((user) =>
-        user.projectMemberships
-          .filter((membership) => membership.projectId === projectId)
-          .map((membership) => ({
-            ...user,
-            ...membership,
-            progress: membership.progress ?? 0,
-          })),
-      ),
-    [projectId],
+      env.dataSource === "api"
+        ? project?.members?.map((member) => ({
+            ...member,
+            progress: member.progress ?? 0,
+          }))
+        : users.flatMap((user) =>
+            (user.projectMemberships ?? [])
+              .filter((membership) => membership.projectId === projectId)
+              .map((membership) => ({
+                ...membership,
+                user,
+                progress: membership.progress ?? 0,
+              })),
+          ),
+    [project?.members, projectId],
   );
 
   if (isLoading) {
@@ -89,32 +95,35 @@ export function ProjectDetailsPage() {
             <Settings size={15} />
             Settings
           </Button>
-          <Button type="button" className="h-11 px-5">
+          {/* <Button type="button" className="h-11 px-5">
             <Plus size={15} />
             Add Member
-          </Button>
+          </Button> */}
         </div>
       </header>
 
       <Tabs items={projectTabs} value={activeTab} onValueChange={setActiveTab} />
 
-      <div className="space-y-6">
-        <label className="relative block max-w-sm">
-          <Search
-            size={16}
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"
-          />
-          <input
-            type="text"
-            value={searchValue}
-            onChange={(event) => setSearchValue(event.target.value)}
-            placeholder="Search by name or email..."
-            className="h-11 w-full rounded-xl border border-border bg-surface pl-11 pr-4 text-sm text-text-primary outline-none transition placeholder:text-text-secondary/60 focus:border-primary"
-          />
-        </label>
-
-        <ProjectMembersTable searchValue={searchValue} projectMembers={projectMembers} />
-      </div>
+      {projectMembers ? (
+        <div className="space-y-6">
+          <label className="relative block max-w-sm">
+            <Search
+              size={16}
+              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"
+            />
+            <input
+              type="text"
+              value={searchValue}
+              onChange={(event) => setSearchValue(event.target.value)}
+              placeholder="Search by name or email..."
+              className="h-11 w-full rounded-xl border border-border bg-surface pl-11 pr-4 text-sm text-text-primary outline-none transition placeholder:text-text-secondary/60 focus:border-primary"
+            />
+          </label>
+          <ProjectMembersTable searchValue={searchValue} projectMembers={projectMembers} />
+        </div>
+      ) : (
+        <div className="text-sm text-text-secondary">No team members found yet.</div>
+      )}
     </section>
   );
 }

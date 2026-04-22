@@ -17,26 +17,26 @@ export function ProjectMembersTable({ searchValue, projectMembers }: ProjectMemb
     }
 
     return projectMembers.filter((employee) => {
-      const email = employee.email ?? "";
+      const email = employee.user.email ?? "";
       return (
-        employee.name.toLowerCase().includes(normalizedSearch) ||
+        employee.user.name.toLowerCase().includes(normalizedSearch) ||
         email.toLowerCase().includes(normalizedSearch)
       );
     });
   }, [projectMembers, searchValue]);
 
   return (
-    <Card className="overflow-hidden shadow-soft">
-      <div className="hidden grid-cols-[240px_120px_minmax(320px,1fr)_180px] gap-4 border-b border-border bg-surface-muted px-7 py-4 text-xs font-medium text-text-secondary md:grid">
+    <Card className=" shadow-soft">
+      <div className="hidden grid-cols-[240px_120px_160px_minmax(320px,1fr)_180px] gap-4 border-b border-border bg-surface-muted px-7 py-4 text-xs font-medium text-text-secondary md:grid">
         <span>Employee</span>
         <span>Role</span>
+        <span>Job</span>
         <span>Progress</span>
         <span className="text-right">Actions</span>
       </div>
-
       <div className="divide-y divide-border">
         {filteredEmployees.map((employee) => (
-          <ProjectMemberRow key={employee.id} member={employee} />
+          <ProjectMemberRow key={employee.user.id} member={employee} />
         ))}
       </div>
 

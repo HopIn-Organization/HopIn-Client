@@ -1,6 +1,7 @@
 import { apiClient } from "@/services/http/api-client";
 import { Project, ProjectStatistics } from "@/types/project";
 import { ProjectsGateway } from "./projects.gateway";
+import { ProjectMemberRole } from "@/types/projectMember";
 
 export const projectsApiGateway: ProjectsGateway = {
   async getProjects() {
@@ -17,6 +18,18 @@ export const projectsApiGateway: ProjectsGateway = {
   },
   async getProjectStatistics() {
     const { data } = await apiClient.get<ProjectStatistics[]>("/projects/statistics");
+    return data;
+  },
+  async updateMemberRole(projectId: string, memberId: string, role: ProjectMemberRole) {
+    const { data } = await apiClient.patch(`projects/${projectId}/members/${memberId}/role`, {
+      role,
+    });
+
+    return data;
+  },
+  async removeMember(memberId: string) {
+    const { data } = await apiClient.delete(`projects/members/${memberId}`);
+
     return data;
   },
 };

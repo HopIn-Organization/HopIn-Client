@@ -1,16 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { projectsService } from "@/features/projects/services/projects.service";
+import { projectKeys } from "./projectKeys";
 
 export function useProjectsQuery() {
   return useQuery({
-    queryKey: ["projects"],
+    queryKey: projectKeys.all,
     queryFn: projectsService.getProjects,
   });
 }
 
 export function useProjectQuery(id: string) {
   return useQuery({
-    queryKey: ["projects", id],
+    queryKey: projectKeys.byId(id),
     queryFn: () => projectsService.getProjectById(id),
     enabled: Boolean(id),
   });
@@ -22,14 +23,14 @@ export function useCreateProjectMutation() {
   return useMutation({
     mutationFn: projectsService.createProject,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["projects"] });
+      await queryClient.invalidateQueries({ queryKey: projectKeys.all });
     },
   });
 }
 
 export function useProjectStatisticsQuery() {
   return useQuery({
-    queryKey: ["project-statistics"],
+    queryKey: projectKeys.statistics(),
     queryFn: projectsService.getProjectStatistics,
   });
 }

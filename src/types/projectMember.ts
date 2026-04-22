@@ -1,3 +1,4 @@
+import { Job } from "./job";
 import type { User } from "./user";
 
 export const ProjectMemberRoles = {
@@ -9,12 +10,13 @@ export type ProjectMemberRole = (typeof ProjectMemberRoles)[keyof typeof Project
 
 export interface ProjectMember {
   id: number;
+  user: User;
   projectId: string;
   role: ProjectMemberRole;
+  job: Job;
   progress?: number;
 }
 
-export type FullProjectMember = Omit<User, "projectMemberships"> &
-  ProjectMember & {
-    progress: number;
-  };
+export type FullProjectMember = ProjectMember & {
+  progress: number;
+};

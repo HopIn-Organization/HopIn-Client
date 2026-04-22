@@ -1,8 +1,8 @@
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ProjectCard } from "@/features/projects/components/ProjectCard";
-import { useProjectsQuery } from "@/features/projects/hooks";
 import { Grid } from "@/ui/Layout";
+import { useProjectsQuery } from "@/features/projects/hooks";
 
 export function ProjectsPage() {
   const { data: projects = [], isLoading, isError } = useProjectsQuery();

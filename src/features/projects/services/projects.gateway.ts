@@ -1,5 +1,6 @@
 import { Job } from "@/types/job";
 import { Project, ProjectStatistics } from "@/types/project";
+import { ProjectMember } from "@/types/projectMember";
 
 export interface ProjectsGateway {
   getProjects(): Promise<Project[]>;
@@ -11,4 +12,6 @@ export interface ProjectsGateway {
     jobs?: Job[];
   }): Promise<Project>;
   getProjectStatistics(): Promise<ProjectStatistics[]>;
+  updateMemberRole(projectId: string, memberId: string, role: string): Promise<ProjectMember>;
+  removeMember(memberId: string): Promise<void>;
 }
