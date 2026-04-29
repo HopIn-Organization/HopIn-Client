@@ -22,6 +22,7 @@ export function ProjectSettingsPage() {
   }
 
   const existingJobs = (project.jobs ?? project.job ?? []).map((job) => ({
+    ...(job.id !== undefined && { id: job.id }),
     title: job.title,
     skills: job.skills?.map((s) => s.name) ?? [],
   }));

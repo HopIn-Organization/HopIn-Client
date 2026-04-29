@@ -10,7 +10,7 @@ export interface ProjectFormValues {
   name: string;
   description: string;
   repositoryUrl: string;
-  jobs: Array<{ title: string; skills: Array<{ name: string }> }>;
+  jobs: Array<{ id?: string; title: string; skills: Array<{ name: string }> }>;
 }
 
 interface ProjectFormProps {
@@ -22,7 +22,7 @@ interface ProjectFormProps {
     name?: string;
     description?: string;
     repositoryUrl?: string;
-    jobs?: Array<{ title: string; skills: string[] }>;
+    jobs?: Array<{ id?: string; title: string; skills: string[] }>;
   };
   isPending: boolean;
   submitLabel: string;
@@ -39,7 +39,7 @@ export function ProjectForm({
   submitLabel,
   onSubmit,
 }: ProjectFormProps) {
-  const [jobs, setJobs] = useState<Array<{ title: string; skills: string[] }>>(
+  const [jobs, setJobs] = useState<Array<{ id?: string; title: string; skills: string[] }>>(
     () => defaultValues?.jobs ?? [{ title: "", skills: [] }],
   );
 
@@ -72,6 +72,7 @@ export function ProjectForm({
       description: String(formData.get("description") ?? ""),
       repositoryUrl: String(formData.get("repositoryUrl") ?? ""),
       jobs: jobs.map((job) => ({
+        id: job.id,
         title: job.title,
         skills: job.skills.map((skill) => ({ name: skill })),
       })),
