@@ -6,7 +6,6 @@ import skillsData from "@/mocks/skills.json";
 import { FullProjectMember } from "@/types/projectMember";
 import { Skill } from "@/types/skill";
 import { User } from "@/types/user";
-import { Button } from "@/ui/Button";
 import { Tabs } from "@/ui/Tabs";
 import { ProjectMembersTable } from "@/features/projects/components/ProjectMembersTable";
 import { env } from "@/utils/env";
@@ -91,10 +90,13 @@ export function ProjectDetailsPage() {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <Button type="button" variant="outline" className="h-11 px-5">
+          <Link
+            to={`/projects/${projectId}/settings`}
+            className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-surface px-5 text-sm font-medium text-text-primary transition hover:bg-surface-muted"
+          >
             <Settings size={15} />
             Settings
-          </Button>
+          </Link>
           {/* <Button type="button" className="h-11 px-5">
             <Plus size={15} />
             Add Member

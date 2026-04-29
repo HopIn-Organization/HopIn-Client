@@ -16,6 +16,10 @@ export const projectsApiGateway: ProjectsGateway = {
     const { data } = await apiClient.post<Project>("/projects", payload);
     return data;
   },
+  async updateProject(payload) {
+    const { data } = await apiClient.put<Project>(`/projects/${payload.id}`, payload);
+    return data;
+  },
   async getProjectStatistics() {
     const { data } = await apiClient.get<ProjectStatistics[]>("/projects/statistics");
     return data;
