@@ -7,6 +7,7 @@ export interface Project {
   description?: string;
   repositoryUrl?: string;
   job?: Job[];
+  jobs?: Job[];
   members?: ProjectMember[];
 }
 

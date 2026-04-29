@@ -6,7 +6,7 @@ interface TechnologyChipsProps {
 export function TechnologyChips({ items, onRemove }: TechnologyChipsProps) {
   return (
     <div className="mt-3 flex flex-wrap gap-2">
-      {items.map((item) => (
+      {items?.map((item) => (
         <button
           key={item}
           type="button"

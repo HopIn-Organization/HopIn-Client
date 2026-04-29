@@ -28,6 +28,18 @@ export function useCreateProjectMutation() {
   });
 }
 
+export function useUpdateProjectMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: projectsService.updateProject,
+    onSuccess: async (data) => {
+      await queryClient.invalidateQueries({ queryKey: projectKeys.all });
+      await queryClient.invalidateQueries({ queryKey: projectKeys.byId(data.id) });
+    },
+  });
+}
+
 export function useProjectStatisticsQuery() {
   return useQuery({
     queryKey: projectKeys.statistics(),

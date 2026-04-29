@@ -39,6 +39,26 @@ export const projectsMockGateway: ProjectsGateway = {
     projects.unshift(newProject);
     return newProject;
   },
+  async updateProject(payload) {
+    await mockDelay();
+
+    const index = projects.findIndex((p) => p.id === payload.id);
+
+    if (index === -1) {
+      throw new Error(`Project ${payload.id} not found`);
+    }
+
+    const updated: Project = {
+      ...projects[index]!,
+      name: payload.name,
+      description: payload.description,
+      repositoryUrl: payload.repositoryUrl,
+      job: payload.jobs,
+    };
+
+    projects[index] = updated;
+    return updated;
+  },
   async getProjectStatistics() {
     await mockDelay();
     return statistics;
