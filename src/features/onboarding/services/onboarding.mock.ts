@@ -70,7 +70,7 @@ export const onboardingMockGateway: OnboardingGateway = {
   },
   async upsertTask(payload: UpsertTaskPayload) {
     await mockDelay();
-    if (payload.id !== undefined) {
+    if ("id" in payload) {
       for (const plan of onboardingPlans) {
         const idx = plan.tasks.findIndex((t) => t.id === payload.id);
         if (idx >= 0) {

@@ -59,17 +59,9 @@ export function TaskModal({ open, onClose, onboardingId, task }: TaskModalProps)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const payload: UpsertTaskPayload = {
-      ...(isEdit && { id: task.id }),
-      order: Number(order),
-      title,
-      description,
-      estimatedDays: Number(estimatedDays),
-      isCompleted,
-      links,
-      onboardingId,
-      parentId: parentId ? Number(parentId) : null,
-    };
+    const payload: UpsertTaskPayload = isEdit
+      ? { id: task.id, order: Number(order), title, description, estimatedDays: Number(estimatedDays), isCompleted, links, onboardingId, parentId: parentId ? Number(parentId) : null }
+      : { order: Number(order), title, description, estimatedDays: Number(estimatedDays), isCompleted, links, onboardingId, parentId: parentId ? Number(parentId) : null };
     await upsertTask(payload);
     onClose();
   }

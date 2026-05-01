@@ -24,8 +24,7 @@ export interface PlanTask {
   subtasks?: Array<{ id: string; label: string; isCompleted: boolean }>;
 }
 
-export interface UpsertTaskPayload {
-  id?: number;
+export interface CreateTaskPayload {
   order: number;
   title: string;
   description: string;
@@ -35,6 +34,20 @@ export interface UpsertTaskPayload {
   onboardingId: number;
   parentId?: number | null;
 }
+
+export interface UpdateTaskPayload {
+  id: number;
+  order?: number;
+  title?: string;
+  description?: string;
+  estimatedDays?: number;
+  isCompleted?: boolean;
+  links?: string[];
+  onboardingId: number;
+  parentId?: number | null;
+}
+
+export type UpsertTaskPayload = CreateTaskPayload | UpdateTaskPayload;
 
 export interface OnboardingPlan {
   id: number;

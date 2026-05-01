@@ -1,6 +1,9 @@
-import { Check, ChevronDown, Circle, Pencil } from "lucide-react";
+import { Check, ChevronDown, Circle, GripVertical, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useCompleteTaskMutation } from "@/features/onboarding/hooks/useOnboardingData";
+import { DndContext, DragEndEvent, PointerSensor, closestCenter, useSensor, useSensors } from "@dnd-kit/core";
+import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { useCompleteTaskMutation, useReorderTaskMutation } from "@/features/onboarding/hooks/useOnboardingData";
 import { OnboardingPlan, PlanTask } from "@/types/onboarding";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
@@ -13,6 +16,11 @@ interface PlanTimelineProps {
 export function PlanTimeline({ plan }: PlanTimelineProps) {
   const [tasks, setTasks] = useState<PlanTask[]>(plan.tasks);
   const [editingTask, setEditingTask] = useState<PlanTask | null>(null);
+  const { mutateAsync: reorderTask } = useReorderTaskMutation();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+  );
 
   useEffect(() => {
     setTasks(plan.tasks);
@@ -23,6 +31,35 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
 
   function handleTaskComplete(updatedTask: PlanTask) {
     setTasks((prev) => prev.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
+  }
+
+  async function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = tasks.findIndex((t) => t.id === active.id);
+    const newIndex = tasks.findIndex((t) => t.id === over.id);
+    const movedTask = tasks[oldIndex];
+    if (oldIndex === -1 || newIndex === -1 || !movedTask) return;
+    const previousTasks = tasks;
+    const reordered = arrayMove(tasks, oldIndex, newIndex);
+    setTasks(reordered);
+
+    // All tasks in the affected range shift by ±1; the moved task lands at newIndex.
+    // Slice that range from the reordered array and assign each its new 1-based order.
+    const [rangeStart, rangeEnd] = oldIndex < newIndex
+      ? [oldIndex, newIndex]   // dragged down: tasks above moved task shift back
+      : [newIndex, oldIndex];  // dragged up: tasks below moved task shift forward
+
+    const updates = reordered
+      .slice(rangeStart, rangeEnd + 1)
+      .map((task, i) => reorderTask({ id: task.id, order: rangeStart + i + 1, onboardingId: plan.id }));
+
+    try {
+      await Promise.all(updates);
+    } catch {
+      setTasks(previousTasks);
+    }
   }
 
   return (
@@ -45,11 +82,15 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
         </p>
       </Card>
 
-      <div className="relative ml-5 border-l-2 border-primary-soft pl-6">
-        {tasks.map((task) => (
-          <TaskRow key={task.id} task={task} onComplete={handleTaskComplete} onEdit={() => setEditingTask(task)} />
-        ))}
-      </div>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
+          <div className="relative ml-5 border-l-2 border-primary-soft pl-6">
+            {tasks.map((task) => (
+              <SortableTaskRow key={task.id} task={task} onComplete={handleTaskComplete} onEdit={() => setEditingTask(task)} />
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
 
       {editingTask && (
         <TaskModal
@@ -63,7 +104,21 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
   );
 }
 
-function TaskRow({ task, onComplete, onEdit }: { task: PlanTask; onComplete: (task: PlanTask) => void; onEdit: () => void }) {
+function SortableTaskRow(props: { task: PlanTask; onComplete: (t: PlanTask) => void; onEdit: () => void }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: props.task.id });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }}
+      {...attributes}
+    >
+      <TaskRow {...props} dragHandleListeners={listeners} />
+    </div>
+  );
+}
+
+function TaskRow({ task, onComplete, onEdit, dragHandleListeners }: { task: PlanTask; onComplete: (task: PlanTask) => void; onEdit: () => void; dragHandleListeners?: ReturnType<typeof useSortable>["listeners"] }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { mutateAsync: completeTask, isPending } = useCompleteTaskMutation();
 
@@ -92,6 +147,14 @@ function TaskRow({ task, onComplete, onEdit }: { task: PlanTask; onComplete: (ta
         <div className="flex cursor-pointer items-start justify-between" onClick={() => setIsExpanded((prev) => !prev)}>
           <h3 className="text-lg font-semibold text-text-primary">{task.title}</h3>
           <div className="mt-1 flex items-center gap-2">
+            <button
+              type="button"
+              {...dragHandleListeners}
+              onClick={(e) => e.stopPropagation()}
+              className="cursor-grab rounded-full p-1 text-text-secondary transition hover:bg-surface-muted active:cursor-grabbing"
+            >
+              <GripVertical size={14} />
+            </button>
             <button
               onClick={(e) => { e.stopPropagation(); onEdit(); }}
               className="rounded-full p-1 text-text-secondary transition hover:bg-surface-muted"
