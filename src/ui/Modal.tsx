@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
+import { X } from "lucide-react";
 import { classNames } from "@/utils/className";
-import { Button } from "@/ui/Button";
 
 interface ModalProps extends PropsWithChildren {
   open: boolean;
@@ -13,13 +13,14 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/30 p-4">
-      <div className={classNames("w-full max-w-xl rounded-2xl border border-border bg-surface p-6 shadow-soft")}>
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-text-primary">{title}</h3>
-          <Button variant="ghost" onClick={onClose}>
-            Close
-          </Button>
-        </div>
+      <div className={classNames("w-full max-w-xl rounded-2xl border border-border bg-surface p-8 shadow-soft")}>
+        <button
+          onClick={onClose}
+          className="mb-4 rounded-full p-1 text-text-secondary transition hover:bg-surface-muted"
+        >
+          <X size={20} />
+        </button>
+        <h3 className="mb-8 text-3xl font-bold text-text-primary">{title}</h3>
         {children}
       </div>
     </div>

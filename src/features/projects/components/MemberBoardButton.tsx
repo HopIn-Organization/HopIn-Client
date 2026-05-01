@@ -30,12 +30,15 @@ export function MemberBoardButton({
 }: MemberBoardButtonProps) {
   const isStarted = progress > 0;
   const [isOpen, setIsOpen] = useState(false);
-  const [daysDuration, setDaysDuration] = useState(30);
-  const [jobId, setJobId] = useState<number>(defaultJobId ?? jobs[0]?.id ?? 1);
+  const [daysDuration, setDaysDuration] = useState<string>("14");
+  const [jobId, setJobId] = useState<number | "">(defaultJobId ?? "");
 
   function handleSubmit() {
+    const days = Number(daysDuration);
+    const job = Number(jobId);
+    if (!days || !job) return;
     setIsOpen(false);
-    onGenerate?.({ daysDuration, jobId });
+    onGenerate?.({ daysDuration: days, jobId: job });
   }
 
   if (isStarted) {
@@ -71,35 +74,42 @@ export function MemberBoardButton({
       <Modal
         open={isOpen}
         onClose={() => setIsOpen(false)}
-        title={`Generate Onboarding for - ${employeeName}`}
+        title={`Generate onboarding for ${employeeName}`}
       >
-        <div className="space-y-4">
-          <Input
-            id="days-duration"
-            label="Onboarding Duration (days)"
-            type="number"
-            min={1}
-            value={daysDuration}
-            onChange={(e) => setDaysDuration(Number(e.target.value))}
-          />
-          <Select
-            id="job"
-            label="Job"
-            value={jobId}
-            onChange={(e) => setJobId(Number(e.target.value))}
-          >
-            {jobs.map((job) => (
-              <option key={job.id} value={job.id}>
-                {job.title}
-              </option>
-            ))}
-          </Select>
-          <div className="pt-2">
-            <Button type="button" variant="primary" className="w-full" onClick={handleSubmit}>
-              <WandSparkles size={14} />
-              Generate Onboarding
-            </Button>
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              id="days-duration"
+              label="Onboarding Duration (days)"
+              type="number"
+              min={1}
+              placeholder="e.g 14"
+              value={daysDuration}
+              onChange={(e) => setDaysDuration(e.target.value)}
+            />
+            <Select
+              id="job"
+              label="Job Type"
+              value={jobId}
+              onChange={(e) => setJobId(Number(e.target.value))}
+            >
+              <option value="" disabled>Choose job</option>
+              {jobs.map((job) => (
+                <option key={job.id} value={job.id}>
+                  {job.title}
+                </option>
+              ))}
+            </Select>
           </div>
+          <Button
+            type="button"
+            variant="primary"
+            className="h-14 w-full rounded-full text-base"
+            onClick={handleSubmit}
+          >
+            <WandSparkles size={18} />
+            Generate Onboarding
+          </Button>
         </div>
       </Modal>
     </>
