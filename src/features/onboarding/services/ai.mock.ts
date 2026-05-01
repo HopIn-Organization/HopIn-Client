@@ -3,26 +3,27 @@ import { OnboardingPlan } from "@/types/onboarding";
 import { AiGateway } from "./ai.gateway";
 
 export const aiMockGateway: AiGateway = {
-  async generatePlan({ employee, requirement }) {
+  async generatePlan({ userId, jobId }) {
     await mockDelay(260);
 
     const generatedPlan: OnboardingPlan = {
-      id: `plan_generated_${employee.userId}`,
-      employeeName: "Generated Employee",
-      trackName: `${requirement.roleTitle} Track`,
-      progressPercent: 0,
+      id: Date.now(),
+      user: { id: userId, name: "", email: null, experienceYears: null },
+      job: { id: jobId, title: "", skills: [] },
+      project: { id: "1", name: "" },
+      progress: 0,
       tasks: [
         {
-          id: "gen_1",
-          title: `Learn ${requirement.desiredTechnologies[0]?.name ?? "core stack"}`,
+          id: 1,
+          title: "Learn core stack",
           description: "Go through docs and finish guided tutorials.",
-          completed: false,
+          isCompleted: false,
         },
         {
-          id: "gen_2",
+          id: 2,
           title: "Ship onboarding mini project",
           description: "Build and present a feature aligned with team standards.",
-          completed: false,
+          isCompleted: false,
         },
       ],
     };

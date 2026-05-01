@@ -1,5 +1,5 @@
 import { apiClient } from "@/services/http/api-client";
-import { OnboardingPlan, TeamLeadRequirement } from "@/types/onboarding";
+import { OnboardingPlan, PlanTask, TeamLeadRequirement, UpsertTaskPayload } from "@/types/onboarding";
 import { EmployeeProfile } from "@/types/user";
 import { OnboardingGateway } from "./onboarding.gateway";
 
@@ -23,5 +23,26 @@ export const onboardingApiGateway: OnboardingGateway = {
   async getOnboardingPlans() {
     const { data } = await apiClient.get<OnboardingPlan[]>('/onboarding/plans');
     return data;
+  },
+  async getOnboardingPlansByProject(projectId: string) {
+    const { data } = await apiClient.get<OnboardingPlan[]>(`/onboarding/project/${projectId}`);
+    return data;
+  },
+  async getOnboardingPlanById(planId: number) {
+    const { data } = await apiClient.get<OnboardingPlan>(`/onboarding/id/${planId}`);
+    return data;
+  },
+  async completeTask(taskId: number) {
+    const { data } = await apiClient.patch<{ task: { id: number; title: string; description: string; estimatedDays: number; isCompleted: boolean; order: number } }>(`/tasks/${taskId}/complete`);
+    const { task } = data;
+    return { id: task.id, title: task.title, description: task.description, isCompleted: task.isCompleted };
+  },
+  async upsertTask(payload: UpsertTaskPayload) {
+    const { data } = await apiClient.put<{ task: { id: number; order: number; title: string; description: string; estimatedDays: number; isCompleted: boolean; links: string[] } }>('/tasks', payload);
+    const { task } = data;
+    return { id: task.id, title: task.title, description: task.description, isCompleted: task.isCompleted, links: task.links } as PlanTask;
+  },
+  async deleteTask(taskId: number) {
+    await apiClient.delete(`/tasks/${taskId}`);
   },
 };

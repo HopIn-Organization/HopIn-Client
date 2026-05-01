@@ -12,4 +12,9 @@ export const onboardingService = {
   saveTeamLeadRequirement: (requirement: Parameters<typeof gateway.saveTeamLeadRequirement>[0]) =>
     gateway.saveTeamLeadRequirement(requirement),
   getOnboardingPlans: () => gateway.getOnboardingPlans(),
+  getOnboardingPlansByProject: (projectId: string) => gateway.getOnboardingPlansByProject(projectId),
+  getOnboardingPlanById: (planId: number) => gateway.getOnboardingPlanById(planId),
+  completeTask: (taskId: number) => gateway.completeTask(taskId),
+  upsertTask: (payload: Parameters<typeof gateway.upsertTask>[0]) => gateway.upsertTask(payload),
+  deleteTask: (taskId: number) => gateway.deleteTask(taskId),
 };

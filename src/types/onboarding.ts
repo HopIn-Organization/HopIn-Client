@@ -1,3 +1,7 @@
+import { Job } from "./job";
+import { Project } from "./project";
+import { User } from "./user";
+
 export type TechLevel = "Beginner" | "Intermediate" | "Advanced";
 
 export interface TeamLeadRequirement {
@@ -12,18 +16,46 @@ export interface TeamLeadRequirement {
 }
 
 export interface PlanTask {
-  id: string;
+  id: number;
   title: string;
   description: string;
-  completed: boolean;
-  links?: Array<{ label: string; url: string }>;
-  subtasks?: Array<{ id: string; label: string; completed: boolean }>;
+  order: number; 
+  estimatedDays: number;
+  isCompleted: boolean;
+  links?: Array<string>;
+  subtasks?: Array<{ id: string; label: string; isCompleted: boolean }>;
 }
 
+export interface CreateTaskPayload {
+  order: number;
+  title: string;
+  description: string;
+  estimatedDays: number;
+  isCompleted?: boolean;
+  links?: string[];
+  onboardingId: number;
+  parentId?: number | null;
+}
+
+export interface UpdateTaskPayload {
+  id: number;
+  order?: number;
+  title?: string;
+  description?: string;
+  estimatedDays?: number;
+  isCompleted?: boolean;
+  links?: string[];
+  onboardingId: number;
+  parentId?: number | null;
+}
+
+export type UpsertTaskPayload = CreateTaskPayload | UpdateTaskPayload;
+
 export interface OnboardingPlan {
-  id: string;
-  employeeName: string;
-  trackName: string;
-  progressPercent: number;
+  id: number;
+  user: User;
+  job: Job;
+  project: Project;
   tasks: PlanTask[];
+  progress: number;
 }
