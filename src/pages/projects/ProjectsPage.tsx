@@ -11,7 +11,7 @@ export function ProjectsPage() {
     <section className="space-y-8">
       <header className="flex items-start justify-between">
         <div>
-          <h1 className="text-5xl font-semibold text-text-primary">My Projects</h1>
+          <h1 className="text-4xl font-semibold text-text-primary">My Projects</h1>
           <p className="mt-2 text-xl text-text-secondary">
             Manage all of your projects’ onboarding and progress
           </p>
@@ -19,7 +19,7 @@ export function ProjectsPage() {
 
         <Link
           to="/projects/new"
-          className="inline-flex items-center gap-2 rounded-2xl bg-primary px-8 py-4 text-lg font-semibold text-white shadow-soft"
+          className="inline-flex items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-lg font-semibold text-white shadow-soft"
         >
           <Plus size={18} />
           Create Project

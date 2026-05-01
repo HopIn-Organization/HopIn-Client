@@ -9,8 +9,8 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <Card className="p-8 shadow-soft">
-      <div className="mb-8">
+    <Card className="px-8 py-5 shadow-soft">
+      <div className="mb-6">
         <div className="grid h-12 w-12 place-items-center rounded-2xl bg-primary-soft text-primary">
           <Sparkles size={18} />
         </div>
@@ -19,20 +19,20 @@ export function ProjectCard({ project }: ProjectCardProps) {
       <h3 className="mb-3 text-[34px] font-semibold leading-tight text-text-primary md:text-3xl">{project.name}</h3>
       <p className="min-h-[56px] text-sm text-text-secondary">{project.description}</p>
 
-      <div className="my-8 h-px bg-border" />
+      <div className="my-3 h-px bg-border" />
 
       <div className="flex items-center justify-between">
         <span className="inline-flex items-center gap-2 text-sm text-text-secondary">
           <Users size={15} />
-          {project.membersCount} members
+          {project.members?.length} members
         </span>
 
         <Link
           to={`/projects/${project.id}`}
-          className="grid h-8 w-8 place-items-center rounded-full bg-surface-muted text-text-primary transition hover:bg-primary-soft hover:text-primary"
+          className="grid h-10 w-10 place-items-center rounded-full bg-surface-muted text-text-primary transition hover:bg-primary-soft hover:text-primary"
           aria-label={`Open ${project.name}`}
         >
-          <ArrowRight size={14} />
+          <ArrowRight size={17} />
         </Link>
       </div>
     </Card>

@@ -67,7 +67,7 @@ export function ProjectDetailsPage() {
     <section className="mx-auto w-full max-w-[1600px] space-y-8">
       <Link
         to="/projects"
-        className="-ml-6 inline-flex items-center gap-2 text-sm text-text-secondary transition hover:text-text-primary"
+        className="inline-flex items-center gap-2 text-sm text-text-secondary transition hover:text-text-primary"
       >
         <ArrowLeft size={14} />
         Back to Projects

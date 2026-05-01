@@ -173,7 +173,7 @@ export function ProjectForm({
         </Card>
 
         <div className="flex justify-end">
-          <Button type="submit" className="px-8" disabled={isPending}>
+          <Button type="submit" className="px-8 py-3 text-base" disabled={isPending}>
             {isPending ? `${submitLabel}...` : submitLabel}
           </Button>
         </div>

@@ -13,8 +13,8 @@ export function Sidebar() {
   const signOut = useAuthStore((state) => state.signOut);
 
   return (
-    <aside className="flex h-screen w-[236px] flex-col border-r border-border bg-surface">
-      <div className="flex items-center border-b border-border px-6 py-8">
+    <aside className="sticky top-0 flex h-screen w-[230px] flex-col border-r border-border bg-surface">
+      <div className="flex items-center justify-center border-b border-border py-2">
         <LogoLockup compact />
       </div>
 
@@ -50,7 +50,7 @@ export function Sidebar() {
             )
           }
         >
-          <div className="grid h-9 w-9 place-items-center rounded-full bg-primary-soft text-sm font-semibold text-primary">MI</div>
+          <div className="grid h-10 w-10 place-items-center rounded-full bg-primary-soft text-sm font-semibold text-primary">MI</div>
           <div>
             <p className="text-sm font-semibold text-text-primary">Moshe Israeli</p>
             <p className="text-xs text-text-secondary">google-user@example.com</p>

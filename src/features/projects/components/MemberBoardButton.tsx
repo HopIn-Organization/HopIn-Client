@@ -55,18 +55,18 @@ export function MemberBoardButton({
       <Button
         type="button"
         variant="primary"
-        className="h-9 min-w-[156px] px-5 text-xs"
+        className="h-11 min-w-[200px] px-3 py-6 text-sm"
         onClick={() => setIsOpen(true)}
         disabled={isGenerating}
       >
         {isGenerating ? (
           <>
-            <Loader2 size={12} className="animate-spin" />
+            <Loader2 size={18} className="animate-spin" />
             Generating...
           </>
         ) : (
           <>
-            <WandSparkles size={12} />
+            <WandSparkles size={18} />
             Generate Onboarding
           </>
         )}
