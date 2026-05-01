@@ -19,7 +19,7 @@ export function OnboardingReviewPage() {
 
     const plan = await generatePlanMutation.mutateAsync({ userId, jobId, documents });
 
-    navigate("/onboarding/plan", { state: { plan } });
+    navigate(`/onboarding/plan/${plan.id}`);
   }
 
   return (
