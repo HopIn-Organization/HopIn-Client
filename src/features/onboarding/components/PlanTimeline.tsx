@@ -10,6 +10,7 @@ interface PlanTimelineProps {
 export function PlanTimeline({ plan }: PlanTimelineProps) {
   const completedTasks = plan.tasks.filter((task) => task.completed).length;
   const remainingTasks = plan.tasks.length - completedTasks;
+  const progressPercent = plan.tasks.length > 0 ? Math.round((completedTasks / plan.tasks.length) * 100) : 0;
 
   return (
     <div className="space-y-6">
@@ -17,12 +18,12 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
         <div className="mb-3 flex items-center justify-between">
           <p className="text-sm font-semibold text-text-primary">Overall Progress</p>
           <span className="rounded-lg bg-[#E9FCFA] px-3 py-1 text-xs font-semibold text-[#13AFA1]">
-            {plan.progressPercent}% Complete
+            {progressPercent}% Complete
           </span>
         </div>
 
         <div className="h-2 rounded-full bg-border">
-          <div className="h-2 rounded-full bg-success" style={{ width: `${plan.progressPercent}%` }} />
+          <div className="h-2 rounded-full bg-success" style={{ width: `${progressPercent}%` }} />
         </div>
 
         <p className="mt-3 flex items-center justify-between text-xs text-text-secondary">

@@ -1,9 +1,12 @@
-import { EmployeeProfile } from "@/types/user";
-import { OnboardingPlan, TeamLeadRequirement } from "@/types/onboarding";
+import { OnboardingPlan } from "@/types/onboarding";
+
+export interface GenerateOnboardingPayload {
+  userId: number;
+  jobId: number;
+  daysDuration: number;
+  documents?: string[];
+}
 
 export interface AiGateway {
-  generatePlan(input: {
-    employee: EmployeeProfile;
-    requirement: TeamLeadRequirement;
-  }): Promise<OnboardingPlan>;
+  generatePlan(payload: GenerateOnboardingPayload): Promise<OnboardingPlan>;
 }

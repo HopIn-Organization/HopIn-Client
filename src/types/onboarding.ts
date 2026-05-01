@@ -21,9 +21,9 @@ export interface PlanTask {
 }
 
 export interface OnboardingPlan {
-  id: string;
-  employeeName: string;
-  trackName: string;
-  progressPercent: number;
+  id: number;
+  userId: number;
+  jobId: number;
+  projectId: number;
   tasks: PlanTask[];
 }

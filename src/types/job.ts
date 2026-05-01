@@ -1,7 +1,7 @@
 import { Skill } from "./skill";
 
 export interface Job {
-  id?: string;
+  id?: number;
   title: string;
   skills: Skill[];
   projectId?: string;
