@@ -44,8 +44,7 @@ export function ProjectMemberRow({ member, projectJobs }: ProjectMemberRowProps)
 
   useClickOutside(menuRef, () => setIsMenuOpen(false), isMenuOpen);
 
-  console.log("Onboarding plans for project:", onboardingPlans);
-  const existingPlan = (onboardingPlans || []).find((p) => p.userId === member.user.id);
+  const existingPlan = onboardingPlans?.find((p) => p.user.id === member.user.id);
 
   async function handleGenerateOnboarding({ daysDuration, jobId }: { daysDuration: number; jobId: number }) {
     const plan = await generatePlan({

@@ -1,3 +1,7 @@
+import { Job } from "./job";
+import { Project } from "./project";
+import { User } from "./user";
+
 export type TechLevel = "Beginner" | "Intermediate" | "Advanced";
 
 export interface TeamLeadRequirement {
@@ -22,8 +26,9 @@ export interface PlanTask {
 
 export interface OnboardingPlan {
   id: number;
-  userId: number;
-  jobId: number;
-  projectId: number;
+  user: User;
+  job: Job;
+  project: Project;
   tasks: PlanTask[];
+  progress: number;
 }

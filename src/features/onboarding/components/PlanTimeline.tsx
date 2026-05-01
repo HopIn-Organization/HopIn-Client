@@ -1,4 +1,5 @@
 import { Check, ChevronDown, Circle } from "lucide-react";
+import { useState } from "react";
 import { OnboardingPlan, PlanTask } from "@/types/onboarding";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
@@ -10,7 +11,7 @@ interface PlanTimelineProps {
 export function PlanTimeline({ plan }: PlanTimelineProps) {
   const completedTasks = plan.tasks.filter((task) => task.completed).length;
   const remainingTasks = plan.tasks.length - completedTasks;
-  const progressPercent = plan.tasks.length > 0 ? Math.round((completedTasks / plan.tasks.length) * 100) : 0;
+  const progressPercent = plan.progress;
 
   return (
     <div className="space-y-6">
@@ -42,7 +43,7 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
 }
 
 function TaskRow({ task }: { task: PlanTask }) {
-  const showExpanded = task.title === "Learn React";
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <article className="relative mb-5">
@@ -51,7 +52,7 @@ function TaskRow({ task }: { task: PlanTask }) {
           <span className="grid h-5 w-5 place-items-center rounded-full bg-success text-white">
             <Check size={12} />
           </span>
-        ) : showExpanded ? (
+        ) : isExpanded ? (
           <span className="grid h-5 w-5 place-items-center rounded-full bg-primary text-white">
             <Circle size={8} fill="white" />
           </span>
@@ -60,14 +61,14 @@ function TaskRow({ task }: { task: PlanTask }) {
         )}
       </div>
 
-      <Card className={showExpanded ? "border-primary/30 p-5" : "p-5"}>
-        <div className="flex items-start justify-between">
+      <Card className={isExpanded ? "border-primary/30 p-5" : "p-5"}>
+        <div className="flex cursor-pointer items-start justify-between" onClick={() => setIsExpanded((prev) => !prev)}>
           <h3 className="text-lg font-semibold text-text-primary">{task.title}</h3>
-          <ChevronDown size={16} className="mt-1 text-text-secondary" />
+          <ChevronDown size={16} className={`mt-1 text-text-secondary transition-transform ${isExpanded ? "rotate-180" : ""}`} />
         </div>
         <p className="mt-3 text-sm text-text-secondary">{task.description}</p>
 
-        {showExpanded && (
+        {isExpanded && (
           <div className="mt-4 space-y-4">
             {!!task.links?.length && (
               <div className="space-y-1 text-sm">
