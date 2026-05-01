@@ -1,9 +1,10 @@
-import { Check, ChevronDown, Circle } from "lucide-react";
+import { Check, ChevronDown, Circle, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useCompleteTaskMutation } from "@/features/onboarding/hooks/useOnboardingData";
 import { OnboardingPlan, PlanTask } from "@/types/onboarding";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
+import { TaskModal } from "./TaskModal";
 
 interface PlanTimelineProps {
   plan: OnboardingPlan;
@@ -11,6 +12,7 @@ interface PlanTimelineProps {
 
 export function PlanTimeline({ plan }: PlanTimelineProps) {
   const [tasks, setTasks] = useState<PlanTask[]>(plan.tasks);
+  const [editingTask, setEditingTask] = useState<PlanTask | null>(null);
 
   useEffect(() => {
     setTasks(plan.tasks);
@@ -45,14 +47,23 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
 
       <div className="relative ml-5 border-l-2 border-primary-soft pl-6">
         {tasks.map((task) => (
-          <TaskRow key={task.id} task={task} onComplete={handleTaskComplete} />
+          <TaskRow key={task.id} task={task} onComplete={handleTaskComplete} onEdit={() => setEditingTask(task)} />
         ))}
       </div>
+
+      {editingTask && (
+        <TaskModal
+          open={true}
+          onClose={() => setEditingTask(null)}
+          onboardingId={plan.id}
+          task={editingTask}
+        />
+      )}
     </div>
   );
 }
 
-function TaskRow({ task, onComplete }: { task: PlanTask; onComplete: (task: PlanTask) => void }) {
+function TaskRow({ task, onComplete, onEdit }: { task: PlanTask; onComplete: (task: PlanTask) => void; onEdit: () => void }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { mutateAsync: completeTask, isPending } = useCompleteTaskMutation();
 
@@ -80,7 +91,15 @@ function TaskRow({ task, onComplete }: { task: PlanTask; onComplete: (task: Plan
       <Card className={isExpanded ? "border-primary/30 p-5" : "p-5"}>
         <div className="flex cursor-pointer items-start justify-between" onClick={() => setIsExpanded((prev) => !prev)}>
           <h3 className="text-lg font-semibold text-text-primary">{task.title}</h3>
-          <ChevronDown size={16} className={`mt-1 text-text-secondary transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+          <div className="mt-1 flex items-center gap-2">
+            <button
+              onClick={(e) => { e.stopPropagation(); onEdit(); }}
+              className="rounded-full p-1 text-text-secondary transition hover:bg-surface-muted"
+            >
+              <Pencil size={14} />
+            </button>
+            <ChevronDown size={16} className={`text-text-secondary transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+          </div>
         </div>
         <p className="mt-3 text-sm text-text-secondary">{task.description}</p>
 

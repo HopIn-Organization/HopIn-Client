@@ -6,14 +6,15 @@ interface ModalProps extends PropsWithChildren {
   open: boolean;
   onClose: () => void;
   title: string;
+  className?: string;
 }
 
-export function Modal({ open, onClose, title, children }: ModalProps) {
+export function Modal({ open, onClose, title, children, className }: ModalProps) {
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/30 p-4">
-      <div className={classNames("w-full max-w-xl rounded-2xl border border-border bg-surface p-8 shadow-soft")}>
+      <div className={classNames("w-full max-w-xl rounded-2xl border border-border bg-surface p-8 shadow-soft", className)}>
         <button
           onClick={onClose}
           className="mb-4 rounded-full p-1 text-text-secondary transition hover:bg-surface-muted"

@@ -2,7 +2,7 @@ import employeeProfilesData from "@/mocks/employee-profiles.json";
 import plansData from "@/mocks/onboarding-plans.json";
 import teamLeadRequirementsData from "@/mocks/team-lead-requirements.json";
 import { mockDelay } from "@/services/mock-delay";
-import { OnboardingPlan, TeamLeadRequirement } from "@/types/onboarding";
+import { OnboardingPlan, PlanTask, TeamLeadRequirement, UpsertTaskPayload } from "@/types/onboarding";
 import { EmployeeProfile } from "@/types/user";
 import { OnboardingGateway } from "./onboarding.gateway";
 
@@ -67,5 +67,29 @@ export const onboardingMockGateway: OnboardingGateway = {
       }
     }
     throw new Error(`Task ${taskId} not found`);
+  },
+  async upsertTask(payload: UpsertTaskPayload) {
+    await mockDelay();
+    if (payload.id !== undefined) {
+      for (const plan of onboardingPlans) {
+        const idx = plan.tasks.findIndex((t) => t.id === payload.id);
+        if (idx >= 0) {
+          plan.tasks[idx] = { ...plan.tasks[idx], ...payload } as PlanTask;
+          return plan.tasks[idx];
+        }
+      }
+      throw new Error(`Task ${payload.id} not found`);
+    }
+    const plan = onboardingPlans.find((p) => p.id === payload.onboardingId);
+    if (!plan) throw new Error(`Plan ${payload.onboardingId} not found`);
+    const newTask: PlanTask = {
+      id: Date.now(),
+      title: payload.title,
+      description: payload.description,
+      isCompleted: payload.isCompleted ?? false,
+      links: payload.links ?? [],
+    };
+    plan.tasks.push(newTask);
+    return newTask;
   },
 };

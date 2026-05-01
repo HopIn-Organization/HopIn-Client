@@ -77,3 +77,14 @@ export function useCompleteTaskMutation() {
     },
   });
 }
+
+export function useUpsertTaskMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: onboardingService.upsertTask,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["onboarding-plans"] });
+    },
+  });
+}

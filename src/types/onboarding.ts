@@ -24,6 +24,18 @@ export interface PlanTask {
   subtasks?: Array<{ id: string; label: string; isCompleted: boolean }>;
 }
 
+export interface UpsertTaskPayload {
+  id?: number;
+  order: number;
+  title: string;
+  description: string;
+  estimatedDays: number;
+  isCompleted?: boolean;
+  links?: string[];
+  onboardingId: number;
+  parentId?: number | null;
+}
+
 export interface OnboardingPlan {
   id: number;
   user: User;

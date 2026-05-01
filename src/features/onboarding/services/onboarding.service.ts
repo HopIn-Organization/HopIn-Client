@@ -15,4 +15,5 @@ export const onboardingService = {
   getOnboardingPlansByProject: (projectId: string) => gateway.getOnboardingPlansByProject(projectId),
   getOnboardingPlanById: (planId: number) => gateway.getOnboardingPlanById(planId),
   completeTask: (taskId: number) => gateway.completeTask(taskId),
+  upsertTask: (payload: Parameters<typeof gateway.upsertTask>[0]) => gateway.upsertTask(payload),
 };
