@@ -7,7 +7,6 @@ import { Input } from "@/ui/Input";
 import { Modal } from "@/ui/Modal";
 
 interface TaskModalTask extends Pick<PlanTask, "id" | "title" | "description" | "isCompleted"> {
-  order?: number;
   estimatedDays?: number;
   links?: string[];
   parentId?: number | null;
@@ -18,15 +17,15 @@ interface TaskModalProps {
   onClose: () => void;
   onboardingId: number;
   task?: TaskModalTask;
+  nextOrder?: number;
 }
 
-export function TaskModal({ open, onClose, onboardingId, task }: TaskModalProps) {
+export function TaskModal({ open, onClose, onboardingId, task, nextOrder }: TaskModalProps) {
   const isEdit = task !== undefined;
   const { mutateAsync: upsertTask, isPending } = useUpsertTaskMutation();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [order, setOrder] = useState("");
   const [estimatedDays, setEstimatedDays] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
   const [links, setLinks] = useState<string[]>([]);
@@ -37,7 +36,6 @@ export function TaskModal({ open, onClose, onboardingId, task }: TaskModalProps)
     if (!open) return;
     setTitle(task?.title ?? "");
     setDescription(task?.description ?? "");
-    setOrder(task?.order != null ? String(task.order) : "");
     setEstimatedDays(task?.estimatedDays != null ? String(task.estimatedDays) : "");
     setIsCompleted(task?.isCompleted ?? false);
     setLinks(task?.links ?? []);
@@ -60,8 +58,8 @@ export function TaskModal({ open, onClose, onboardingId, task }: TaskModalProps)
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const payload: UpsertTaskPayload = isEdit
-      ? { id: task.id, order: Number(order), title, description, estimatedDays: Number(estimatedDays), isCompleted, links, onboardingId, parentId: parentId ? Number(parentId) : null }
-      : { order: Number(order), title, description, estimatedDays: Number(estimatedDays), isCompleted, links, onboardingId, parentId: parentId ? Number(parentId) : null };
+      ? { id: task.id, title, description, estimatedDays: Number(estimatedDays), isCompleted, links, onboardingId, parentId: parentId ? Number(parentId) : null }
+      : { order: nextOrder ?? 1, title, description, estimatedDays: Number(estimatedDays), isCompleted, links, onboardingId, parentId: parentId ? Number(parentId) : null };
     await upsertTask(payload);
     onClose();
   }
@@ -90,28 +88,16 @@ export function TaskModal({ open, onClose, onboardingId, task }: TaskModalProps)
           />
         </label>
 
-        <div className="grid grid-cols-2 gap-3">
-          <Input
-            id="task-order"
-            label="Order"
-            type="number"
-            min={1}
-            value={order}
-            onChange={(e) => setOrder(e.target.value)}
-            placeholder="1"
-            required={!isEdit}
-          />
-          <Input
-            id="task-estimated-days"
-            label="Estimated Days"
-            type="number"
-            min={1}
-            value={estimatedDays}
-            onChange={(e) => setEstimatedDays(e.target.value)}
-            placeholder="3"
-            required={!isEdit}
-          />
-        </div>
+        <Input
+          id="task-estimated-days"
+          label="Estimated Days"
+          type="number"
+          min={1}
+          value={estimatedDays}
+          onChange={(e) => setEstimatedDays(e.target.value)}
+          placeholder="3"
+          required={!isEdit}
+        />
 
         <div className="space-y-2">
           <span className="text-xs font-medium text-text-secondary">Links</span>

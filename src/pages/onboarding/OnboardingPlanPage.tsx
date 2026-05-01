@@ -37,6 +37,7 @@ export function OnboardingPlanPage() {
         open={addModalOpen}
         onClose={() => setAddModalOpen(false)}
         onboardingId={plan.id}
+        nextOrder={(plan.tasks.at(-1)?.order || 0) + 1}
       />
     </section>
   );

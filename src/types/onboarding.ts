@@ -19,6 +19,8 @@ export interface PlanTask {
   id: number;
   title: string;
   description: string;
+  order: number; 
+  estimatedDays: number;
   isCompleted: boolean;
   links?: Array<string>;
   subtasks?: Array<{ id: string; label: string; isCompleted: boolean }>;
