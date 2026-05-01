@@ -52,11 +52,11 @@ export function ProjectMemberRow({ member, projectJobs }: ProjectMemberRowProps)
       jobId,
       daysDuration,
     });
-    navigate("/onboarding/plan", { state: { plan } });
+    navigate(`/onboarding/plan/${plan.id}`);
   }
 
   function handleViewBoard() {
-    navigate("/onboarding/plan", { state: { plan: existingPlan } });
+    navigate(`/onboarding/plan/${existingPlan!.id}`);
   }
 
   const updateMemberRole = () => {
@@ -106,12 +106,12 @@ export function ProjectMemberRow({ member, projectJobs }: ProjectMemberRowProps)
           <div
             className={classNames(
               "h-full rounded-full transition-all",
-              getProgressTone(member.progress),
+              getProgressTone(existingPlan?.progress ?? 0),
             )}
-            style={{ width: `${member.progress}%` }}
+            style={{ width: `${existingPlan?.progress ?? 0}%` }}
           />
         </div>
-        <div className="text-xs text-text-secondary">{member.progress}%</div>
+        <div className="text-xs text-text-secondary">{existingPlan?.progress ?? 0}%</div>
       </div>
       <div className="flex items-center justify-end gap-2 justify-self-end">
         <MemberBoardButton

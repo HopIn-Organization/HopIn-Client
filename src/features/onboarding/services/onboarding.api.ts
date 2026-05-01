@@ -28,4 +28,13 @@ export const onboardingApiGateway: OnboardingGateway = {
     const { data } = await apiClient.get<OnboardingPlan[]>(`/onboarding/project/${projectId}`);
     return data;
   },
+  async getOnboardingPlanById(planId: number) {
+    const { data } = await apiClient.get<OnboardingPlan>(`/onboarding/id/${planId}`);
+    return data;
+  },
+  async completeTask(taskId: number) {
+    const { data } = await apiClient.patch<{ task: { id: number; title: string; description: string; estimatedDays: number; isCompleted: boolean; order: number } }>(`/tasks/${taskId}/complete`);
+    const { task } = data;
+    return { id: task.id, title: task.title, description: task.description, isCompleted: task.isCompleted };
+  },
 };

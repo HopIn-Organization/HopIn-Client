@@ -8,21 +8,22 @@ export const aiMockGateway: AiGateway = {
 
     const generatedPlan: OnboardingPlan = {
       id: Date.now(),
-      userId,
-      jobId,
-      projectId: 1,
+      user: { id: userId, name: "", email: null, experienceYears: null },
+      job: { id: jobId, title: "", skills: [] },
+      project: { id: "1", name: "" },
+      progress: 0,
       tasks: [
         {
-          id: "gen_1",
+          id: 1,
           title: "Learn core stack",
           description: "Go through docs and finish guided tutorials.",
-          completed: false,
+          isCompleted: false,
         },
         {
-          id: "gen_2",
+          id: 2,
           title: "Ship onboarding mini project",
           description: "Build and present a feature aligned with team standards.",
-          completed: false,
+          isCompleted: false,
         },
       ],
     };

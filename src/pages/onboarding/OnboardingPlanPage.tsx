@@ -1,10 +1,11 @@
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { PlanTimeline } from "@/features/onboarding/components/PlanTimeline";
-import { OnboardingPlan } from "@/types/onboarding";
+import { useOnboardingPlanQuery } from "@/features/onboarding/hooks/useOnboardingData";
 
 export function OnboardingPlanPage() {
-  const location = useLocation();
-  const plan = location.state?.plan as OnboardingPlan | undefined;
+  const { planId } = useParams<{ planId: string }>();
+  console.log("Loading plan with ID:", planId);
+  const { data: plan } = useOnboardingPlanQuery(planId ? Number(planId) : undefined);
 
   if (!plan) {
     return <p className="text-sm text-text-secondary">No onboarding plan found. Please generate one first.</p>;

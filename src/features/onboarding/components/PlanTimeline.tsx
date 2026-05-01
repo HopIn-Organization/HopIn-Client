@@ -1,5 +1,6 @@
 import { Check, ChevronDown, Circle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useCompleteTaskMutation } from "@/features/onboarding/hooks/useOnboardingData";
 import { OnboardingPlan, PlanTask } from "@/types/onboarding";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
@@ -9,9 +10,18 @@ interface PlanTimelineProps {
 }
 
 export function PlanTimeline({ plan }: PlanTimelineProps) {
-  const completedTasks = plan.tasks.filter((task) => task.completed).length;
-  const remainingTasks = plan.tasks.length - completedTasks;
+  const [tasks, setTasks] = useState<PlanTask[]>(plan.tasks);
+
+  useEffect(() => {
+    setTasks(plan.tasks);
+  }, [plan.tasks]);
+
+  const completedCount = tasks.filter((t) => t.isCompleted).length;
   const progressPercent = plan.progress;
+
+  function handleTaskComplete(updatedTask: PlanTask) {
+    setTasks((prev) => prev.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
+  }
 
   return (
     <div className="space-y-6">
@@ -28,27 +38,33 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
         </div>
 
         <p className="mt-3 flex items-center justify-between text-xs text-text-secondary">
-          <span>{completedTasks} of {plan.tasks.length} tasks completed</span>
-          <span>{remainingTasks} remaining</span>
+          <span>{completedCount} of {tasks.length} tasks completed</span>
+          <span>{tasks.length - completedCount} remaining</span>
         </p>
       </Card>
 
       <div className="relative ml-5 border-l-2 border-primary-soft pl-6">
-        {plan.tasks.map((task) => (
-          <TaskRow key={task.id} task={task} />
+        {tasks.map((task) => (
+          <TaskRow key={task.id} task={task} onComplete={handleTaskComplete} />
         ))}
       </div>
     </div>
   );
 }
 
-function TaskRow({ task }: { task: PlanTask }) {
+function TaskRow({ task, onComplete }: { task: PlanTask; onComplete: (task: PlanTask) => void }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { mutateAsync: completeTask, isPending } = useCompleteTaskMutation();
+
+  async function handleMarkComplete() {
+    const updated = await completeTask(task.id);
+    onComplete({ ...task, isCompleted: updated.isCompleted });
+  }
 
   return (
     <article className="relative mb-5">
       <div className="absolute -left-[38px] top-6 grid h-6 w-6 place-items-center rounded-full border-2 border-bg bg-surface">
-        {task.completed ? (
+        {task.isCompleted ? (
           <span className="grid h-5 w-5 place-items-center rounded-full bg-success text-white">
             <Check size={12} />
           </span>
@@ -74,8 +90,8 @@ function TaskRow({ task }: { task: PlanTask }) {
               <div className="space-y-1 text-sm">
                 <p className="font-medium text-text-primary">Relevant Links:</p>
                 {task.links.map((link) => (
-                  <a key={link.url} href={link.url} className="block text-primary underline" target="_blank" rel="noreferrer">
-                    {link.label}
+                  <a key={link} href={link} className="block text-primary underline" target="_blank" rel="noreferrer">
+                    {link}
                   </a>
                 ))}
               </div>
@@ -87,7 +103,7 @@ function TaskRow({ task }: { task: PlanTask }) {
                 <ul className="space-y-2 text-sm text-text-secondary">
                   {task.subtasks.map((subtask) => (
                     <li key={subtask.id} className="inline-flex items-center gap-2">
-                      <input type="checkbox" checked={subtask.completed} readOnly />
+                      <input type="checkbox" checked={subtask.isCompleted} readOnly />
                       <span>{subtask.label}</span>
                     </li>
                   ))}
@@ -95,7 +111,11 @@ function TaskRow({ task }: { task: PlanTask }) {
               </div>
             )}
 
-            <Button className="w-fit">Mark Complete</Button>
+            {!task.isCompleted && (
+              <Button className="w-fit" onClick={handleMarkComplete} disabled={isPending}>
+                {isPending ? "Saving..." : "Mark Complete"}
+              </Button>
+            )}
           </div>
         )}
       </Card>

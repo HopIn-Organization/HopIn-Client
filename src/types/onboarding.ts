@@ -16,12 +16,12 @@ export interface TeamLeadRequirement {
 }
 
 export interface PlanTask {
-  id: string;
+  id: number;
   title: string;
   description: string;
-  completed: boolean;
-  links?: Array<{ label: string; url: string }>;
-  subtasks?: Array<{ id: string; label: string; completed: boolean }>;
+  isCompleted: boolean;
+  links?: Array<string>;
+  subtasks?: Array<{ id: string; label: string; isCompleted: boolean }>;
 }
 
 export interface OnboardingPlan {

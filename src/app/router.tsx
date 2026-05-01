@@ -41,7 +41,7 @@ export function AppRouter() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/onboarding/start" element={<OnboardingStartPage />} />
           <Route path="/onboarding/review" element={<OnboardingReviewPage />} />
-          <Route path="/onboarding/plan" element={<OnboardingPlanPage />} />
+          <Route path="/onboarding/plan/:planId" element={<OnboardingPlanPage />} />
           <Route path="*" element={<Navigate to="/projects" replace />} />
         </Route>
 

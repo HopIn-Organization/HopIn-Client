@@ -17,6 +17,14 @@ export function useOnboardingPlansByProjectQuery(projectId: string) {
   });
 }
 
+export function useOnboardingPlanQuery(planId: number | undefined) {
+  return useQuery({
+    queryKey: ["onboarding-plans", planId],
+    queryFn: () => onboardingService.getOnboardingPlanById(planId!),
+    enabled: planId != null,
+  });
+}
+
 export function useEmployeeProfilesQuery() {
   return useQuery({
     queryKey: ["employee-profiles"],
@@ -56,5 +64,16 @@ export function useSaveTeamLeadRequirementMutation() {
 export function useGeneratePlanMutation() {
   return useMutation({
     mutationFn: aiService.generatePlan,
+  });
+}
+
+export function useCompleteTaskMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: onboardingService.completeTask,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["onboarding-plans"] });
+    },
   });
 }

@@ -1,5 +1,5 @@
 import { EmployeeProfile } from "@/types/user";
-import { OnboardingPlan, TeamLeadRequirement } from "@/types/onboarding";
+import { OnboardingPlan, PlanTask, TeamLeadRequirement } from "@/types/onboarding";
 
 export interface OnboardingGateway {
   getEmployeeProfiles(): Promise<EmployeeProfile[]>;
@@ -8,4 +8,6 @@ export interface OnboardingGateway {
   saveTeamLeadRequirement(requirement: TeamLeadRequirement): Promise<TeamLeadRequirement>;
   getOnboardingPlans(): Promise<OnboardingPlan[]>;
   getOnboardingPlansByProject(projectId: string): Promise<OnboardingPlan[]>;
+  getOnboardingPlanById(planId: number): Promise<OnboardingPlan>;
+  completeTask(taskId: number): Promise<PlanTask>;
 }

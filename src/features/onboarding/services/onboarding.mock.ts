@@ -51,4 +51,21 @@ export const onboardingMockGateway: OnboardingGateway = {
     await mockDelay();
     return onboardingPlans.filter((p) => String(p.project.id) === String(projectId));
   },
+  async getOnboardingPlanById(planId: number) {
+    await mockDelay();
+    const plan = onboardingPlans.find((p) => p.id === planId);
+    if (!plan) throw new Error(`Plan ${planId} not found`);
+    return plan;
+  },
+  async completeTask(taskId: number) {
+    await mockDelay();
+    for (const plan of onboardingPlans) {
+      const task = plan.tasks.find((t) => t.id === taskId);
+      if (task) {
+        task.isCompleted = true;
+        return task;
+      }
+    }
+    throw new Error(`Task ${taskId} not found`);
+  },
 };
