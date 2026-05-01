@@ -1,14 +1,16 @@
 import { useMemo } from "react";
 import { ProjectMemberRow } from "@/features/projects/components/ProjectMemberRow";
 import { FullProjectMember } from "@/types/projectMember";
+import { Job } from "@/types/job";
 import { Card } from "@/ui/Card";
 
 interface ProjectMembersTableProps {
   searchValue: string;
   projectMembers: FullProjectMember[];
+  projectJobs: Job[];
 }
 
-export function ProjectMembersTable({ searchValue, projectMembers }: ProjectMembersTableProps) {
+export function ProjectMembersTable({ searchValue, projectMembers, projectJobs }: ProjectMembersTableProps) {
   const filteredEmployees = useMemo(() => {
     const normalizedSearch = searchValue.trim().toLowerCase();
 
@@ -36,7 +38,7 @@ export function ProjectMembersTable({ searchValue, projectMembers }: ProjectMemb
       </div>
       <div className="divide-y divide-border">
         {filteredEmployees.map((employee) => (
-          <ProjectMemberRow key={employee.user.id} member={employee} />
+          <ProjectMemberRow key={employee.user.id} member={employee} projectJobs={projectJobs} />
         ))}
       </div>
 

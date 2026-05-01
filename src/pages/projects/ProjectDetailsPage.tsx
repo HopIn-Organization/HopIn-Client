@@ -121,7 +121,7 @@ export function ProjectDetailsPage() {
               className="h-11 w-full rounded-xl border border-border bg-surface pl-11 pr-4 text-sm text-text-primary outline-none transition placeholder:text-text-secondary/60 focus:border-primary"
             />
           </label>
-          <ProjectMembersTable searchValue={searchValue} projectMembers={projectMembers} />
+          <ProjectMembersTable searchValue={searchValue} projectMembers={projectMembers} projectJobs={project.jobs ?? []} />
         </div>
       ) : (
         <div className="text-sm text-text-secondary">No team members found yet.</div>

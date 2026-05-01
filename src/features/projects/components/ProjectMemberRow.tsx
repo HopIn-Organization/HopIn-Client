@@ -1,6 +1,9 @@
 import { useRef, useState } from "react";
 import { Check, Loader2, MoreVertical, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useGeneratePlanMutation, useOnboardingPlansByProjectQuery } from "@/features/onboarding/hooks/useOnboardingData";
 import { FullProjectMember, ProjectMemberRole, ProjectMemberRoles } from "@/types/projectMember";
+import { Job } from "@/types/job";
 import { classNames } from "@/utils/className";
 import { MemberBoardButton } from "./MemberBoardButton";
 import { useUpdateMemberRoleMutation, useRemoveMemberMutation } from "../hooks/members";
@@ -8,6 +11,7 @@ import { useClickOutside } from "@/hooks/useClickOutside";
 
 interface ProjectMemberRowProps {
   member: FullProjectMember;
+  projectJobs: Job[];
 }
 
 function getInitials(name: string) {
@@ -29,13 +33,31 @@ function formatProjectRole(role: ProjectMemberRole) {
   return role === ProjectMemberRoles.ADMIN ? "Admin" : "Trainee";
 }
 
-export function ProjectMemberRow({ member }: ProjectMemberRowProps) {
+export function ProjectMemberRow({ member, projectJobs }: ProjectMemberRowProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { mutate: updateRole, isPending } = useUpdateMemberRoleMutation();
   const { mutate: removeMember, isPending: isRemoving } = useRemoveMemberMutation();
+  const { mutateAsync: generatePlan, isPending: isGenerating } = useGeneratePlanMutation();
+  const { data: onboardingPlans } = useOnboardingPlansByProjectQuery(member.projectId);
+  const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement>(null);
 
   useClickOutside(menuRef, () => setIsMenuOpen(false), isMenuOpen);
+
+  const existingPlan = onboardingPlans?.find((p) => p.user.id === member.user.id);
+
+  async function handleGenerateOnboarding({ daysDuration, jobId }: { daysDuration: number; jobId: number }) {
+    const plan = await generatePlan({
+      userId: member.user.id,
+      jobId,
+      daysDuration,
+    });
+    navigate(`/onboarding/plan/${plan.id}`);
+  }
+
+  function handleViewBoard() {
+    navigate(`/onboarding/plan/${existingPlan!.id}`);
+  }
 
   const updateMemberRole = () => {
     setIsMenuOpen(false);
@@ -84,15 +106,23 @@ export function ProjectMemberRow({ member }: ProjectMemberRowProps) {
           <div
             className={classNames(
               "h-full rounded-full transition-all",
-              getProgressTone(member.progress),
+              getProgressTone(existingPlan?.progress ?? 0),
             )}
-            style={{ width: `${member.progress}%` }}
+            style={{ width: `${existingPlan?.progress ?? 0}%` }}
           />
         </div>
-        <div className="text-xs text-text-secondary">{member.progress}%</div>
+        <div className="text-xs text-text-secondary">{existingPlan?.progress ?? 0}%</div>
       </div>
       <div className="flex items-center justify-end gap-2 justify-self-end">
-        <MemberBoardButton progress={member.progress} />
+        <MemberBoardButton
+            hasOnboarding={!!existingPlan}
+            employeeName={member.user.name}
+            jobs={projectJobs}
+            defaultJobId={member.job.id}
+            onGenerate={handleGenerateOnboarding}
+            onViewBoard={handleViewBoard}
+            isGenerating={isGenerating}
+          />
 
         <div className="relative" ref={menuRef}>
           <button

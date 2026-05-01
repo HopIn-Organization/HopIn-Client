@@ -9,6 +9,22 @@ export function useOnboardingPlansQuery() {
   });
 }
 
+export function useOnboardingPlansByProjectQuery(projectId: string) {
+  return useQuery({
+    queryKey: ["onboarding-plans", "project", projectId],
+    queryFn: () => onboardingService.getOnboardingPlansByProject(projectId),
+    enabled: !!projectId,
+  });
+}
+
+export function useOnboardingPlanQuery(planId: number | undefined) {
+  return useQuery({
+    queryKey: ["onboarding-plans", planId],
+    queryFn: () => onboardingService.getOnboardingPlanById(planId!),
+    enabled: planId != null,
+  });
+}
+
 export function useEmployeeProfilesQuery() {
   return useQuery({
     queryKey: ["employee-profiles"],
@@ -48,5 +64,49 @@ export function useSaveTeamLeadRequirementMutation() {
 export function useGeneratePlanMutation() {
   return useMutation({
     mutationFn: aiService.generatePlan,
+  });
+}
+
+export function useCompleteTaskMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: onboardingService.completeTask,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["onboarding-plans"] });
+    },
+  });
+}
+
+export function useUpsertTaskMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: onboardingService.upsertTask,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["onboarding-plans"] });
+    },
+  });
+}
+
+export function useReorderTaskMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: onboardingService.upsertTask,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["onboarding-plans"] });
+    },
+  });
+}
+
+export function useDeleteTaskMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: onboardingService.deleteTask,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["onboarding-plans"] });
+    },
   });
 }
