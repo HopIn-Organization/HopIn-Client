@@ -47,4 +47,8 @@ export const onboardingMockGateway: OnboardingGateway = {
     await mockDelay();
     return onboardingPlans;
   },
+  async getOnboardingPlansByProject(projectId: string) {
+    await mockDelay();
+    return onboardingPlans.filter((p) => String(p.projectId) === String(projectId));
+  },
 };

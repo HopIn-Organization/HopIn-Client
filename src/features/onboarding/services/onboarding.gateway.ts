@@ -7,4 +7,5 @@ export interface OnboardingGateway {
   getTeamLeadRequirements(): Promise<TeamLeadRequirement[]>;
   saveTeamLeadRequirement(requirement: TeamLeadRequirement): Promise<TeamLeadRequirement>;
   getOnboardingPlans(): Promise<OnboardingPlan[]>;
+  getOnboardingPlansByProject(projectId: string): Promise<OnboardingPlan[]>;
 }

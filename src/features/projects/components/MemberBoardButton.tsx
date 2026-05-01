@@ -12,23 +12,24 @@ export interface GenerateOnboardingParams {
 }
 
 interface MemberBoardButtonProps {
-  progress: number;
+  hasOnboarding: boolean;
   employeeName: string;
   jobs: Job[];
   defaultJobId?: number | undefined;
   onGenerate?: (params: GenerateOnboardingParams) => void;
+  onViewBoard?: () => void;
   isGenerating?: boolean;
 }
 
 export function MemberBoardButton({
-  progress,
+  hasOnboarding,
   employeeName,
   jobs,
   defaultJobId,
   onGenerate,
+  onViewBoard,
   isGenerating,
 }: MemberBoardButtonProps) {
-  const isStarted = progress > 0;
   const [isOpen, setIsOpen] = useState(false);
   const [daysDuration, setDaysDuration] = useState<string>("14");
   const [jobId, setJobId] = useState<number | "">(defaultJobId ?? "");
@@ -41,9 +42,9 @@ export function MemberBoardButton({
     onGenerate?.({ daysDuration: days, jobId: job });
   }
 
-  if (isStarted) {
+  if (hasOnboarding) {
     return (
-      <Button type="button" variant="outline" className="h-9 px-4 text-xs">
+      <Button type="button" variant="outline" className="h-9 px-4 text-xs" onClick={onViewBoard}>
         View Board
       </Button>
     );

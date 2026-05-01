@@ -24,4 +24,8 @@ export const onboardingApiGateway: OnboardingGateway = {
     const { data } = await apiClient.get<OnboardingPlan[]>('/onboarding/plans');
     return data;
   },
+  async getOnboardingPlansByProject(projectId: string) {
+    const { data } = await apiClient.get<OnboardingPlan[]>(`/onboarding/project/${projectId}`);
+    return data;
+  },
 };

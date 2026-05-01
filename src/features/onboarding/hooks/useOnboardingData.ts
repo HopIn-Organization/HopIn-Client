@@ -9,6 +9,14 @@ export function useOnboardingPlansQuery() {
   });
 }
 
+export function useOnboardingPlansByProjectQuery(projectId: string) {
+  return useQuery({
+    queryKey: ["onboarding-plans", "project", projectId],
+    queryFn: () => onboardingService.getOnboardingPlansByProject(projectId),
+    enabled: !!projectId,
+  });
+}
+
 export function useEmployeeProfilesQuery() {
   return useQuery({
     queryKey: ["employee-profiles"],

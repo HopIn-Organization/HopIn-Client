@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { Check, Loader2, MoreVertical, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useGeneratePlanMutation } from "@/features/onboarding/hooks/useOnboardingData";
+import { useGeneratePlanMutation, useOnboardingPlansByProjectQuery } from "@/features/onboarding/hooks/useOnboardingData";
 import { FullProjectMember, ProjectMemberRole, ProjectMemberRoles } from "@/types/projectMember";
 import { Job } from "@/types/job";
 import { classNames } from "@/utils/className";
@@ -38,10 +38,14 @@ export function ProjectMemberRow({ member, projectJobs }: ProjectMemberRowProps)
   const { mutate: updateRole, isPending } = useUpdateMemberRoleMutation();
   const { mutate: removeMember, isPending: isRemoving } = useRemoveMemberMutation();
   const { mutateAsync: generatePlan, isPending: isGenerating } = useGeneratePlanMutation();
+  const { data: onboardingPlans } = useOnboardingPlansByProjectQuery(member.projectId);
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement>(null);
 
   useClickOutside(menuRef, () => setIsMenuOpen(false), isMenuOpen);
+
+  console.log("Onboarding plans for project:", onboardingPlans);
+  const existingPlan = (onboardingPlans || []).find((p) => p.userId === member.user.id);
 
   async function handleGenerateOnboarding({ daysDuration, jobId }: { daysDuration: number; jobId: number }) {
     const plan = await generatePlan({
@@ -50,6 +54,10 @@ export function ProjectMemberRow({ member, projectJobs }: ProjectMemberRowProps)
       daysDuration,
     });
     navigate("/onboarding/plan", { state: { plan } });
+  }
+
+  function handleViewBoard() {
+    navigate("/onboarding/plan", { state: { plan: existingPlan } });
   }
 
   const updateMemberRole = () => {
@@ -108,11 +116,12 @@ export function ProjectMemberRow({ member, projectJobs }: ProjectMemberRowProps)
       </div>
       <div className="flex items-center justify-end gap-2 justify-self-end">
         <MemberBoardButton
-            progress={member.progress}
+            hasOnboarding={!!existingPlan}
             employeeName={member.user.name}
             jobs={projectJobs}
             defaultJobId={member.job.id}
             onGenerate={handleGenerateOnboarding}
+            onViewBoard={handleViewBoard}
             isGenerating={isGenerating}
           />
 
