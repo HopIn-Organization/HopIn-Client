@@ -92,4 +92,15 @@ export const onboardingMockGateway: OnboardingGateway = {
     plan.tasks.push(newTask);
     return newTask;
   },
+  async deleteTask(taskId: number) {
+    await mockDelay();
+    for (const plan of onboardingPlans) {
+      const idx = plan.tasks.findIndex((t) => t.id === taskId);
+      if (idx >= 0) {
+        plan.tasks.splice(idx, 1);
+        return;
+      }
+    }
+    throw new Error(`Task ${taskId} not found`);
+  },
 };

@@ -42,4 +42,7 @@ export const onboardingApiGateway: OnboardingGateway = {
     const { task } = data;
     return { id: task.id, title: task.title, description: task.description, isCompleted: task.isCompleted, links: task.links } as PlanTask;
   },
+  async deleteTask(taskId: number) {
+    await apiClient.delete(`/tasks/${taskId}`);
+  },
 };

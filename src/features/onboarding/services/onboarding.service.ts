@@ -16,4 +16,5 @@ export const onboardingService = {
   getOnboardingPlanById: (planId: number) => gateway.getOnboardingPlanById(planId),
   completeTask: (taskId: number) => gateway.completeTask(taskId),
   upsertTask: (payload: Parameters<typeof gateway.upsertTask>[0]) => gateway.upsertTask(payload),
+  deleteTask: (taskId: number) => gateway.deleteTask(taskId),
 };

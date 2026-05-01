@@ -11,4 +11,5 @@ export interface OnboardingGateway {
   getOnboardingPlanById(planId: number): Promise<OnboardingPlan>;
   completeTask(taskId: number): Promise<PlanTask>;
   upsertTask(payload: UpsertTaskPayload): Promise<PlanTask>;
+  deleteTask(taskId: number): Promise<void>;
 }

@@ -1,12 +1,13 @@
-import { Check, ChevronDown, Circle, GripVertical, Pencil } from "lucide-react";
+import { Check, ChevronDown, Circle, GripVertical, Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { DndContext, DragEndEvent, PointerSensor, closestCenter, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useCompleteTaskMutation, useReorderTaskMutation } from "@/features/onboarding/hooks/useOnboardingData";
+import { useCompleteTaskMutation, useDeleteTaskMutation, useReorderTaskMutation } from "@/features/onboarding/hooks/useOnboardingData";
 import { OnboardingPlan, PlanTask } from "@/types/onboarding";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
+import { Modal } from "@/ui/Modal";
 import { TaskModal } from "./TaskModal";
 
 interface PlanTimelineProps {
@@ -120,11 +121,18 @@ function SortableTaskRow(props: { task: PlanTask; onComplete: (t: PlanTask) => v
 
 function TaskRow({ task, onComplete, onEdit, dragHandleListeners }: { task: PlanTask; onComplete: (task: PlanTask) => void; onEdit: () => void; dragHandleListeners?: ReturnType<typeof useSortable>["listeners"] }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const { mutateAsync: completeTask, isPending } = useCompleteTaskMutation();
+  const { mutateAsync: deleteTask, isPending: isDeleting } = useDeleteTaskMutation();
 
   async function handleMarkComplete() {
     const updated = await completeTask(task.id);
     onComplete({ ...task, isCompleted: updated.isCompleted });
+  }
+
+  async function handleDelete() {
+    await deleteTask(task.id);
+    setConfirmDelete(false);
   }
 
   return (
@@ -154,12 +162,6 @@ function TaskRow({ task, onComplete, onEdit, dragHandleListeners }: { task: Plan
               className="cursor-grab rounded-full p-1 text-text-secondary transition hover:bg-surface-muted active:cursor-grabbing"
             >
               <GripVertical size={14} />
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); onEdit(); }}
-              className="rounded-full p-1 text-text-secondary transition hover:bg-surface-muted"
-            >
-              <Pencil size={14} />
             </button>
             <ChevronDown size={16} className={`text-text-secondary transition-transform ${isExpanded ? "rotate-180" : ""}`} />
           </div>
@@ -193,14 +195,48 @@ function TaskRow({ task, onComplete, onEdit, dragHandleListeners }: { task: Plan
               </div>
             )}
 
-            {!task.isCompleted && (
-              <Button className="w-fit" onClick={handleMarkComplete} disabled={isPending}>
-                {isPending ? "Saving..." : "Mark Complete"}
+            <div className="flex items-center gap-3">
+              {!task.isCompleted && (
+                <Button className="w-fit" onClick={handleMarkComplete} disabled={isPending}>
+                  {isPending ? "Saving..." : "Mark Complete"}
+                </Button>
+              )}
+              <Button type="button" variant="outline" className="w-fit" onClick={onEdit}>
+                <Pencil size={14} />
+                Edit
               </Button>
-            )}
+              <Button
+                type="button"
+                variant="outline"
+                className="ml-auto w-fit text-red-500 hover:border-red-400 hover:bg-red-50"
+                onClick={() => setConfirmDelete(true)}
+              >
+                <Trash2 size={14} />
+                Delete
+              </Button>
+            </div>
           </div>
         )}
       </Card>
+
+      <Modal open={confirmDelete} onClose={() => setConfirmDelete(false)} title="Delete Task" className="p-6">
+        <p className="mb-6 text-sm text-text-secondary">
+          Are you sure you want to delete <span className="font-semibold text-text-primary">"{task.title}"</span>? This action cannot be undone.
+        </p>
+        <div className="flex justify-end gap-3">
+          <Button type="button" variant="outline" onClick={() => setConfirmDelete(false)}>
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            className="bg-red-500 hover:bg-red-600"
+            onClick={handleDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting ? "Deleting..." : "Delete"}
+          </Button>
+        </div>
+      </Modal>
     </article>
   );
 }

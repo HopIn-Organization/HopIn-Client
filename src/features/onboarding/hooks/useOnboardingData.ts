@@ -99,3 +99,14 @@ export function useReorderTaskMutation() {
     },
   });
 }
+
+export function useDeleteTaskMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: onboardingService.deleteTask,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["onboarding-plans"] });
+    },
+  });
+}
