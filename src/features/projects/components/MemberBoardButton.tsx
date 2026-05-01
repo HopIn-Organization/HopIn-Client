@@ -12,13 +12,13 @@ export function MemberBoardButton({ progress }: MemberBoardButtonProps) {
     <Button
       type="button"
       variant={isStarted ? "outline" : "primary"}
-      className={isStarted ? "h-9 px-4 text-xs" : "h-9 min-w-[156px] px-5 text-xs"}
+      className={isStarted ? "h-11 px-3 py-3 text-sm" : "h-11 min-w-[200px] px-3 py-6 text-sm"}
     >
       {isStarted ? (
         "View Board"
       ) : (
         <>
-          <WandSparkles size={12} />
+          <WandSparkles size={20} />
           Generate Onboarding
         </>
       )}

@@ -16,7 +16,7 @@ export function StatisticsPage() {
   return (
     <section className="space-y-8">
       <header>
-        <h1 className="text-5xl font-semibold text-text-primary">Statistics</h1>
+        <h1 className="text-4xl font-semibold text-text-primary">Statistics</h1>
         <p className="mt-2 text-xl text-text-secondary">
           View detailed analytics for each project.
         </p>
