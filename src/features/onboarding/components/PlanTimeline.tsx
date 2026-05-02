@@ -3,12 +3,13 @@ import { useEffect, useState } from "react";
 import { DndContext, DragEndEvent, PointerSensor, closestCenter, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useCompleteTaskMutation, useDeleteTaskMutation, useReorderTaskMutation } from "@/features/onboarding/hooks/useOnboardingData";
+import { useCompleteTaskMutation, useDeleteTaskMutation, useReorderTaskMutation, useUpsertTaskMutation } from "@/features/onboarding/hooks/useOnboardingData";
 import { OnboardingPlan, PlanTask } from "@/types/onboarding";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 import { Modal } from "@/ui/Modal";
 import { TaskModal } from "./TaskModal";
+import { Checkbox } from "@/ui/Checkbox";
 
 interface PlanTimelineProps {
   plan: OnboardingPlan;
@@ -87,7 +88,7 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           <div className="relative ml-5 border-l-2 border-primary-soft pl-6">
             {tasks.map((task) => (
-              <SortableTaskRow key={task.id} task={task} onComplete={handleTaskComplete} onEdit={() => setEditingTask(task)} />
+              <SortableTaskRow key={task.id} task={task} onboardingId={plan.id} onComplete={handleTaskComplete} onEdit={() => setEditingTask(task)} />
             ))}
           </div>
         </SortableContext>
@@ -105,7 +106,7 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
   );
 }
 
-function SortableTaskRow(props: { task: PlanTask; onComplete: (t: PlanTask) => void; onEdit: () => void }) {
+function SortableTaskRow(props: { task: PlanTask; onboardingId: number; onComplete: (t: PlanTask) => void; onEdit: () => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: props.task.id });
 
   return (
@@ -119,10 +120,11 @@ function SortableTaskRow(props: { task: PlanTask; onComplete: (t: PlanTask) => v
   );
 }
 
-function TaskRow({ task, onComplete, onEdit, dragHandleListeners }: { task: PlanTask; onComplete: (task: PlanTask) => void; onEdit: () => void; dragHandleListeners?: ReturnType<typeof useSortable>["listeners"] }) {
+function TaskRow({ task, onboardingId, onComplete, onEdit, dragHandleListeners }: { task: PlanTask; onboardingId: number; onComplete: (task: PlanTask) => void; onEdit: () => void; dragHandleListeners?: ReturnType<typeof useSortable>["listeners"] }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { mutateAsync: completeTask, isPending } = useCompleteTaskMutation();
+  const { mutateAsync: upsertTask } = useUpsertTaskMutation();
   const { mutateAsync: deleteTask, isPending: isDeleting } = useDeleteTaskMutation();
 
   async function handleMarkComplete() {
@@ -186,9 +188,17 @@ function TaskRow({ task, onComplete, onEdit, dragHandleListeners }: { task: Plan
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-text-secondary">Subtasks</p>
                 <ul className="space-y-2 text-sm text-text-secondary">
                   {task.subtasks.map((subtask) => (
-                    <li key={subtask.id} className="inline-flex items-center gap-2">
-                      <input type="checkbox" checked={subtask.isCompleted} readOnly />
-                      <span>{subtask.label}</span>
+                    <li key={subtask.id} className="flex items-center gap-2">
+                      <Checkbox
+                        checked={subtask.isCompleted}
+                        onChange={async () => {
+                          const updated = await upsertTask({ id: Number(subtask.id), isCompleted: !subtask.isCompleted, onboardingId });
+                          onComplete({ ...task, subtasks: task.subtasks!.map((s) =>
+                            s.id === subtask.id ? { ...s, isCompleted: updated.isCompleted } : s,
+                          )});
+                        }}
+                      />
+                      <span className={subtask.isCompleted ? "line-through opacity-50" : ""}>{subtask.title}</span>
                     </li>
                   ))}
                 </ul>

@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { Check, Loader2, MoreVertical, Trash2 } from "lucide-react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useGeneratePlanMutation, useOnboardingPlansByProjectQuery } from "@/features/onboarding/hooks/useOnboardingData";
 import { FullProjectMember, ProjectMemberRole, ProjectMemberRoles } from "@/types/projectMember";
@@ -44,15 +45,19 @@ export function ProjectMemberRow({ member, projectJobs }: ProjectMemberRowProps)
 
   useClickOutside(menuRef, () => setIsMenuOpen(false), isMenuOpen);
 
-  const existingPlan = onboardingPlans?.find((p) => p.user.id === member.user.id);
+  const existingPlan = onboardingPlans?.find((p) => p.user.id === member.user.id); // todo tamar is the progress even working
 
   async function handleGenerateOnboarding({ daysDuration, jobId }: { daysDuration: number; jobId: number }) {
-    const plan = await generatePlan({
-      userId: member.user.id,
-      jobId,
-      daysDuration,
-    });
-    navigate(`/onboarding/plan/${plan.id}`);
+    try {
+      const plan = await generatePlan({
+        userId: member.user.id,
+        jobId,
+        daysDuration,
+      });
+      navigate(`/onboarding/plan/${plan.id}`);
+    } catch {
+      toast.error("Failed to generate onboarding plan. Please try again.");
+    }
   }
 
   function handleViewBoard() {
@@ -161,6 +166,7 @@ export function ProjectMemberRow({ member, projectJobs }: ProjectMemberRowProps)
           )}
         </div>
       </div>
+
     </div>
   );
 }
