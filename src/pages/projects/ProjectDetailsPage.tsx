@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ArrowLeft, Search, Settings, Sparkles } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import usersData from "@/mocks/users.json";
 import skillsData from "@/mocks/skills.json";
 import { FullProjectMember } from "@/types/projectMember";
@@ -32,9 +33,17 @@ const projectTabs = [
 
 export function ProjectDetailsPage() {
   const { projectId = "" } = useParams();
+  const navigate = useNavigate();
   const { data: project, isLoading, isError } = useProjectQuery(projectId);
   const [activeTab, setActiveTab] = useState<ProjectTab>("members");
   const [searchValue, setSearchValue] = useState("");
+
+  useEffect(() => {
+    if (isError) {
+      toast.error("Failed to load project details.");
+      navigate("/projects");
+    }
+  }, [isError, navigate]);
 
   const projectMembers = useMemo<FullProjectMember[] | undefined>(
     () =>
@@ -59,11 +68,8 @@ export function ProjectDetailsPage() {
     return <p className="text-sm text-text-secondary">Loading project details...</p>;
   }
 
-  if (isError || !project) {
-    return <p className="text-sm text-red-500">Failed to load project details.</p>;
-  }
 
-  return (
+  return (!isError && project) && (
     <section className="mx-auto w-full max-w-[1600px] space-y-8">
       <Link
         to="/projects"

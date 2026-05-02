@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useProjectQuery, useUpdateProjectMutation } from "@/features/projects/hooks";
 import { ProjectForm, ProjectFormValues } from "@/features/projects/components/ProjectForm";
 
@@ -8,13 +10,17 @@ export function ProjectSettingsPage() {
   const navigate = useNavigate();
   const mutation = useUpdateProjectMutation();
 
+  useEffect(() => {
+    if (isError) {
+      toast.error("Failed to load project.");
+      navigate("/projects");
+    }
+  }, [isError, navigate]);
+
   if (isLoading) {
     return <p className="text-sm text-text-secondary">Loading project...</p>;
   }
 
-  if (isError || !project) {
-    return <p className="text-sm text-red-500">Failed to load project.</p>;
-  }
 
   async function handleSubmit(values: ProjectFormValues) {
     await mutation.mutateAsync({ id: project!.id, ...values });
@@ -27,7 +33,7 @@ export function ProjectSettingsPage() {
     skills: job.skills?.map((s) => s.name) ?? [],
   }));
 
-  return (
+  return (!isError && project) && (
     <ProjectForm
       backTo={`/projects/${project.id}/details`}
       backLabel="Back to Project"
