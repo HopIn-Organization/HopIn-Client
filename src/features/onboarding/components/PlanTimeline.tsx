@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { DndContext, DragEndEvent, PointerSensor, closestCenter, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useCompleteTaskMutation, useDeleteTaskMutation, useReorderTaskMutation } from "@/features/onboarding/hooks/useOnboardingData";
+import { useCompleteTaskMutation, useDeleteTaskMutation, useReorderTaskMutation, useUpsertTaskMutation } from "@/features/onboarding/hooks/useOnboardingData";
 import { OnboardingPlan, PlanTask } from "@/types/onboarding";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
@@ -87,7 +87,7 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           <div className="relative ml-5 border-l-2 border-primary-soft pl-6">
             {tasks.map((task) => (
-              <SortableTaskRow key={task.id} task={task} onComplete={handleTaskComplete} onEdit={() => setEditingTask(task)} />
+              <SortableTaskRow key={task.id} task={task} onboardingId={plan.id} onComplete={handleTaskComplete} onEdit={() => setEditingTask(task)} />
             ))}
           </div>
         </SortableContext>
@@ -105,7 +105,7 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
   );
 }
 
-function SortableTaskRow(props: { task: PlanTask; onComplete: (t: PlanTask) => void; onEdit: () => void }) {
+function SortableTaskRow(props: { task: PlanTask; onboardingId: number; onComplete: (t: PlanTask) => void; onEdit: () => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: props.task.id });
 
   return (
@@ -119,10 +119,11 @@ function SortableTaskRow(props: { task: PlanTask; onComplete: (t: PlanTask) => v
   );
 }
 
-function TaskRow({ task, onComplete, onEdit, dragHandleListeners }: { task: PlanTask; onComplete: (task: PlanTask) => void; onEdit: () => void; dragHandleListeners?: ReturnType<typeof useSortable>["listeners"] }) {
+function TaskRow({ task, onboardingId, onComplete, onEdit, dragHandleListeners }: { task: PlanTask; onboardingId: number; onComplete: (task: PlanTask) => void; onEdit: () => void; dragHandleListeners?: ReturnType<typeof useSortable>["listeners"] }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { mutateAsync: completeTask, isPending } = useCompleteTaskMutation();
+  const { mutateAsync: upsertTask } = useUpsertTaskMutation();
   const { mutateAsync: deleteTask, isPending: isDeleting } = useDeleteTaskMutation();
 
   async function handleMarkComplete() {
@@ -187,8 +188,21 @@ function TaskRow({ task, onComplete, onEdit, dragHandleListeners }: { task: Plan
                 <ul className="space-y-2 text-sm text-text-secondary">
                   {task.subtasks.map((subtask) => (
                     <li key={subtask.id} className="inline-flex items-center gap-2">
-                      <input type="checkbox" checked={subtask.isCompleted} readOnly />
-                      <span>{subtask.label}</span>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const updated = await upsertTask({ id: Number(subtask.id), isCompleted: !subtask.isCompleted, onboardingId });
+                          onComplete({ ...task, subtasks: task.subtasks!.map((s) =>
+                            s.id === subtask.id ? { ...s, isCompleted: updated.isCompleted } : s,
+                          )});
+                        }}
+                        className={`grid h-4 w-4 shrink-0 place-items-center rounded ${subtask.isCompleted ? "bg-[#2DD4BF]" : "border border-border bg-surface"}`}
+                        aria-checked={subtask.isCompleted}
+                        role="checkbox"
+                      >
+                        {subtask.isCompleted && <Check size={10} strokeWidth={3} className="text-white" />}
+                      </button>
+                      <span className={subtask.isCompleted ? "line-through opacity-50" : ""}>{subtask.title}</span>
                     </li>
                   ))}
                 </ul>

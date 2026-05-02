@@ -83,7 +83,7 @@ export function TaskModal({ open, onClose, onboardingId, task, nextOrder }: Task
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Task description"
             required={!isEdit}
-            rows={2}
+            rows={4}
             className="w-full resize-none rounded-xl border border-border bg-surface px-3 py-2.5 text-sm text-text-primary outline-none transition placeholder:text-text-secondary/60 focus:border-primary"
           />
         </label>
@@ -136,18 +136,6 @@ export function TaskModal({ open, onClose, onboardingId, task, nextOrder }: Task
             </ul>
           )}
         </div>
-
-        {isEdit && (
-          <label className="flex cursor-pointer items-center gap-2 text-sm text-text-primary">
-            <input
-              type="checkbox"
-              checked={isCompleted}
-              onChange={(e) => setIsCompleted(e.target.checked)}
-              className="h-4 w-4 rounded accent-primary"
-            />
-            <span>Mark as completed</span>
-          </label>
-        )}
 
         <div className="flex justify-end gap-3">
           <Button type="button" variant="outline" onClick={onClose}>

@@ -45,6 +45,7 @@ export interface UpdateTaskPayload {
   estimatedDays?: number;
   isCompleted?: boolean;
   links?: string[];
+  subtasks?: Array<{ id: string; label: string; isCompleted: boolean }>;
   onboardingId: number;
   parentId?: number | null;
 }
