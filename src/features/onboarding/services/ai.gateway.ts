@@ -1,4 +1,4 @@
-import { OnboardingPlan } from "@/types/onboarding";
+import { OnboardingGenerationJob, OnboardingStatusResult } from "@/types/onboarding";
 
 export interface GenerateOnboardingPayload {
   userId: number;
@@ -8,5 +8,6 @@ export interface GenerateOnboardingPayload {
 }
 
 export interface AiGateway {
-  generatePlan(payload: GenerateOnboardingPayload): Promise<OnboardingPlan>;
+  generatePlan(payload: GenerateOnboardingPayload): Promise<OnboardingGenerationJob>;
+  getOnboardingStatus(onboardingId: number): Promise<OnboardingStatusResult>;
 }

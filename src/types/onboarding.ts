@@ -2,6 +2,18 @@ import { Job } from "./job";
 import { Project } from "./project";
 import { User } from "./user";
 
+export type OnboardingStatus = 'pending' | 'generating' | 'ready' | 'failed';
+
+export interface OnboardingGenerationJob {
+  onboardingId: number;
+}
+
+export interface OnboardingStatusResult {
+  id: number;
+  status: OnboardingStatus;
+  failureReason?: string | null;
+}
+
 export type TechLevel = "Beginner" | "Intermediate" | "Advanced";
 
 export interface TeamLeadRequirement {

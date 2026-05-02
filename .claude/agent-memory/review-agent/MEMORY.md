@@ -1,0 +1,2 @@
+- [HopIn project architecture](project_architecture.md) — client/server split, gateway pattern, migration conventions, CLAUDE.md rules
+- [Async background onboarding generation feature](project_async_onboarding.md) — fire-and-forget 202 flow, polling, known gaps from May 2026 review
