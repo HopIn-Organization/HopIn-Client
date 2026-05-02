@@ -15,8 +15,13 @@ interface PlanTimelineProps {
   plan: OnboardingPlan;
 }
 
+function toTopLevel(allTasks: PlanTask[]): PlanTask[] {
+  const subtaskIds = new Set(allTasks.flatMap((t) => (t.subtasks ?? []).map((s) => s.id)));
+  return allTasks.filter((t) => !subtaskIds.has(t.id));
+}
+
 export function PlanTimeline({ plan }: PlanTimelineProps) {
-  const [tasks, setTasks] = useState<PlanTask[]>(plan.tasks);
+  const [tasks, setTasks] = useState<PlanTask[]>(toTopLevel(plan.tasks));
   const [editingTask, setEditingTask] = useState<PlanTask | null>(null);
   const { mutateAsync: reorderTask } = useReorderTaskMutation();
 
@@ -25,7 +30,7 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
   );
 
   useEffect(() => {
-    setTasks(plan.tasks);
+    setTasks(toTopLevel(plan.tasks));
   }, [plan.tasks]);
 
   const completedCount = tasks.filter((t) => t.isCompleted).length;
@@ -87,9 +92,12 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           <div className="relative ml-5 border-l-2 border-primary-soft pl-6">
-            {tasks.map((task) => (
-              <SortableTaskRow key={task.id} task={task} onboardingId={plan.id} onComplete={handleTaskComplete} onEdit={() => setEditingTask(task)} />
-            ))}
+            {(() => {
+              const currentTaskId = tasks.find((t) => !t.isCompleted)?.id ?? null;
+              return tasks.map((task) => (
+                <SortableTaskRow key={task.id} task={task} onboardingId={plan.id} onComplete={handleTaskComplete} onEdit={() => setEditingTask(task)} isCurrent={task.id === currentTaskId} />
+              ));
+            })()}
           </div>
         </SortableContext>
       </DndContext>
@@ -106,7 +114,7 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
   );
 }
 
-function SortableTaskRow(props: { task: PlanTask; onboardingId: number; onComplete: (t: PlanTask) => void; onEdit: () => void }) {
+function SortableTaskRow(props: { task: PlanTask; onboardingId: number; onComplete: (t: PlanTask) => void; onEdit: () => void; isCurrent: boolean }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: props.task.id });
 
   return (
@@ -120,7 +128,7 @@ function SortableTaskRow(props: { task: PlanTask; onboardingId: number; onComple
   );
 }
 
-function TaskRow({ task, onboardingId, onComplete, onEdit, dragHandleListeners }: { task: PlanTask; onboardingId: number; onComplete: (task: PlanTask) => void; onEdit: () => void; dragHandleListeners?: ReturnType<typeof useSortable>["listeners"] }) {
+function TaskRow({ task, onboardingId, onComplete, onEdit, isCurrent, dragHandleListeners }: { task: PlanTask; onboardingId: number; onComplete: (task: PlanTask) => void; onEdit: () => void; isCurrent: boolean; dragHandleListeners?: ReturnType<typeof useSortable>["listeners"] }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { mutateAsync: completeTask, isPending } = useCompleteTaskMutation();
@@ -144,8 +152,8 @@ function TaskRow({ task, onboardingId, onComplete, onEdit, dragHandleListeners }
           <span className="grid h-5 w-5 place-items-center rounded-full bg-success text-white">
             <Check size={12} />
           </span>
-        ) : isExpanded ? (
-          <span className="grid h-5 w-5 place-items-center rounded-full bg-primary text-white">
+        ) : isCurrent ? (
+          <span className="grid h-5 w-5 place-items-center rounded-full bg-[#E8856A] text-white">
             <Circle size={8} fill="white" />
           </span>
         ) : (

@@ -33,14 +33,16 @@ export const onboardingApiGateway: OnboardingGateway = {
     return data;
   },
   async completeTask(taskId: number) {
-    const { data } = await apiClient.patch<{ task: { id: number; title: string; description: string; estimatedDays: number; isCompleted: boolean; order: number } }>(`/tasks/${taskId}/complete`);
+    type TaskData = { id: number; title: string; description: string; estimatedDays: number; isCompleted: boolean; order: number; links: string[]; subtasks?: Array<{ id: number; order: number; title: string; description: string; estimatedDays: number; isCompleted: boolean; links: string[] }> };
+    const { data } = await apiClient.patch<{ task: TaskData }>(`/tasks/${taskId}/complete`);
     const { task } = data;
-    return { id: task.id, title: task.title, description: task.description, isCompleted: task.isCompleted };
+    return { ...task, subtasks: task.subtasks ?? [] } as PlanTask;
   },
   async upsertTask(payload: UpsertTaskPayload) {
-    const { data } = await apiClient.put<{ task: { id: number; order: number; title: string; description: string; estimatedDays: number; isCompleted: boolean; links: string[] } }>('/tasks', payload);
+    type TaskData = { id: number; order: number; title: string; description: string; estimatedDays: number; isCompleted: boolean; links: string[]; subtasks?: Array<{ id: number; order: number; title: string; description: string; estimatedDays: number; isCompleted: boolean; links: string[] }> };
+    const { data } = await apiClient.put<{ task: TaskData }>('/tasks', payload);
     const { task } = data;
-    return { id: task.id, title: task.title, description: task.description, isCompleted: task.isCompleted, links: task.links } as PlanTask;
+    return { ...task, subtasks: task.subtasks ?? [] } as PlanTask;
   },
   async deleteTask(taskId: number) {
     await apiClient.delete(`/tasks/${taskId}`);
