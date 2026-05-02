@@ -23,7 +23,7 @@ export interface PlanTask {
   estimatedDays: number;
   isCompleted: boolean;
   links?: Array<string>;
-  subtasks?: Array<{ id: string; label: string; isCompleted: boolean }>;
+  subtasks?: Array<PlanTask>;
 }
 
 export interface CreateTaskPayload {
@@ -45,7 +45,7 @@ export interface UpdateTaskPayload {
   estimatedDays?: number;
   isCompleted?: boolean;
   links?: string[];
-  subtasks?: Array<{ id: string; label: string; isCompleted: boolean }>;
+  subtasks?: Array<{ id?: number; title: string; description?: string; order?: number; estimatedDays?: number; isCompleted?: boolean }>;
   onboardingId: number;
   parentId?: number | null;
 }

@@ -9,6 +9,7 @@ import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 import { Modal } from "@/ui/Modal";
 import { TaskModal } from "./TaskModal";
+import { Checkbox } from "@/ui/Checkbox";
 
 interface PlanTimelineProps {
   plan: OnboardingPlan;
@@ -187,21 +188,16 @@ function TaskRow({ task, onboardingId, onComplete, onEdit, dragHandleListeners }
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-text-secondary">Subtasks</p>
                 <ul className="space-y-2 text-sm text-text-secondary">
                   {task.subtasks.map((subtask) => (
-                    <li key={subtask.id} className="inline-flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={async () => {
+                    <li key={subtask.id} className="flex items-center gap-2">
+                      <Checkbox
+                        checked={subtask.isCompleted}
+                        onChange={async () => {
                           const updated = await upsertTask({ id: Number(subtask.id), isCompleted: !subtask.isCompleted, onboardingId });
                           onComplete({ ...task, subtasks: task.subtasks!.map((s) =>
                             s.id === subtask.id ? { ...s, isCompleted: updated.isCompleted } : s,
                           )});
                         }}
-                        className={`grid h-4 w-4 shrink-0 place-items-center rounded ${subtask.isCompleted ? "bg-[#2DD4BF]" : "border border-border bg-surface"}`}
-                        aria-checked={subtask.isCompleted}
-                        role="checkbox"
-                      >
-                        {subtask.isCompleted && <Check size={10} strokeWidth={3} className="text-white" />}
-                      </button>
+                      />
                       <span className={subtask.isCompleted ? "line-through opacity-50" : ""}>{subtask.title}</span>
                     </li>
                   ))}
