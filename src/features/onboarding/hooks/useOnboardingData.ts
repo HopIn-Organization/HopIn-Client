@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { aiService } from "@/features/onboarding/services/ai.service";
 import { onboardingService } from "@/features/onboarding/services/onboarding.service";
+import { useUiStore } from "@/store/ui.store";
 
 export function useOnboardingPlansQuery() {
   return useQuery({
@@ -64,6 +65,24 @@ export function useSaveTeamLeadRequirementMutation() {
 export function useGeneratePlanMutation() {
   return useMutation({
     mutationFn: aiService.generatePlan,
+    onSuccess: (data, variables) => {
+      const store = useUiStore.getState();
+      store.setGeneratingOnboardingId(data.onboardingId);
+      store.setGeneratingForUserId(variables.userId);
+    },
+  });
+}
+
+export function useOnboardingStatusQuery(id: number | null) {
+  return useQuery({
+    queryKey: ['onboarding-status', id],
+    queryFn: () => aiService.getOnboardingStatus(id!),
+    enabled: id != null,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      if (status === 'ready' || status === 'failed') return false;
+      return 3000;
+    },
   });
 }
 

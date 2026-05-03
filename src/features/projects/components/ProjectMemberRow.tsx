@@ -9,6 +9,7 @@ import { classNames } from "@/utils/className";
 import { MemberBoardButton } from "./MemberBoardButton";
 import { useUpdateMemberRoleMutation, useRemoveMemberMutation } from "../hooks/members";
 import { useClickOutside } from "@/hooks/useClickOutside";
+import { useUiStore } from "@/store/ui.store";
 
 interface ProjectMemberRowProps {
   member: FullProjectMember;
@@ -38,8 +39,10 @@ export function ProjectMemberRow({ member, projectJobs }: ProjectMemberRowProps)
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { mutate: updateRole, isPending } = useUpdateMemberRoleMutation();
   const { mutate: removeMember, isPending: isRemoving } = useRemoveMemberMutation();
-  const { mutateAsync: generatePlan, isPending: isGenerating } = useGeneratePlanMutation();
+  const { mutateAsync: generatePlan, isPending: isMutating } = useGeneratePlanMutation();
   const { data: onboardingPlans } = useOnboardingPlansByProjectQuery(member.projectId);
+  const generatingForUserId = useUiStore((s) => s.generatingForUserId);
+  const isGenerating = isMutating || generatingForUserId === member.user.id;
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -49,12 +52,11 @@ export function ProjectMemberRow({ member, projectJobs }: ProjectMemberRowProps)
 
   async function handleGenerateOnboarding({ daysDuration, jobId }: { daysDuration: number; jobId: number }) {
     try {
-      const plan = await generatePlan({
+      await generatePlan({
         userId: member.user.id,
         jobId,
         daysDuration,
       });
-      navigate(`/onboarding/plan/${plan.id}`);
     } catch {
       toast.error("Failed to generate onboarding plan. Please try again.");
     }
