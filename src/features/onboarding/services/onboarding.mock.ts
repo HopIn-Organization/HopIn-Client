@@ -71,10 +71,26 @@ export const onboardingMockGateway: OnboardingGateway = {
   async upsertTask(payload: UpsertTaskPayload) {
     await mockDelay();
     if ("id" in payload) {
+      // First check if the ID belongs to a subtask on any parent task
+      for (const plan of onboardingPlans) {
+        for (const task of plan.tasks) {
+          if (!task.subtasks) continue;
+          const subIdx = task.subtasks.findIndex((s) => s.id === payload.id);
+          if (subIdx >= 0) {
+            const existing = task.subtasks[subIdx] as PlanTask;
+            const updated: PlanTask = { ...existing, isCompleted: payload.isCompleted ?? existing.isCompleted };
+            task.subtasks[subIdx] = updated;
+            return updated;
+          }
+        }
+      }
+      // Otherwise update as a top-level task
       for (const plan of onboardingPlans) {
         const idx = plan.tasks.findIndex((t) => t.id === payload.id);
         if (idx >= 0) {
-          plan.tasks[idx] = { ...plan.tasks[idx], ...payload } as PlanTask;
+          const { id: _id, onboardingId: _oid, subtasks: _sub, parentId: _pid, ...topLevelFields } = payload as typeof payload & { subtasks?: unknown };
+          void _id; void _oid; void _sub; void _pid;
+          plan.tasks[idx] = { ...plan.tasks[idx], ...topLevelFields } as PlanTask;
           return plan.tasks[idx];
         }
       }
@@ -86,8 +102,11 @@ export const onboardingMockGateway: OnboardingGateway = {
       id: Date.now(),
       title: payload.title,
       description: payload.description,
+      order: payload.order ?? plan.tasks.length + 1,
+      estimatedDays: payload.estimatedDays ?? 1,
       isCompleted: payload.isCompleted ?? false,
       links: payload.links ?? [],
+      subtasks: [],
     };
     plan.tasks.push(newTask);
     return newTask;

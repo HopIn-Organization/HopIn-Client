@@ -23,40 +23,101 @@
         "id": 1,
         "title": "Setup development environment",
         "description": "Install Node.js, VS Code, and configure git credentials.",
-        "isCompleted": true
+        "order": 1,
+        "estimatedDays": 1,
+        "isCompleted": true,
+        "links": [],
+        "subtasks": []
       },
       {
         "id": 2,
         "title": "Read engineering handbook",
         "description": "Review coding standards, PR process, and deployment workflows.",
-        "isCompleted": true
+        "order": 2,
+        "estimatedDays": 2,
+        "isCompleted": true,
+        "links": [],
+        "subtasks": [
+          {
+            "id": 101,
+            "title": "Read coding standards section",
+            "description": "Review the team's coding standards and style guide.",
+            "order": 1,
+            "estimatedDays": 1,
+            "isCompleted": true,
+            "links": []
+          },
+          {
+            "id": 102,
+            "title": "Review PR process",
+            "description": "Understand the pull request workflow and review guidelines.",
+            "order": 2,
+            "estimatedDays": 1,
+            "isCompleted": true,
+            "links": []
+          }
+        ]
       },
       {
         "id": 3,
         "title": "Learn React",
         "description": "Complete React fundamentals and assignments.",
+        "order": 3,
+        "estimatedDays": 7,
         "isCompleted": false,
         "links": [
-          { "label": "React documentation", "url": "https://react.dev" },
-          { "label": "Scrimba free course", "url": "https://scrimba.com/learn/learnreact" }
+          "https://react.dev",
+          "https://scrimba.com/learn/learnreact"
         ],
         "subtasks": [
-          { "id": "st_1", "label": "Read docs", "isCompleted": true },
-          { "id": "st_2", "label": "Finish course", "isCompleted": false },
-          { "id": "st_3", "label": "Mini project", "isCompleted": false }
+          {
+            "id": 103,
+            "title": "Read official docs",
+            "description": "Read the official React documentation from react.dev.",
+            "order": 1,
+            "estimatedDays": 2,
+            "isCompleted": true,
+            "links": []
+          },
+          {
+            "id": 104,
+            "title": "Finish Scrimba course",
+            "description": "Complete the free React course on Scrimba.",
+            "order": 2,
+            "estimatedDays": 3,
+            "isCompleted": false,
+            "links": []
+          },
+          {
+            "id": 105,
+            "title": "Build mini project",
+            "description": "Build a small React app to solidify the fundamentals.",
+            "order": 3,
+            "estimatedDays": 2,
+            "isCompleted": false,
+            "links": []
+          }
         ]
       },
       {
         "id": 4,
         "title": "Complete first PR",
         "description": "Pick a good first issue and submit your first pull request.",
-        "isCompleted": false
+        "order": 4,
+        "estimatedDays": 3,
+        "isCompleted": false,
+        "links": [],
+        "subtasks": []
       },
       {
         "id": 5,
         "title": "Sign contract",
         "description": "Review and sign the contract and NDA.",
-        "isCompleted": false
+        "order": 5,
+        "estimatedDays": 1,
+        "isCompleted": false,
+        "links": [],
+        "subtasks": []
       }
     ]
   }
