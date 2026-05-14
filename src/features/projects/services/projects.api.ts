@@ -36,4 +36,13 @@ export const projectsApiGateway: ProjectsGateway = {
 
     return data;
   },
+  async addMember(projectId: string, memberId: string, jobId: string, role: string) {
+    const { data } = await apiClient.post(`projects/${projectId}/members`, {
+      memberId,
+      jobId,
+      role,
+    });
+
+    return data;
+  },
 };

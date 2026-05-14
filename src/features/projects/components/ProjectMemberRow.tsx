@@ -48,13 +48,14 @@ export function ProjectMemberRow({ member, projectJobs }: ProjectMemberRowProps)
 
   useClickOutside(menuRef, () => setIsMenuOpen(false), isMenuOpen);
 
-  const existingPlan = onboardingPlans?.find((p) => p.user.id === member.user.id); // todo tamar is the progress even working
+  const existingPlan = onboardingPlans?.find((p) => p.user.id === member.user.id); // TODO fix the progress bar
 
   async function handleGenerateOnboarding({ daysDuration, jobId }: { daysDuration: number; jobId: number }) {
     try {
       await generatePlan({
         userId: member.user.id,
         jobId,
+        projectId: member.projectId,
         daysDuration,
       });
     } catch {

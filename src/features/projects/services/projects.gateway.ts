@@ -21,4 +21,5 @@ export interface ProjectsGateway {
   getProjectStatistics(): Promise<ProjectStatistics[]>;
   updateMemberRole(projectId: string, memberId: string, role: string): Promise<ProjectMember>;
   removeMember(memberId: string): Promise<void>;
+  addMember(projectId:string, memberId:string, jobId: string, role: string): Promise<ProjectMember>
 }
