@@ -1,4 +1,4 @@
-import { FormEvent } from "react";
+import { type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { useLoginMutation } from "@/features/auth/hooks/useAuthMutations";
@@ -18,14 +18,18 @@ export function LoginPage() {
     const formData = new FormData(event.currentTarget);
 
     const email = String(formData.get("email") ?? "");
-    const { accessToken } = await loginMutation.mutateAsync({
-      email,
-      password: String(formData.get("password") ?? ""),
-    });
+    try {
+      const { accessToken } = await loginMutation.mutateAsync({
+        email,
+        password: String(formData.get("password") ?? ""),
+      });
 
-    setAccessToken(accessToken);
-    setCurrentUserEmail(email);
-    navigate("/projects");
+      setAccessToken(accessToken);
+      setCurrentUserEmail(email);
+      navigate("/projects");
+    } catch {
+      // loginMutation.isError displays the error message
+    }
   }
 
   return (
