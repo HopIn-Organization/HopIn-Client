@@ -10,7 +10,7 @@ interface UiState {
 }
 
 export const useUiStore = create<UiState>((set) => ({
-  selectedProjectId: "p_1",
+  selectedProjectId: null,
   setSelectedProjectId: (projectId) => set({ selectedProjectId: projectId }),
   generatingOnboardingId: null,
   setGeneratingOnboardingId: (id) => set({ generatingOnboardingId: id }),

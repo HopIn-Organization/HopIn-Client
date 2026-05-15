@@ -10,18 +10,21 @@ import { Button } from "@/ui/Button";
 export function LoginPage() {
   const navigate = useNavigate();
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
+  const setCurrentUserEmail = useAuthStore((state) => state.setCurrentUserEmail);
   const loginMutation = useLoginMutation();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
 
+    const email = String(formData.get("email") ?? "");
     const { accessToken } = await loginMutation.mutateAsync({
-      email: String(formData.get("email") ?? ""),
+      email,
       password: String(formData.get("password") ?? ""),
     });
 
     setAccessToken(accessToken);
+    setCurrentUserEmail(email);
     navigate("/projects");
   }
 

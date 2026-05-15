@@ -4,7 +4,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import usersData from "@/mocks/users.json";
 import skillsData from "@/mocks/skills.json";
-import { FullProjectMember } from "@/types/projectMember";
+import { FullProjectMember, ProjectMemberRoles } from "@/types/projectMember";
 import { Skill } from "@/types/skill";
 import { User } from "@/types/user";
 import { Tabs } from "@/ui/Tabs";
@@ -13,6 +13,7 @@ import { AddMemberModal } from "@/features/projects/components/AddMemberModal";
 import { useAddMemberMutation } from "@/features/projects/hooks/members";
 import { env } from "@/utils/env";
 import { useProjectQuery } from "@/features/projects/hooks";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { Button } from "@/ui/Button";
 
 interface StoredUser extends Omit<User, "skills"> {
@@ -42,6 +43,8 @@ export function ProjectDetailsPage() {
   const [searchValue, setSearchValue] = useState("");
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const addMemberMutation = useAddMemberMutation();
+  const role = useProjectRole(projectId, project?.members);
+  const isAdmin = role === ProjectMemberRoles.ADMIN;
 
   useEffect(() => {
     if (isError) {
@@ -101,19 +104,21 @@ export function ProjectDetailsPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <Link
-              to={`/projects/${projectId}/settings`}
-              className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-surface px-5 text-sm font-medium text-text-primary transition hover:bg-surface-muted"
-            >
-              <Settings size={15} />
-              Settings
-            </Link>
-            <Button type="button" className="h-11 px-5" onClick={() => setIsAddMemberOpen(true)}>
-              <Plus size={15} />
-              Add Member
-            </Button>
-          </div>
+          {isAdmin && (
+            <div className="flex flex-wrap gap-3">
+              <Link
+                to={`/projects/${projectId}/settings`}
+                className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-surface px-5 text-sm font-medium text-text-primary transition hover:bg-surface-muted"
+              >
+                <Settings size={15} />
+                Settings
+              </Link>
+              <Button type="button" className="h-11 px-5" onClick={() => setIsAddMemberOpen(true)}>
+                <Plus size={15} />
+                Add Member
+              </Button>
+            </div>
+          )}
         </header>
 
         <Tabs items={projectTabs} value={activeTab} onValueChange={setActiveTab} />
@@ -137,6 +142,7 @@ export function ProjectDetailsPage() {
               searchValue={searchValue}
               projectMembers={projectMembers}
               projectJobs={project.jobs ?? []}
+              isAdmin={isAdmin}
             />
           </div>
         ) : (

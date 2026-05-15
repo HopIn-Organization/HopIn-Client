@@ -3,21 +3,30 @@ import { create } from "zustand";
 interface AuthState {
   accessToken: string | null;
   isAuthenticated: boolean;
+  currentUserEmail: string | null;
   setAccessToken: (token: string) => void;
+  setCurrentUserEmail: (email: string) => void;
   signOut: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   accessToken: localStorage.getItem("access_token"),
   isAuthenticated: !!localStorage.getItem("access_token"),
+  currentUserEmail: localStorage.getItem("current_user_email"),
 
   setAccessToken: (token: string) => {
     localStorage.setItem("access_token", token);
     set({ accessToken: token, isAuthenticated: true });
   },
 
+  setCurrentUserEmail: (email: string) => {
+    localStorage.setItem("current_user_email", email);
+    set({ currentUserEmail: email });
+  },
+
   signOut: () => {
     localStorage.removeItem("access_token");
-    set({ accessToken: null, isAuthenticated: false });
+    localStorage.removeItem("current_user_email");
+    set({ accessToken: null, isAuthenticated: false, currentUserEmail: null });
   },
 }));
