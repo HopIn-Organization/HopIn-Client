@@ -13,6 +13,16 @@ export const authMockGateway: AuthGateway = {
     return { accessToken: "mock-access-token-xyz" };
   },
 
+  async register(payload: LoginPayload) {
+    await mockDelay(220);
+
+    if (!payload.email.includes("@") || payload.password.length < 6) {
+      throw new Error("Invalid email or password");
+    }
+
+    return { accessToken: "mock-access-token-xyz" };
+  },
+
   async logout() {
     await mockDelay(100);
   },

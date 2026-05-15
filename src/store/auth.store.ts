@@ -6,6 +6,7 @@ interface AuthState {
   currentUserEmail: string | null;
   setAccessToken: (token: string) => void;
   setCurrentUserEmail: (email: string) => void;
+  signIn: (user: { email: string }) => void;
   signOut: () => void;
 }
 
@@ -22,6 +23,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   setCurrentUserEmail: (email: string) => {
     localStorage.setItem("current_user_email", email);
     set({ currentUserEmail: email });
+  },
+
+  signIn: (user: { email: string }) => {
+    localStorage.setItem("current_user_email", user.email);
+    set({ currentUserEmail: user.email });
   },
 
   signOut: () => {

@@ -1,5 +1,6 @@
 import { BarChart3, LogOut, FolderKanban } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { useProfileQuery } from "@/features/profile/hooks";
 import { useAuthStore } from "@/store/auth.store";
 import { classNames } from "@/utils/className";
@@ -11,7 +12,13 @@ const navItems = [
 
 export function Sidebar() {
   const signOut = useAuthStore((state) => state.signOut);
+  const queryClient = useQueryClient();
   const { data: profile } = useProfileQuery();
+
+  function handleSignOut() {
+    queryClient.removeQueries({ queryKey: ["profile"] });
+    signOut();
+  }
 
   return (
     <aside className="sticky top-0 flex h-screen w-[230px] flex-col border-r border-border bg-surface">
@@ -67,7 +74,7 @@ export function Sidebar() {
 
         <button
           type="button"
-          onClick={signOut}
+          onClick={handleSignOut}
           className="inline-flex items-center gap-2 text-sm text-text-secondary transition hover:text-text-primary"
         >
           <LogOut size={14} />

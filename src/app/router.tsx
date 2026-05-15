@@ -2,6 +2,9 @@ import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom
 import { AppShell } from "@/components/layout/AppShell";
 import { ProtectedRoute } from "@/app/protected-route";
 import { LoginPage } from "@/pages/auth/LoginPage";
+import { SignUpChoicePage } from "@/pages/auth/SignUpChoicePage";
+import { SignUpEmailPage } from "@/pages/auth/SignUpEmailPage";
+import { CompleteProfilePage } from "@/pages/auth/CompleteProfilePage";
 import { OnboardingPlanPage } from "@/pages/onboarding/OnboardingPlanPage";
 import { OnboardingReviewPage } from "@/pages/onboarding/OnboardingReviewPage";
 import { OnboardingStartPage } from "@/pages/onboarding/OnboardingStartPage";
@@ -18,6 +21,9 @@ export function AppRouter() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<SignUpChoicePage />} />
+        <Route path="/register/email" element={<SignUpEmailPage />} />
+        <Route path="/register/profile" element={<CompleteProfilePage />} />
 
         <Route
           element={

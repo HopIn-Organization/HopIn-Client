@@ -8,6 +8,11 @@ export const authApiGateway: AuthGateway = {
     return data;
   },
 
+  async register(payload: LoginPayload) {
+    const { data } = await apiClient.post<{ accessToken: string }>("/auth/register", payload);
+    return data;
+  },
+
   async logout() {
     await apiClient.post("/auth/logout");
   },
