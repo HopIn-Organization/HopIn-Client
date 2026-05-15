@@ -15,6 +15,7 @@ interface ProjectMemberRowProps {
   member: FullProjectMember;
   projectJobs: Job[];
   isAdmin: boolean;
+  currentUserEmail?: string | null;
 }
 
 function getInitials(name: string) {
@@ -36,7 +37,7 @@ function formatProjectRole(role: ProjectMemberRole) {
   return role === ProjectMemberRoles.ADMIN ? "Admin" : "Trainee";
 }
 
-export function ProjectMemberRow({ member, projectJobs, isAdmin }: ProjectMemberRowProps) {
+export function ProjectMemberRow({ member, projectJobs, isAdmin, currentUserEmail }: ProjectMemberRowProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { mutate: updateRole, isPending } = useUpdateMemberRoleMutation();
   const { mutate: removeMember, isPending: isRemoving } = useRemoveMemberMutation();
@@ -44,6 +45,7 @@ export function ProjectMemberRow({ member, projectJobs, isAdmin }: ProjectMember
   const { data: onboardingPlans } = useOnboardingPlansByProjectQuery(member.projectId);
   const generatingForUserId = useUiStore((s) => s.generatingForUserId);
   const isGenerating = isMutating || generatingForUserId === member.user.id;
+  const isOwnRow = !!currentUserEmail && member.user.email === currentUserEmail;
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -122,56 +124,66 @@ export function ProjectMemberRow({ member, projectJobs, isAdmin }: ProjectMember
         </div>
         <div className="text-xs text-text-secondary">{existingPlan?.progress ?? 0}%</div>
       </div>
-      {isAdmin && (
-        <div className="flex items-center justify-end gap-2 justify-self-end">
-          <MemberBoardButton
-            hasOnboarding={!!existingPlan}
-            employeeName={member.user.name}
-            jobs={projectJobs}
-            defaultJobId={member.job.id}
-            onGenerate={handleGenerateOnboarding}
-            onViewBoard={handleViewBoard}
-            isGenerating={isGenerating}
-          />
+      <div className="flex items-center justify-end gap-2 justify-self-end">
+        {isAdmin ? (
+          <>
+            <MemberBoardButton
+              hasOnboarding={!!existingPlan}
+              employeeName={member.user.name}
+              jobs={projectJobs}
+              defaultJobId={member.job.id}
+              onGenerate={handleGenerateOnboarding}
+              onViewBoard={handleViewBoard}
+              isGenerating={isGenerating}
+            />
 
-          <div className="relative" ref={menuRef}>
-            <button
-              type="button"
-              onClick={() => setIsMenuOpen((currentState) => !currentState)}
-              className="grid h-9 w-9 place-items-center rounded-xl text-text-secondary transition hover:bg-surface-muted hover:text-text-primary"
-              aria-label={`Open actions for ${member.user.name}`}
-            >
-              <MoreVertical size={16} />
-            </button>
+            <div className="relative" ref={menuRef}>
+              <button
+                type="button"
+                onClick={() => setIsMenuOpen((currentState) => !currentState)}
+                className="grid h-9 w-9 place-items-center rounded-xl text-text-secondary transition hover:bg-surface-muted hover:text-text-primary"
+                aria-label={`Open actions for ${member.user.name}`}
+              >
+                <MoreVertical size={16} />
+              </button>
 
-            {isMenuOpen && (
-              <div className="absolute right-0 top-11 z-10 w-48 rounded-xl border border-border bg-surface p-2 shadow-soft">
-                <button
-                  type="button"
-                  onClick={handleRemoveMember}
-                  disabled={isRemoving}
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-red-500 transition hover:bg-surface-muted"
-                >
-                  {isRemoving ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
-                  Remove Member
-                </button>
-                <button
-                  type="button"
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-text-primary transition hover:bg-surface-muted"
-                  disabled={isPending}
-                  onClick={updateMemberRole}
-                >
-                  {isPending ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
-                  Change role to{" "}
-                  {member.role === ProjectMemberRoles.ADMIN
-                    ? ProjectMemberRoles.TRAINEE
-                    : ProjectMemberRoles.ADMIN}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+              {isMenuOpen && (
+                <div className="absolute right-0 top-11 z-10 w-48 rounded-xl border border-border bg-surface p-2 shadow-soft">
+                  <button
+                    type="button"
+                    onClick={handleRemoveMember}
+                    disabled={isRemoving}
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-red-500 transition hover:bg-surface-muted"
+                  >
+                    {isRemoving ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                    Remove Member
+                  </button>
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-text-primary transition hover:bg-surface-muted"
+                    disabled={isPending}
+                    onClick={updateMemberRole}
+                  >
+                    {isPending ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+                    Change role to{" "}
+                    {member.role === ProjectMemberRoles.ADMIN
+                      ? ProjectMemberRoles.TRAINEE
+                      : ProjectMemberRoles.ADMIN}
+                  </button>
+                </div>
+              )}
+            </div>
+          </>
+        ) : isOwnRow && existingPlan ? (
+          <button
+            type="button"
+            onClick={handleViewBoard}
+            className="h-9 rounded-xl border border-border px-4 text-xs font-medium text-text-primary transition hover:bg-surface-muted"
+          >
+            View Board
+          </button>
+        ) : null}
+      </div>
 
     </div>
   );

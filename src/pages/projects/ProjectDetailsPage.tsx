@@ -14,6 +14,7 @@ import { useAddMemberMutation } from "@/features/projects/hooks/members";
 import { env } from "@/utils/env";
 import { useProjectQuery } from "@/features/projects/hooks";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import { useAuthStore } from "@/store/auth.store";
 import { Button } from "@/ui/Button";
 
 interface StoredUser extends Omit<User, "skills"> {
@@ -32,7 +33,6 @@ type ProjectTab = "members" | "statistics";
 
 const projectTabs = [
   { label: "Team Members", value: "members" },
-  // { label: "Statistics", value: "statistics" },
 ] as const satisfies readonly { label: string; value: ProjectTab }[];
 
 export function ProjectDetailsPage() {
@@ -45,6 +45,7 @@ export function ProjectDetailsPage() {
   const addMemberMutation = useAddMemberMutation();
   const role = useProjectRole(projectId, project?.members);
   const isAdmin = role === ProjectMemberRoles.ADMIN;
+  const currentUserEmail = useAuthStore((state) => state.currentUserEmail);
 
   useEffect(() => {
     if (isError) {
@@ -143,32 +144,35 @@ export function ProjectDetailsPage() {
               projectMembers={projectMembers}
               projectJobs={project.jobs ?? []}
               isAdmin={isAdmin}
+              currentUserEmail={currentUserEmail}
             />
           </div>
         ) : (
           <div className="text-sm text-text-secondary">No team members found yet.</div>
         )}
 
-        <AddMemberModal
-          open={isAddMemberOpen}
-          onClose={() => setIsAddMemberOpen(false)}
-          jobs={project.jobs ?? []}
-          isPending={addMemberMutation.isPending}
-          onSubmit={({ memberId, jobId, role }) => {
-            addMemberMutation.mutate(
-              { projectId, memberId, jobId, role },
-              {
-                onSuccess: () => {
-                  setIsAddMemberOpen(false);
-                  toast.success("Member added successfully");
+        {isAdmin && (
+          <AddMemberModal
+            open={isAddMemberOpen}
+            onClose={() => setIsAddMemberOpen(false)}
+            jobs={project.jobs ?? []}
+            isPending={addMemberMutation.isPending}
+            onSubmit={({ memberId, jobId, role }) => {
+              addMemberMutation.mutate(
+                { projectId, memberId, jobId, role },
+                {
+                  onSuccess: () => {
+                    setIsAddMemberOpen(false);
+                    toast.success("Member added successfully");
+                  },
+                  onError: () => {
+                    toast.error("Failed to add member");
+                  },
                 },
-                onError: () => {
-                  toast.error("Failed to add member");
-                },
-              },
-            );
-          }}
-        />
+              );
+            }}
+          />
+        )}
       </section>
     )
   );

@@ -9,9 +9,10 @@ interface ProjectMembersTableProps {
   projectMembers: FullProjectMember[];
   projectJobs: Job[];
   isAdmin: boolean;
+  currentUserEmail?: string | null;
 }
 
-export function ProjectMembersTable({ searchValue, projectMembers, projectJobs, isAdmin }: ProjectMembersTableProps) {
+export function ProjectMembersTable({ searchValue, projectMembers, projectJobs, isAdmin, currentUserEmail }: ProjectMembersTableProps) {
   const filteredEmployees = useMemo(() => {
     const normalizedSearch = searchValue.trim().toLowerCase();
 
@@ -39,7 +40,7 @@ export function ProjectMembersTable({ searchValue, projectMembers, projectJobs, 
       </div>
       <div className="divide-y divide-border">
         {filteredEmployees.map((employee) => (
-          <ProjectMemberRow key={employee.user.id} member={employee} projectJobs={projectJobs} isAdmin={isAdmin} />
+          <ProjectMemberRow key={employee.user.id} member={employee} projectJobs={projectJobs} isAdmin={isAdmin} currentUserEmail={currentUserEmail} />
         ))}
       </div>
 
