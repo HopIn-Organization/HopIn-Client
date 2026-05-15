@@ -18,21 +18,16 @@ export function useUpdateMemberRoleMutation() {
       role: ProjectMemberRole;
     }) => projectsService.updateMemberRole(projectId, memberId, role),
     onSuccess: async (_, variables) => {
-      queryClient.setQueryData(
-        projectKeys.byId(JSON.stringify(variables.projectId)),
-        (old: Project) => {
-          if (!old) return old;
+      queryClient.setQueryData(projectKeys.byId(variables.projectId), (old: Project) => {
+        if (!old) return old;
 
-          return {
-            ...old,
-            members: old.members?.map((member: ProjectMember) =>
-              member.id === Number(variables.memberId)
-                ? { ...member, role: variables.role }
-                : member,
-            ),
-          };
-        },
-      );
+        return {
+          ...old,
+          members: old.members?.map((member: ProjectMember) =>
+            member.id === Number(variables.memberId) ? { ...member, role: variables.role } : member,
+          ),
+        };
+      });
     },
   });
 }
@@ -41,23 +36,37 @@ export function useRemoveMemberMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ memberId }: { projectId: string; memberId: string }) =>
-      projectsService.removeMember(memberId),
+    mutationFn: ({ projectId, memberId }: { projectId: string; memberId: string }) =>
+      projectsService.removeMember(projectId, memberId),
 
     onSuccess: (_, variables) => {
-      queryClient.setQueryData(
-        projectKeys.byId(JSON.stringify(variables.projectId)),
-        (old: Project | undefined) => {
-          if (!old) return old;
+      queryClient.invalidateQueries({
+        queryKey: projectKeys.byId(String(variables.projectId)),
+      });
+    },
+  });
+}
 
-          return {
-            ...old,
-            members: old.members?.filter(
-              (member: ProjectMember) => member.id !== Number(variables.memberId),
-            ),
-          };
-        },
-      );
+export function useAddMemberMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      projectId,
+      memberId,
+      jobId,
+      role,
+    }: {
+      projectId: string;
+      memberId: string;
+      jobId: string;
+      role: string;
+    }) => projectsService.addMember(projectId, memberId, jobId, role),
+
+    onSuccess: (_newMember, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: projectKeys.byId(variables.projectId),
+      });
     },
   });
 }

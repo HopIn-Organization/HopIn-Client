@@ -11,7 +11,11 @@ export function LogoLockup({ className, compact = false }: LogoLockupProps) {
     <img
       src={primaryLogoSrc}
       alt="HopIn logo"
-      className={classNames("h-auto object-contain", compact ? "w-[140px]" : "w-[230px]", className)}
+      className={classNames(
+        "h-auto object-contain",
+        compact ? "w-[140px]" : "w-[230px]",
+        className,
+      )}
       aria-label="HopIn logo"
     />
   );

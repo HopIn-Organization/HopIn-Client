@@ -3,12 +3,19 @@ import { classNames } from "@/utils/className";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
+  labelClassName?: string;
 }
 
-export function Input({ label, className, id, ...props }: InputProps) {
+export function Input({ label, labelClassName, className, id, ...props }: InputProps) {
   return (
     <label htmlFor={id} className="block space-y-2 text-sm">
-      {label && <span className="text-xs font-medium text-text-secondary">{label}</span>}
+      {label && (
+        <span
+          className={classNames("font-medium text-text-secondary", labelClassName ?? "text-xs")}
+        >
+          {label}
+        </span>
+      )}
       <input
         id={id}
         className={classNames(

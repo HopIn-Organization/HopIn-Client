@@ -2,7 +2,7 @@ import { Job } from "./job";
 import { Project } from "./project";
 import { User } from "./user";
 
-export type OnboardingStatus = 'pending' | 'generating' | 'ready' | 'failed';
+export type OnboardingStatus = "pending" | "generating" | "ready" | "failed";
 
 export interface OnboardingGenerationJob {
   onboardingId: number;
@@ -31,7 +31,7 @@ export interface PlanTask {
   id: number;
   title: string;
   description: string;
-  order: number; 
+  order: number;
   estimatedDays: number;
   isCompleted: boolean;
   links?: Array<string>;
@@ -39,6 +39,7 @@ export interface PlanTask {
 }
 
 export interface CreateTaskPayload {
+  projectId: string;
   order: number;
   title: string;
   description: string;
@@ -51,13 +52,21 @@ export interface CreateTaskPayload {
 
 export interface UpdateTaskPayload {
   id: number;
+  projectId: string;
   order?: number;
   title?: string;
   description?: string;
   estimatedDays?: number;
   isCompleted?: boolean;
   links?: string[];
-  subtasks?: Array<{ id?: number; title: string; description?: string; order?: number; estimatedDays?: number; isCompleted?: boolean }>;
+  subtasks?: Array<{
+    id?: number;
+    title: string;
+    description?: string;
+    order?: number;
+    estimatedDays?: number;
+    isCompleted?: boolean;
+  }>;
   onboardingId: number;
   parentId?: number | null;
 }

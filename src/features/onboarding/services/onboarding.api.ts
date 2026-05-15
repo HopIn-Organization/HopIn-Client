@@ -1,27 +1,35 @@
 import { apiClient } from "@/services/http/api-client";
-import { OnboardingPlan, PlanTask, TeamLeadRequirement, UpsertTaskPayload } from "@/types/onboarding";
+import {
+  OnboardingPlan,
+  PlanTask,
+  TeamLeadRequirement,
+  UpsertTaskPayload,
+} from "@/types/onboarding";
 import { EmployeeProfile } from "@/types/user";
 import { OnboardingGateway } from "./onboarding.gateway";
 
 export const onboardingApiGateway: OnboardingGateway = {
   async getEmployeeProfiles() {
-    const { data } = await apiClient.get<EmployeeProfile[]>('/employees/profiles');
+    const { data } = await apiClient.get<EmployeeProfile[]>("/employees/profiles");
     return data;
   },
   async saveEmployeeProfile(profile) {
-    const { data } = await apiClient.post<EmployeeProfile>('/employees/profiles', profile);
+    const { data } = await apiClient.post<EmployeeProfile>("/employees/profiles", profile);
     return data;
   },
   async getTeamLeadRequirements() {
-    const { data } = await apiClient.get<TeamLeadRequirement[]>('/team-lead/requirements');
+    const { data } = await apiClient.get<TeamLeadRequirement[]>("/team-lead/requirements");
     return data;
   },
   async saveTeamLeadRequirement(requirement) {
-    const { data } = await apiClient.post<TeamLeadRequirement>('/team-lead/requirements', requirement);
+    const { data } = await apiClient.post<TeamLeadRequirement>(
+      "/team-lead/requirements",
+      requirement,
+    );
     return data;
   },
   async getOnboardingPlans() {
-    const { data } = await apiClient.get<OnboardingPlan[]>('/onboarding/plans');
+    const { data } = await apiClient.get<OnboardingPlan[]>("/onboarding/plans");
     return data;
   },
   async getOnboardingPlansByProject(projectId: string) {
@@ -33,18 +41,55 @@ export const onboardingApiGateway: OnboardingGateway = {
     return data;
   },
   async completeTask(taskId: number) {
-    type TaskData = { id: number; title: string; description: string; estimatedDays: number; isCompleted: boolean; order: number; links: string[]; subtasks?: Array<{ id: number; order: number; title: string; description: string; estimatedDays: number; isCompleted: boolean; links: string[] }> };
+    type TaskData = {
+      id: number;
+      title: string;
+      description: string;
+      estimatedDays: number;
+      isCompleted: boolean;
+      order: number;
+      links: string[];
+      subtasks?: Array<{
+        id: number;
+        order: number;
+        title: string;
+        description: string;
+        estimatedDays: number;
+        isCompleted: boolean;
+        links: string[];
+      }>;
+    };
     const { data } = await apiClient.patch<{ task: TaskData }>(`/tasks/${taskId}/complete`);
     const { task } = data;
     return { ...task, subtasks: task.subtasks ?? [] } as PlanTask;
   },
   async upsertTask(payload: UpsertTaskPayload) {
-    type TaskData = { id: number; order: number; title: string; description: string; estimatedDays: number; isCompleted: boolean; links: string[]; subtasks?: Array<{ id: number; order: number; title: string; description: string; estimatedDays: number; isCompleted: boolean; links: string[] }> };
-    const { data } = await apiClient.put<{ task: TaskData }>('/tasks', payload);
+    type TaskData = {
+      id: number;
+      projectId: string;
+      order: number;
+      title: string;
+      description: string;
+      estimatedDays: number;
+      isCompleted: boolean;
+      links: string[];
+      subtasks?: Array<{
+        id: number;
+        order: number;
+        title: string;
+        description: string;
+        estimatedDays: number;
+        isCompleted: boolean;
+        links: string[];
+      }>;
+    };
+    const { data } = await apiClient.put<{ task: TaskData }>("/tasks", payload);
     const { task } = data;
     return { ...task, subtasks: task.subtasks ?? [] } as PlanTask;
   },
-  async deleteTask(taskId: number) {
-    await apiClient.delete(`/tasks/${taskId}`);
+  async deleteTask(taskId: number, projectId: string) {
+    await apiClient.delete(`/tasks/${taskId}`, {
+      data: { projectId },
+    });
   },
 };

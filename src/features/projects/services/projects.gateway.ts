@@ -11,7 +11,7 @@ export interface ProjectsGateway {
     repositoryUrl?: string;
     jobs?: Job[];
   }): Promise<Project>;
-    updateProject(payload: {
+  updateProject(payload: {
     id: string;
     name: string;
     description?: string;
@@ -20,5 +20,11 @@ export interface ProjectsGateway {
   }): Promise<Project>;
   getProjectStatistics(): Promise<ProjectStatistics[]>;
   updateMemberRole(projectId: string, memberId: string, role: string): Promise<ProjectMember>;
-  removeMember(memberId: string): Promise<void>;
+  removeMember(projectId: string, memberId: string): Promise<void>;
+  addMember(
+    projectId: string,
+    memberId: string,
+    jobId: string,
+    role: string,
+  ): Promise<ProjectMember>;
 }
