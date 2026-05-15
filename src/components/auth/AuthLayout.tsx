@@ -23,21 +23,23 @@ export function AuthLayout({
   compact = false,
 }: AuthLayoutProps) {
   return (
-    <main className="relative grid min-h-screen place-items-center bg-bg px-4 py-12">
-      <div className="pointer-events-none absolute right-0 top-4 h-px w-[270px] bg-border" />
-
-      <section className={classNames("w-full max-w-[520px] text-center", compact && "max-w-[420px]")}>
-        <div className="mb-6 flex justify-center">
-          <LogoLockup className="w-[180px]" />
+    <main className="relative grid min-h-screen place-items-center bg-bg px-4 py-8 lg:py-12">
+      <section
+        className={classNames("w-full max-w-[520px] text-center", compact && "max-w-[420px]")}
+      >
+        <div className="mb-4 flex justify-center lg:mb-6">
+          <LogoLockup className="w-[40px] lg:w-[80px]" />
         </div>
 
-        <h1 className="text-[46px] font-semibold leading-tight text-text-primary md:text-[52px]">{title}</h1>
-        <p className="mt-3 text-[31px] text-text-secondary md:text-[28px]">{subtitle}</p>
+        <h1 className="text-3xl font-semibold leading-tight text-text-primary lg:text-[46px]">
+          {title}
+        </h1>
+        <p className="mt-2 text-lg text-text-secondary lg:mt-3 lg:text-[26px]">{subtitle}</p>
 
-        <div className="mt-9">{children}</div>
+        <div className="mt-6 lg:mt-9">{children}</div>
 
         {footerText && footerActionText && footerActionHref && (
-          <p className="mt-8 text-lg text-text-secondary">
+          <p className="mt-6 text-base text-text-secondary lg:mt-8 lg:text-lg">
             {footerText}{" "}
             <Link to={footerActionHref} className="font-medium text-primary">
               {footerActionText}

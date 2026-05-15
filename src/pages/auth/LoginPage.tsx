@@ -33,8 +33,8 @@ export function LoginPage() {
       footerActionText="Sign up"
       footerActionHref="/register"
     >
-      <Card className="p-8 shadow-soft">
-        <form className="space-y-5" onSubmit={handleSubmit}>
+      <Card className="px-10 py-8 shadow-soft">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <Input
             id="email"
             name="email"
@@ -42,14 +42,17 @@ export function LoginPage() {
             label="Email address"
             placeholder="name@company.com"
             required
+            className="h-12 text-base"
+            labelClassName="text-sm"
           />
           <Input
             id="password"
             name="password"
             type="password"
             label="Password"
-            placeholder="••••••••"
             required
+            className="h-12 text-base"
+            labelClassName="text-sm"
           />
 
           {loginMutation.isError && (
@@ -58,7 +61,7 @@ export function LoginPage() {
 
           <Button
             type="submit"
-            className="mt-2 h-14 w-full text-base"
+            className="mt-4 h-12 w-full text-base"
             disabled={loginMutation.isPending}
           >
             {loginMutation.isPending ? "Signing in..." : "Sign in"}
