@@ -4,16 +4,21 @@ import { Link, useParams } from "react-router-dom";
 import { TaskModal } from "@/features/onboarding/components/TaskModal";
 import { PlanTimeline } from "@/features/onboarding/components/PlanTimeline";
 import { useOnboardingPlanQuery } from "@/features/onboarding/hooks/useOnboardingData";
+import { useProjectQuery } from "@/features/projects/hooks";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { useAuthStore } from "@/store/auth.store";
+import { ProjectMemberRoles } from "@/types/projectMember";
 import { Button } from "@/ui/Button";
 
 export function OnboardingPlanPage() {
   const { planId } = useParams<{ planId: string }>();
   const { data: plan } = useOnboardingPlanQuery(planId ? Number(planId) : undefined);
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const currentUserEmail = useAuthStore((state) => state.currentUserEmail);
+  const { data: project } = useProjectQuery(plan?.project.id ?? "");
+  const role = useProjectRole(plan?.project.id ?? "", project?.members);
 
-  const isOwner = !!currentUserEmail && plan?.user.email === currentUserEmail;
+  const isAdmin = role === ProjectMemberRoles.ADMIN;
+  const canEdit = isAdmin;
 
   if (!plan) {
     return <p className="text-sm text-text-secondary">No onboarding plan found. Please generate one first.</p>;
@@ -37,7 +42,7 @@ export function OnboardingPlanPage() {
               {plan.user.name} • {plan.job.title}
             </p>
           </div>
-          {!isOwner && (
+          {canEdit && (
             <Button onClick={() => setAddModalOpen(true)}>
               <Plus size={16} />
               Add Task
@@ -45,9 +50,9 @@ export function OnboardingPlanPage() {
           )}
         </header>
 
-        <PlanTimeline plan={plan} isReadonly={isOwner} />
+        <PlanTimeline plan={plan} isReadonly={!canEdit} />
 
-        {!isOwner && (
+        {canEdit && (
           <TaskModal
             open={addModalOpen}
             onClose={() => setAddModalOpen(false)}
