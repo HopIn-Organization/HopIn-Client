@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
 import { ProtectedRoute } from "@/app/protected-route";
+import { LoginPage } from "@/pages/auth/LoginPage";
 import { OnboardingPlanPage } from "@/pages/onboarding/OnboardingPlanPage";
 import { OnboardingReviewPage } from "@/pages/onboarding/OnboardingReviewPage";
 import { OnboardingStartPage } from "@/pages/onboarding/OnboardingStartPage";
@@ -16,12 +17,7 @@ export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<SignUpChoicePage />} />
-        <Route path="/register/email" element={<SignUpEmailPage />} />
-        <Route path="/register/verify" element={<VerifyEmailPage />} />
-        <Route path="/register/password" element={<SetPasswordPage />} />
-        <Route path="/register/profile" element={<CompleteProfilePage />} /> */}
+        <Route path="/login" element={<LoginPage />} />
 
         <Route
           element={
@@ -45,7 +41,7 @@ export function AppRouter() {
           <Route path="*" element={<Navigate to="/projects" replace />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/projects" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );

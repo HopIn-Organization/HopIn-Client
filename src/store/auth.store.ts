@@ -1,20 +1,23 @@
 import { create } from "zustand";
-import { AuthUser } from "@/types/auth";
 
 interface AuthState {
+  accessToken: string | null;
   isAuthenticated: boolean;
-  currentUserEmail: string | null;
-  signIn: (user?: AuthUser) => void;
+  setAccessToken: (token: string) => void;
   signOut: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  isAuthenticated: false,
-  currentUserEmail: "google-user@example.com",
-  signIn: (user) =>
-    set((state) => ({
-      isAuthenticated: true,
-      currentUserEmail: user?.email ?? state.currentUserEmail,
-    })),
-  signOut: () => set({ isAuthenticated: false, currentUserEmail: null }),
+  accessToken: localStorage.getItem("access_token"),
+  isAuthenticated: !!localStorage.getItem("access_token"),
+
+  setAccessToken: (token: string) => {
+    localStorage.setItem("access_token", token);
+    set({ accessToken: token, isAuthenticated: true });
+  },
+
+  signOut: () => {
+    localStorage.removeItem("access_token");
+    set({ accessToken: null, isAuthenticated: false });
+  },
 }));
