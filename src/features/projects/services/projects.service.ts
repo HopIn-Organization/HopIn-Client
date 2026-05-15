@@ -15,4 +15,6 @@ export const projectsService = {
   updateMemberRole: (projectId: string, memberId: string, role: string) =>
     gateway.updateMemberRole(projectId, memberId, role),
   removeMember: (projectId: string, memberId: string) => gateway.removeMember(projectId, memberId),
+  addMember: (projectId: string, memberId: string, jobId: string, role: string) =>
+    gateway.addMember(projectId, memberId, jobId, role),
 };

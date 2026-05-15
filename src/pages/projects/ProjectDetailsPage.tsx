@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { ArrowLeft, Search, Settings, Sparkles } from "lucide-react";
+import { ArrowLeft, Plus, Search, Settings, Sparkles } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import usersData from "@/mocks/users.json";
@@ -9,8 +9,11 @@ import { Skill } from "@/types/skill";
 import { User } from "@/types/user";
 import { Tabs } from "@/ui/Tabs";
 import { ProjectMembersTable } from "@/features/projects/components/ProjectMembersTable";
+import { AddMemberModal } from "@/features/projects/components/AddMemberModal";
+import { useAddMemberMutation } from "@/features/projects/hooks/members";
 import { env } from "@/utils/env";
 import { useProjectQuery } from "@/features/projects/hooks";
+import { Button } from "@/ui/Button";
 
 interface StoredUser extends Omit<User, "skills"> {
   skillIds: number[];
@@ -37,6 +40,8 @@ export function ProjectDetailsPage() {
   const { data: project, isLoading, isError } = useProjectQuery(projectId);
   const [activeTab, setActiveTab] = useState<ProjectTab>("members");
   const [searchValue, setSearchValue] = useState("");
+  const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
+  const addMemberMutation = useAddMemberMutation();
 
   useEffect(() => {
     if (isError) {
@@ -68,70 +73,97 @@ export function ProjectDetailsPage() {
     return <p className="text-sm text-text-secondary">Loading project details...</p>;
   }
 
+  return (
+    !isError &&
+    project && (
+      <section className="mx-auto w-full max-w-[1600px] space-y-8">
+        <Link
+          to="/projects"
+          className="inline-flex items-center gap-2 text-sm text-text-secondary transition hover:text-text-primary"
+        >
+          <ArrowLeft size={14} />
+          Back to Projects
+        </Link>
 
-  return (!isError && project) && (
-    <section className="mx-auto w-full max-w-[1600px] space-y-8">
-      <Link
-        to="/projects"
-        className="inline-flex items-center gap-2 text-sm text-text-secondary transition hover:text-text-primary"
-      >
-        <ArrowLeft size={14} />
-        Back to Projects
-      </Link>
-
-      <header className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-        <div className="space-y-3">
-          <p className="text-sm text-text-secondary">Projects / Details</p>
-          <div className="flex items-start gap-4">
-            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-soft text-primary">
-              <Sparkles size={20} />
-            </div>
-            <div>
-              <h1 className="text-4xl font-semibold text-text-primary">{project.name}</h1>
-              <p className="mt-2 max-w-2xl text-lg text-text-secondary">
-                {project.description || "Manage team members and track onboarding progress."}
-              </p>
+        <header className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="space-y-3">
+            <p className="text-sm text-text-secondary">Projects / Details</p>
+            <div className="flex items-start gap-4">
+              <div className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-soft text-primary">
+                <Sparkles size={20} />
+              </div>
+              <div>
+                <h1 className="text-4xl font-semibold text-text-primary">{project.name}</h1>
+                <p className="mt-2 max-w-2xl text-lg text-text-secondary">
+                  {project.description || "Manage team members and track onboarding progress."}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex flex-wrap gap-3">
-          <Link
-            to={`/projects/${projectId}/settings`}
-            className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-surface px-5 text-sm font-medium text-text-primary transition hover:bg-surface-muted"
-          >
-            <Settings size={15} />
-            Settings
-          </Link>
-          {/* <Button type="button" className="h-11 px-5">
-            <Plus size={15} />
-            Add Member
-          </Button> */}
-        </div>
-      </header>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              to={`/projects/${projectId}/settings`}
+              className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-surface px-5 text-sm font-medium text-text-primary transition hover:bg-surface-muted"
+            >
+              <Settings size={15} />
+              Settings
+            </Link>
+            <Button type="button" className="h-11 px-5" onClick={() => setIsAddMemberOpen(true)}>
+              <Plus size={15} />
+              Add Member
+            </Button>
+          </div>
+        </header>
 
-      <Tabs items={projectTabs} value={activeTab} onValueChange={setActiveTab} />
+        <Tabs items={projectTabs} value={activeTab} onValueChange={setActiveTab} />
 
-      {projectMembers ? (
-        <div className="space-y-6">
-          <label className="relative block max-w-sm">
-            <Search
-              size={16}
-              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"
+        {projectMembers ? (
+          <div className="space-y-6">
+            <label className="relative block max-w-sm">
+              <Search
+                size={16}
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"
+              />
+              <input
+                type="text"
+                value={searchValue}
+                onChange={(event) => setSearchValue(event.target.value)}
+                placeholder="Search by name or email..."
+                className="h-11 w-full rounded-xl border border-border bg-surface pl-11 pr-4 text-sm text-text-primary outline-none transition placeholder:text-text-secondary/60 focus:border-primary"
+              />
+            </label>
+            <ProjectMembersTable
+              searchValue={searchValue}
+              projectMembers={projectMembers}
+              projectJobs={project.jobs ?? []}
             />
-            <input
-              type="text"
-              value={searchValue}
-              onChange={(event) => setSearchValue(event.target.value)}
-              placeholder="Search by name or email..."
-              className="h-11 w-full rounded-xl border border-border bg-surface pl-11 pr-4 text-sm text-text-primary outline-none transition placeholder:text-text-secondary/60 focus:border-primary"
-            />
-          </label>
-          <ProjectMembersTable searchValue={searchValue} projectMembers={projectMembers} projectJobs={project.jobs ?? []} />
-        </div>
-      ) : (
-        <div className="text-sm text-text-secondary">No team members found yet.</div>
-      )}
-    </section>
+          </div>
+        ) : (
+          <div className="text-sm text-text-secondary">No team members found yet.</div>
+        )}
+
+        <AddMemberModal
+          open={isAddMemberOpen}
+          onClose={() => setIsAddMemberOpen(false)}
+          jobs={project.jobs ?? []}
+          isPending={addMemberMutation.isPending}
+          onSubmit={({ memberId, jobId, role }) => {
+            addMemberMutation.mutate(
+              { projectId, memberId, jobId, role },
+              {
+                onSuccess: () => {
+                  setIsAddMemberOpen(false);
+                  toast.success("Member added successfully");
+                },
+                onError: () => {
+                  toast.error("Failed to add member");
+                },
+              },
+            );
+          }}
+        />
+      </section>
+    )
   );
 }

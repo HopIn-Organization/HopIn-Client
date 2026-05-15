@@ -25,21 +25,21 @@ export const projectsApiGateway: ProjectsGateway = {
     return data;
   },
   async updateMemberRole(projectId: string, memberId: string, role: ProjectMemberRole) {
-    const { data } = await apiClient.patch(`projects/${projectId}/members/${memberId}/role`, {
+    const { data } = await apiClient.patch(`/projects/${projectId}/members/${memberId}/role`, {
       role,
     });
 
     return data;
   },
   async removeMember(projectId: string, memberId: string) {
-    const { data } = await apiClient.delete(`projects/${projectId}/members/${memberId}`);
+    const { data } = await apiClient.delete(`/projects/${projectId}/members/${memberId}`);
 
     return data;
   },
   async addMember(projectId: string, memberId: string, jobId: string, role: string) {
-    const { data } = await apiClient.post(`projects/${projectId}/members`, {
-      memberId,
-      jobId,
+    const { data } = await apiClient.post(`/projects/${projectId}/members`, {
+      userId: Number(memberId),
+      jobId: Number(jobId),
       role,
     });
 
