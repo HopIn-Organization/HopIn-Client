@@ -41,8 +41,8 @@ export function useRemoveMemberMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ memberId }: { projectId: string; memberId: string }) =>
-      projectsService.removeMember(memberId),
+    mutationFn: ({ projectId, memberId }: { projectId: string; memberId: string }) =>
+      projectsService.removeMember(projectId, memberId),
 
     onSuccess: (_, variables) => {
       queryClient.setQueryData(
