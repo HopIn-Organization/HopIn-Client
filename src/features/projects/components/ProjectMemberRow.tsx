@@ -182,6 +182,10 @@ export function ProjectMemberRow({ member, projectJobs, isAdmin, currentUserEmai
           >
             View Board
           </button>
+        ) : isOwnRow ? (
+          <span className="text-xs text-text-secondary italic">
+            Contact your manager to create onboarding
+          </span>
         ) : null}
       </div>
 

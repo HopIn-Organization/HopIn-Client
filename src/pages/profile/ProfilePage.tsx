@@ -134,12 +134,17 @@ export function ProfilePage() {
   }
 
   function saveSkills() {
+    const pendingSkill = skillInput.trim();
+    const finalSkills =
+      pendingSkill && !skillsDraft.includes(pendingSkill)
+        ? [...skillsDraft, pendingSkill]
+        : skillsDraft;
+
+    setSkillsDraft(finalSkills);
+    setSkillInput("");
     setDraft((prev) => {
       if (!prev) return prev;
-      return {
-        ...prev,
-        keySkills: [...skillsDraft],
-      };
+      return { ...prev, keySkills: finalSkills };
     });
 
     setIsSkillsModalOpen(false);
@@ -300,6 +305,8 @@ export function ProfilePage() {
                     label="Years of experience"
                     placeholder="e.g. 3"
                     value={yearsInput}
+                    type="number"
+                    min={0}
                     onChange={(event) => setYearsInput(event.target.value)}
                   />
                   <button

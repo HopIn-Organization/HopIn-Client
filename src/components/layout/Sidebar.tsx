@@ -1,5 +1,6 @@
 import { BarChart3, LogOut, FolderKanban } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { useProfileQuery } from "@/features/profile/hooks";
 import { useAuthStore } from "@/store/auth.store";
 import { classNames } from "@/utils/className";
 
@@ -10,6 +11,7 @@ const navItems = [
 
 export function Sidebar() {
   const signOut = useAuthStore((state) => state.signOut);
+  const { data: profile } = useProfileQuery();
 
   return (
     <aside className="sticky top-0 flex h-screen w-[230px] flex-col border-r border-border bg-surface">
@@ -55,11 +57,11 @@ export function Sidebar() {
           }
         >
           <div className="grid h-10 w-10 place-items-center rounded-full bg-primary-soft text-sm font-semibold text-primary">
-            MI
+            {profile?.avatarInitials ?? "—"}
           </div>
           <div>
-            <p className="text-sm font-semibold text-text-primary">Moshe Israeli</p>
-            <p className="text-xs text-text-secondary">google-user@example.com</p>
+            <p className="text-sm font-semibold text-text-primary">{profile?.fullName ?? ""}</p>
+            <p className="text-xs text-text-secondary">{profile?.email ?? ""}</p>
           </div>
         </NavLink>
 
