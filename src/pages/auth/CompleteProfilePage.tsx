@@ -1,8 +1,11 @@
-import { FormEvent, KeyboardEvent, useState } from "react";
-import { BriefcaseBusiness, CalendarDays, Plus, Trash2, UserRound } from "lucide-react";
+import { FormEvent } from "react";
+import { BriefcaseBusiness, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { LogoMark } from "@/components/brand/LogoMark";
-import { useCompleteProfileMutation } from "@/features/auth/hooks/useAuthMutations";
+import { BirthDateInput } from "@/features/profile/components/BirthDateInput";
+import { WorkExperienceInputRow } from "@/features/profile/components/WorkExperienceInputRow";
+import { WorkExperienceList } from "@/features/profile/components/WorkExperienceList";
+import { useCompleteProfileMutation, useSkillInput, useWorkExperienceInput } from "@/features/profile/hooks";
 import { useAuthStore } from "@/store/auth.store";
 import { useRegistrationStore } from "@/store/registration.store";
 import { Button } from "@/ui/Button";
@@ -25,34 +28,20 @@ export function CompleteProfilePage() {
   const reset = useRegistrationStore((state) => state.reset);
   const completeProfileMutation = useCompleteProfileMutation();
 
-  const [skillInput, setSkillInput] = useState("");
-  const [jobTitleInput, setJobTitleInput] = useState("");
-  const [yearsInput, setYearsInput] = useState("");
-
-  function handleSkillKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key !== "Enter") return;
-
-    event.preventDefault();
-    const value = skillInput.trim();
-    if (!value) return;
-
-    addSkill(value);
-    setSkillInput("");
-  }
+  const { skillInput, setSkillInput, handleSkillKeyDown } = useSkillInput(addSkill);
+  const { jobTitleInput, onJobTitleChange, yearsInput, onYearsChange, warnedExperience, resetInputs, checkUnsaved, getValidatedExperience } =
+    useWorkExperienceInput();
 
   function handleAddExperience() {
-    const title = jobTitleInput.trim();
-    const years = Number(yearsInput);
-
-    if (!title || Number.isNaN(years) || years < 0) return;
-
-    addExperience({ title, years });
-    setJobTitleInput("");
-    setYearsInput("");
+    const experience = getValidatedExperience();
+    if (!experience) return;
+    addExperience(experience);
+    resetInputs();
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (checkUnsaved()) return;
 
     const user = await completeProfileMutation.mutateAsync({
       email,
@@ -102,20 +91,12 @@ export function CompleteProfilePage() {
                   required
                 />
 
-                <label htmlFor="birthDate" className="block space-y-2 text-sm">
-                  <span className="text-xs font-medium text-text-secondary">Birth Date</span>
-                  <div className="relative">
-                    <CalendarDays size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary/70" />
-                    <input
-                      id="birthDate"
-                      type="date"
-                      value={birthDate}
-                      onChange={(event) => setProfileField("birthDate", event.target.value)}
-                      className="h-11 w-full rounded-xl border border-border bg-surface px-10 text-sm text-text-primary outline-none transition focus:border-primary"
-                      required
-                    />
-                  </div>
-                </label>
+                <BirthDateInput
+                  id="birthDate"
+                  value={birthDate}
+                  onChange={(value) => setProfileField("birthDate", value)}
+                  required
+                />
 
                 <Input
                   id="keySkills"
@@ -151,46 +132,17 @@ export function CompleteProfilePage() {
                   </div>
                 </div>
 
-                <ul className="space-y-2 text-left">
-                  {workExperience.map((item) => (
-                    <li
-                      key={item.id}
-                      className="flex items-center justify-between rounded-xl border border-success/40 bg-success/15 px-4 py-3 text-sm text-text-primary"
-                    >
-                      <span>
-                        {item.title}, {item.years} years
-                      </span>
-                      <button type="button" onClick={() => removeExperience(item.id)} className="text-text-secondary hover:text-text-primary">
-                        <Trash2 size={14} />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+                <WorkExperienceList items={workExperience} onRemove={removeExperience} />
 
-                <div className="grid gap-3 sm:grid-cols-[1fr_160px_auto] sm:items-end">
-                  <Input
-                    id="jobTitle"
-                    label="Job Title"
-                    placeholder="e.g. Fullstack developer"
-                    value={jobTitleInput}
-                    onChange={(event) => setJobTitleInput(event.target.value)}
-                  />
-                  <Input
-                    id="years"
-                    label="Years of experience"
-                    placeholder="e.g. 3"
-                    value={yearsInput}
-                    onChange={(event) => setYearsInput(event.target.value)}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddExperience}
-                    className="grid h-11 w-11 place-items-center self-end rounded-full border border-border bg-surface text-text-primary transition hover:bg-surface-muted"
-                    aria-label="Add work experience"
-                  >
-                    <Plus size={16} />
-                  </button>
-                </div>
+                <WorkExperienceInputRow
+                  idPrefix="register-"
+                  jobTitleInput={jobTitleInput}
+                  onJobTitleChange={onJobTitleChange}
+                  yearsInput={yearsInput}
+                  onYearsChange={onYearsChange}
+                  onAdd={handleAddExperience}
+                  warnedExperience={warnedExperience}
+                />
               </section>
             </div>
 

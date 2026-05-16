@@ -1,7 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
 import { authService } from "@/features/auth/services/auth.service";
-import { profileApiGateway } from "@/features/profile/services/profile.api";
-import type { CompleteProfilePayload } from "@/types/auth";
 
 export function useLoginMutation() {
   return useMutation({ mutationFn: authService.login });
@@ -9,13 +7,6 @@ export function useLoginMutation() {
 
 export function useRegisterMutation() {
   return useMutation({ mutationFn: authService.register });
-}
-
-export function useCompleteProfileMutation() {
-  return useMutation({
-    mutationFn: ({ fullName, birthDate, keySkills, workExperience }: CompleteProfilePayload) =>
-      profileApiGateway.updateProfile({ fullName, birthDate, keySkills, workExperience }),
-  });
 }
 
 export function useLogoutMutation() {
