@@ -1,7 +1,8 @@
 import { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthLayout } from "@/components/auth/AuthLayout";
-import { useStartRegistrationMutation } from "@/features/auth/hooks/useAuthMutations";
+import { useRegisterMutation } from "@/features/auth/hooks/useAuthMutations";
+import { useAuthStore } from "@/store/auth.store";
 import { useRegistrationStore } from "@/store/registration.store";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
@@ -9,26 +10,49 @@ import { Input } from "@/ui/Input";
 
 export function SignUpEmailPage() {
   const navigate = useNavigate();
+  const setAccessToken = useAuthStore((state) => state.setAccessToken);
+  const setCurrentUserEmail = useAuthStore((state) => state.setCurrentUserEmail);
   const setEmail = useRegistrationStore((state) => state.setEmail);
-  const startRegistration = useStartRegistrationMutation();
+  const registerMutation = useRegisterMutation();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") ?? "");
+    const password = String(formData.get("password") ?? "");
 
-    await startRegistration.mutateAsync({ email });
-    setEmail(email);
-    navigate("/register/verify");
+    try {
+      const { accessToken } = await registerMutation.mutateAsync({ email, password });
+      setAccessToken(accessToken);
+      setCurrentUserEmail(email);
+      setEmail(email);
+      navigate("/register/profile");
+    } catch {
+      // registerMutation.isError displays the error
+    }
   }
 
   return (
-    <AuthLayout title="Create an account" subtitle="Enter your email to start your onboarding journey">
+    <AuthLayout
+      title="Create an account"
+      subtitle="Enter your details to get started"
+      footerText="Already have an account?"
+      footerActionText="Sign in"
+      footerActionHref="/login"
+    >
       <Card className="p-8 shadow-soft">
-        <form className="space-y-8" onSubmit={handleSubmit}>
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <Input id="email" name="email" type="email" label="Email address" placeholder="name@company.com" required />
-          <Button type="submit" className="h-14 w-full text-base" disabled={startRegistration.isPending}>
-            {startRegistration.isPending ? "Sending..." : "Continue"}
+          <Input id="password" name="password" type="password" label="Password" placeholder="At least 6 characters" required />
+
+          {registerMutation.isError && (
+            <p className="text-sm text-red-500">
+              {registerMutation.error instanceof Error ? registerMutation.error.message : "Registration failed. Please try again."}
+            </p>
+          )}
+
+          <Button type="submit" className="h-14 w-full text-base" disabled={registerMutation.isPending}>
+            {registerMutation.isPending ? "Creating account..." : "Create account"}
           </Button>
         </form>
       </Card>

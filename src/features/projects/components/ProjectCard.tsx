@@ -28,7 +28,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </span>
 
         <Link
-          to={`/projects/${project.id}`}
+          to={`/projects/${project.id}/details`}
           className="grid h-10 w-10 place-items-center rounded-full bg-surface-muted text-text-primary transition hover:bg-primary-soft hover:text-primary"
           aria-label={`Open ${project.name}`}
         >

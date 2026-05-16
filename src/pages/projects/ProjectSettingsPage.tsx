@@ -3,12 +3,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useProjectQuery, useUpdateProjectMutation } from "@/features/projects/hooks";
 import { ProjectForm, ProjectFormValues } from "@/features/projects/components/ProjectForm";
+import { useProjectRole } from "@/hooks/useProjectRole";
+import { ProjectMemberRoles } from "@/types/projectMember";
 
 export function ProjectSettingsPage() {
   const { projectId = "" } = useParams();
   const { data: project, isLoading, isError } = useProjectQuery(projectId);
   const navigate = useNavigate();
   const mutation = useUpdateProjectMutation();
+  const role = useProjectRole(projectId, project?.members);
 
   useEffect(() => {
     if (isError) {
@@ -16,6 +19,12 @@ export function ProjectSettingsPage() {
       navigate("/projects");
     }
   }, [isError, navigate]);
+
+  useEffect(() => {
+    if (!isLoading && role !== null && role !== ProjectMemberRoles.ADMIN) {
+      navigate(`/projects/${projectId}/details`, { replace: true });
+    }
+  }, [isLoading, role, projectId, navigate]);
 
   if (isLoading) {
     return <p className="text-sm text-text-secondary">Loading project...</p>;

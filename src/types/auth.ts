@@ -36,3 +36,8 @@ export interface CompleteProfilePayload {
   keySkills: string[];
   workExperience: WorkExperienceItem[];
 }
+
+export interface GoogleAuthResponse {
+  accessToken: string;
+  user: { email: string; name: string };
+}

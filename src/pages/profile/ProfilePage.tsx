@@ -1,6 +1,9 @@
-import { FormEvent, KeyboardEvent, useState } from "react";
-import { BriefcaseBusiness, CalendarDays, PenLine, Plus, Trash2, UserRound, X } from "lucide-react";
-import { useProfileQuery, useUpdateProfileMutation } from "@/features/profile/hooks";
+import { FormEvent, useState } from "react";
+import { BriefcaseBusiness, PenLine, Plus, UserRound, X } from "lucide-react";
+import { useProfileQuery, useSkillInput, useUpdateProfileMutation, useWorkExperienceInput } from "@/features/profile/hooks";
+import { BirthDateInput } from "@/features/profile/components/BirthDateInput";
+import { WorkExperienceInputRow } from "@/features/profile/components/WorkExperienceInputRow";
+import { WorkExperienceList } from "@/features/profile/components/WorkExperienceList";
 import { WorkExperienceItem } from "@/types/auth";
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/ui/Button";
@@ -15,13 +18,6 @@ function cloneProfile(profile: UserProfile): UserProfile {
   };
 }
 
-function formatBirthDate(value: string) {
-  if (!value) return "";
-  const [year, month, day] = value.split("-");
-  if (!year || !month || !day) return value;
-  return `${day}/${month}/${year}`;
-}
-
 export function ProfilePage() {
   const { data: profile, isLoading, isError } = useProfileQuery();
   const updateProfileMutation = useUpdateProfileMutation();
@@ -30,9 +26,14 @@ export function ProfilePage() {
   const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
   const [draft, setDraft] = useState<UserProfile | null>(null);
   const [skillsDraft, setSkillsDraft] = useState<string[]>([]);
-  const [skillInput, setSkillInput] = useState("");
-  const [jobTitleInput, setJobTitleInput] = useState("");
-  const [yearsInput, setYearsInput] = useState("");
+
+  const { jobTitleInput, onJobTitleChange, yearsInput, onYearsChange, warnedExperience, resetInputs, checkUnsaved, getValidatedExperience } =
+    useWorkExperienceInput();
+
+  const { skillInput, setSkillInput, handleSkillKeyDown } = useSkillInput(
+    (skill) => setSkillsDraft((prev) => [...prev, skill]),
+    skillsDraft,
+  );
 
   const displayedProfile = isEditing ? draft : profile;
 
@@ -48,14 +49,14 @@ export function ProfilePage() {
     setDraft(null);
     setIsSkillsModalOpen(false);
     setSkillInput("");
-    setJobTitleInput("");
-    setYearsInput("");
+    resetInputs();
     setIsEditing(false);
   }
 
   async function handleSaveChanges(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!draft) return;
+    if (checkUnsaved()) return;
 
     await updateProfileMutation.mutateAsync({
       fullName: draft.fullName,
@@ -69,37 +70,16 @@ export function ProfilePage() {
   }
 
   function addWorkExperience() {
-    const title = jobTitleInput.trim();
-    const years = Number(yearsInput);
+    const experience = getValidatedExperience();
+    if (!experience || !draft) return;
 
-    if (!title || Number.isNaN(years) || years < 0 || !draft) return;
-
-    const newItem: WorkExperienceItem = {
-      id: crypto.randomUUID(),
-      title,
-      years,
-    };
-
-    setDraft((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        workExperience: [...prev.workExperience, newItem],
-      };
-    });
-
-    setJobTitleInput("");
-    setYearsInput("");
+    const newItem: WorkExperienceItem = { id: crypto.randomUUID(), ...experience };
+    setDraft((prev) => (prev ? { ...prev, workExperience: [...prev.workExperience, newItem] } : prev));
+    resetInputs();
   }
 
   function removeWorkExperience(id: string) {
-    setDraft((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        workExperience: prev.workExperience.filter((item) => item.id !== id),
-      };
-    });
+    setDraft((prev) => (prev ? { ...prev, workExperience: prev.workExperience.filter((item) => item.id !== id) } : prev));
   }
 
   function openSkillsModal() {
@@ -109,39 +89,18 @@ export function ProfilePage() {
     setIsSkillsModalOpen(true);
   }
 
-  function handleSkillKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key !== "Enter") return;
-    event.preventDefault();
-
-    const value = skillInput.trim();
-    if (!value || skillsDraft.includes(value)) return;
-
-    setSkillsDraft((prev) => [...prev, value]);
-    setSkillInput("");
-  }
-
   function removeSkill(skill: string) {
     if (!isEditing) return;
-
     setSkillsDraft((prev) => prev.filter((item) => item !== skill));
-    setDraft((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        keySkills: prev.keySkills.filter((item) => item !== skill),
-      };
-    });
+    setDraft((prev) => (prev ? { ...prev, keySkills: prev.keySkills.filter((item) => item !== skill) } : prev));
   }
 
   function saveSkills() {
-    setDraft((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        keySkills: [...skillsDraft],
-      };
-    });
-
+    const pendingSkill = skillInput.trim();
+    const finalSkills = pendingSkill && !skillsDraft.includes(pendingSkill) ? [...skillsDraft, pendingSkill] : skillsDraft;
+    setSkillsDraft(finalSkills);
+    setSkillInput("");
+    setDraft((prev) => (prev ? { ...prev, keySkills: finalSkills } : prev));
     setIsSkillsModalOpen(false);
   }
 
@@ -197,12 +156,7 @@ export function ProfilePage() {
             </div>
           </div>
 
-          <Button
-            className="h-12 w-[146px] whitespace-nowrap text-base"
-            onClick={beginEditing}
-            disabled={isEditing}
-            variant="primary"
-          >
+          <Button className="h-12 w-[146px] whitespace-nowrap text-base" onClick={beginEditing} disabled={isEditing} variant="primary">
             <PenLine size={14} />
             Edit Profile
           </Button>
@@ -231,26 +185,12 @@ export function ProfilePage() {
 
               <Input id="profile-email" label="Email" value={displayedProfile.email} disabled />
 
-              <label htmlFor="profile-birthDate" className="block space-y-2 text-sm">
-                <span className="text-xs font-medium text-text-secondary">Birth Date</span>
-                <div className="relative">
-                  <CalendarDays
-                    size={16}
-                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary/70"
-                  />
-                  <input
-                    id="profile-birthDate"
-                    type={isEditing ? "date" : "text"}
-                    value={isEditing ? displayedProfile.birthDate : formatBirthDate(displayedProfile.birthDate)}
-                    onChange={(event) => {
-                      if (!isEditing) return;
-                      setDraft((prev) => (prev ? { ...prev, birthDate: event.target.value } : prev));
-                    }}
-                    className="h-11 w-full rounded-xl border border-border bg-surface px-10 text-sm text-text-primary outline-none transition focus:border-primary disabled:bg-surface"
-                    disabled={!isEditing}
-                  />
-                </div>
-              </label>
+              <BirthDateInput
+                id="profile-birthDate"
+                value={displayedProfile.birthDate}
+                onChange={(value) => setDraft((prev) => (prev ? { ...prev, birthDate: value } : prev))}
+                disabled={!isEditing}
+              />
             </section>
 
             <div className="hidden w-px bg-border lg:block" />
@@ -263,54 +203,18 @@ export function ProfilePage() {
                 <h2 className="text-2xl font-semibold text-text-primary">Work Experience</h2>
               </div>
 
-              <ul className="space-y-3 text-left">
-                {displayedProfile.workExperience.map((item) => (
-                  <li
-                    key={item.id}
-                    className="flex h-8 items-center justify-between rounded-xl border border-success/40 bg-success/15 px-4 text-sm text-text-primary"
-                  >
-                    <span>
-                      {item.title}, {item.years} {item.years === 1 ? "year" : "years"}
-                    </span>
-
-                    {isEditing && (
-                      <button
-                        type="button"
-                        onClick={() => removeWorkExperience(item.id)}
-                        className="text-text-secondary transition hover:text-text-primary"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    )}
-                  </li>
-                ))}
-              </ul>
+              <WorkExperienceList items={displayedProfile.workExperience} onRemove={isEditing ? removeWorkExperience : undefined} />
 
               {isEditing && (
-                <div className="grid gap-3 sm:grid-cols-[1fr_132px_auto] sm:items-end">
-                  <Input
-                    id="profile-jobTitle"
-                    label="Job Title"
-                    placeholder="e.g. Fullstack developer"
-                    value={jobTitleInput}
-                    onChange={(event) => setJobTitleInput(event.target.value)}
-                  />
-                  <Input
-                    id="profile-years"
-                    label="Years of experience"
-                    placeholder="e.g. 3"
-                    value={yearsInput}
-                    onChange={(event) => setYearsInput(event.target.value)}
-                  />
-                  <button
-                    type="button"
-                    onClick={addWorkExperience}
-                    className="grid h-9 w-9 place-items-center self-end rounded-full border border-border bg-surface text-text-primary transition hover:bg-surface-muted"
-                    aria-label="Add work experience"
-                  >
-                    <Plus size={16} />
-                  </button>
-                </div>
+                <WorkExperienceInputRow
+                  idPrefix="profile-"
+                  jobTitleInput={jobTitleInput}
+                  onJobTitleChange={onJobTitleChange}
+                  yearsInput={yearsInput}
+                  onYearsChange={onYearsChange}
+                  onAdd={addWorkExperience}
+                  warnedExperience={warnedExperience}
+                />
               )}
             </section>
           </div>

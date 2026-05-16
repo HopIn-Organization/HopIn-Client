@@ -13,6 +13,7 @@ import { Checkbox } from "@/ui/Checkbox";
 
 interface PlanTimelineProps {
   plan: OnboardingPlan;
+  isReadonly?: boolean;
 }
 
 function toTopLevel(allTasks: PlanTask[]): PlanTask[] {
@@ -20,7 +21,7 @@ function toTopLevel(allTasks: PlanTask[]): PlanTask[] {
   return allTasks.filter((t) => !subtaskIds.has(t.id));
 }
 
-export function PlanTimeline({ plan }: PlanTimelineProps) {
+export function PlanTimeline({ plan, isReadonly = false }: PlanTimelineProps) {
   const [tasks, setTasks] = useState<PlanTask[]>(toTopLevel(plan.tasks));
   const [editingTask, setEditingTask] = useState<PlanTask | null>(null);
   const { mutateAsync: reorderTask } = useReorderTaskMutation();
@@ -69,6 +70,8 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
     }
   }
 
+  const currentTaskId = tasks.find((t) => !t.isCompleted)?.id ?? null;
+
   return (
     <div className="space-y-6">
       <Card className="p-6">
@@ -89,20 +92,25 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
         </p>
       </Card>
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={isReadonly ? () => {} : handleDragEnd}>
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           <div className="relative ml-5 border-l-2 border-primary-soft pl-6">
-            {(() => {
-              const currentTaskId = tasks.find((t) => !t.isCompleted)?.id ?? null;
-              return tasks.map((task) => (
-                <SortableTaskRow key={task.id} task={task} onboardingId={plan.id} onComplete={handleTaskComplete} onEdit={() => setEditingTask(task)} isCurrent={task.id === currentTaskId} />
-              ));
-            })()}
+            {tasks.map((task) => (
+              <SortableTaskRow
+                key={task.id}
+                task={task}
+                onboardingId={plan.id}
+                onComplete={handleTaskComplete}
+                onEdit={() => setEditingTask(task)}
+                isCurrent={task.id === currentTaskId}
+                isReadonly={isReadonly}
+              />
+            ))}
           </div>
         </SortableContext>
       </DndContext>
 
-      {editingTask && (
+      {!isReadonly && editingTask && (
         <TaskModal
           open={true}
           onClose={() => setEditingTask(null)}
@@ -114,8 +122,12 @@ export function PlanTimeline({ plan }: PlanTimelineProps) {
   );
 }
 
-function SortableTaskRow(props: { task: PlanTask; onboardingId: number; onComplete: (t: PlanTask) => void; onEdit: () => void; isCurrent: boolean }) {
+function SortableTaskRow(props: { task: PlanTask; onboardingId: number; onComplete: (t: PlanTask) => void; onEdit: () => void; isCurrent: boolean; isReadonly?: boolean }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: props.task.id });
+
+  if (props.isReadonly) {
+    return <TaskRow {...props} />;
+  }
 
   return (
     <div
@@ -128,7 +140,23 @@ function SortableTaskRow(props: { task: PlanTask; onboardingId: number; onComple
   );
 }
 
-function TaskRow({ task, onboardingId, onComplete, onEdit, isCurrent, dragHandleListeners }: { task: PlanTask; onboardingId: number; onComplete: (task: PlanTask) => void; onEdit: () => void; isCurrent: boolean; dragHandleListeners?: ReturnType<typeof useSortable>["listeners"] }) {
+function TaskRow({
+  task,
+  onboardingId,
+  onComplete,
+  onEdit,
+  isCurrent,
+  dragHandleListeners,
+  isReadonly = false,
+}: {
+  task: PlanTask;
+  onboardingId: number;
+  onComplete: (task: PlanTask) => void;
+  onEdit: () => void;
+  isCurrent: boolean;
+  dragHandleListeners?: ReturnType<typeof useSortable>["listeners"];
+  isReadonly?: boolean;
+}) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { mutateAsync: completeTask, isPending } = useCompleteTaskMutation();
@@ -165,14 +193,16 @@ function TaskRow({ task, onboardingId, onComplete, onEdit, isCurrent, dragHandle
         <div className="flex cursor-pointer items-start justify-between" onClick={() => setIsExpanded((prev) => !prev)}>
           <h3 className="text-lg font-semibold text-text-primary">{task.title}</h3>
           <div className="mt-1 flex items-center gap-2">
-            <button
-              type="button"
-              {...dragHandleListeners}
-              onClick={(e) => e.stopPropagation()}
-              className="cursor-grab rounded-full p-1 text-text-secondary transition hover:bg-surface-muted active:cursor-grabbing"
-            >
-              <GripVertical size={14} />
-            </button>
+            {!isReadonly && (
+              <button
+                type="button"
+                {...dragHandleListeners}
+                onClick={(e) => e.stopPropagation()}
+                className="cursor-grab rounded-full p-1 text-text-secondary transition hover:bg-surface-muted active:cursor-grabbing"
+              >
+                <GripVertical size={14} />
+              </button>
+            )}
             <ChevronDown size={16} className={`text-text-secondary transition-transform ${isExpanded ? "rotate-180" : ""}`} />
           </div>
         </div>
@@ -219,42 +249,48 @@ function TaskRow({ task, onboardingId, onComplete, onEdit, isCurrent, dragHandle
                   {isPending ? "Saving..." : "Mark Complete"}
                 </Button>
               )}
-              <Button type="button" variant="outline" className="w-fit" onClick={onEdit}>
-                <Pencil size={14} />
-                Edit
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="ml-auto w-fit text-red-500 hover:border-red-400 hover:bg-red-50"
-                onClick={() => setConfirmDelete(true)}
-              >
-                <Trash2 size={14} />
-                Delete
-              </Button>
+              {!isReadonly && (
+                <>
+                  <Button type="button" variant="outline" className="w-fit" onClick={onEdit}>
+                    <Pencil size={14} />
+                    Edit
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="ml-auto w-fit text-red-500 hover:border-red-400 hover:bg-red-50"
+                    onClick={() => setConfirmDelete(true)}
+                  >
+                    <Trash2 size={14} />
+                    Delete
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         )}
       </Card>
 
-      <Modal open={confirmDelete} onClose={() => setConfirmDelete(false)} title="Delete Task" className="p-6">
-        <p className="mb-6 text-sm text-text-secondary">
-          Are you sure you want to delete <span className="font-semibold text-text-primary">"{task.title}"</span>? This action cannot be undone.
-        </p>
-        <div className="flex justify-end gap-3">
-          <Button type="button" variant="outline" onClick={() => setConfirmDelete(false)}>
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            className="bg-red-500 hover:bg-red-600"
-            onClick={handleDelete}
-            disabled={isDeleting}
-          >
-            {isDeleting ? "Deleting..." : "Delete"}
-          </Button>
-        </div>
-      </Modal>
+      {!isReadonly && (
+        <Modal open={confirmDelete} onClose={() => setConfirmDelete(false)} title="Delete Task" className="p-6">
+          <p className="mb-6 text-sm text-text-secondary">
+            Are you sure you want to delete <span className="font-semibold text-text-primary">"{task.title}"</span>? This action cannot be undone.
+          </p>
+          <div className="flex justify-end gap-3">
+            <Button type="button" variant="outline" onClick={() => setConfirmDelete(false)}>
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              className="bg-red-500 hover:bg-red-600"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </Button>
+          </div>
+        </Modal>
+      )}
     </article>
   );
 }
