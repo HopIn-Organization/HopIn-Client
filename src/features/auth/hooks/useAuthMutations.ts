@@ -27,5 +27,8 @@ export function useStartRegistrationMutation() {
 }
 
 export function useLoginWithGoogleMutation() {
-  return useMutation({ mutationFn: async (): Promise<{ email: string }> => { throw new Error("Google sign-in not implemented"); } });
+  return useMutation({
+    mutationFn: ({ token, mode }: { token: string; mode: 'register' | 'login' }) =>
+      authService.googleLogin(token, mode),
+  });
 }

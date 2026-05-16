@@ -26,4 +26,12 @@ export const authMockGateway: AuthGateway = {
   async logout() {
     await mockDelay(100);
   },
+
+  async googleLogin(_token: string, _mode: 'register' | 'login') {
+    await mockDelay(220);
+    return {
+      accessToken: 'mock-google-access-token',
+      user: { email: 'google@example.com', name: 'Google User' },
+    };
+  },
 };
