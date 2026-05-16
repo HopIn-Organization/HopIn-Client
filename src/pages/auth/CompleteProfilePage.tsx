@@ -28,7 +28,7 @@ export function CompleteProfilePage() {
   const reset = useRegistrationStore((state) => state.reset);
   const completeProfileMutation = useCompleteProfileMutation();
 
-  const { skillInput, setSkillInput, handleSkillKeyDown } = useSkillInput(addSkill);
+  const { skillInput, onSkillInputChange, handleSkillKeyDown, warnedSkill, checkUnsavedSkill } = useSkillInput(addSkill);
   const { jobTitleInput, onJobTitleChange, yearsInput, onYearsChange, warnedExperience, resetInputs, checkUnsaved, getValidatedExperience } =
     useWorkExperienceInput();
 
@@ -41,7 +41,9 @@ export function CompleteProfilePage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (checkUnsaved()) return;
+    const skillBlocked = checkUnsavedSkill();
+    const expBlocked = checkUnsaved();
+    if (skillBlocked || expBlocked) return;
 
     const user = await completeProfileMutation.mutateAsync({
       email,
@@ -103,8 +105,9 @@ export function CompleteProfilePage() {
                   label="Key Skills"
                   placeholder="Type and press Enter"
                   value={skillInput}
-                  onChange={(event) => setSkillInput(event.target.value)}
+                  onChange={(event) => onSkillInputChange(event.target.value)}
                   onKeyDown={handleSkillKeyDown}
+                  className={warnedSkill ? "animate-pulse ring-2 ring-primary/60" : undefined}
                 />
 
                 <div className="flex flex-wrap gap-2">

@@ -73,6 +73,12 @@ export function useWorkExperienceInput() {
 
 export function useSkillInput(onAdd: (skill: string) => void, existingSkills?: string[]) {
   const [skillInput, setSkillInput] = useState("");
+  const [warnedSkill, setWarnedSkill] = useState(false);
+
+  function onSkillInputChange(value: string) {
+    setSkillInput(value);
+    setWarnedSkill(false);
+  }
 
   function handleSkillKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key !== "Enter") return;
@@ -81,7 +87,20 @@ export function useSkillInput(onAdd: (skill: string) => void, existingSkills?: s
     if (!value || existingSkills?.includes(value)) return;
     onAdd(value);
     setSkillInput("");
+    setWarnedSkill(false);
   }
 
-  return { skillInput, setSkillInput, handleSkillKeyDown };
+  // Returns true if the submit should be blocked (unsaved skill text), false if it can proceed.
+  function checkUnsavedSkill(): boolean {
+    if (!skillInput.trim()) return false;
+    if (!warnedSkill) {
+      setWarnedSkill(true);
+      return true;
+    }
+    setSkillInput("");
+    setWarnedSkill(false);
+    return false;
+  }
+
+  return { skillInput, setSkillInput, onSkillInputChange, handleSkillKeyDown, warnedSkill, checkUnsavedSkill };
 }
