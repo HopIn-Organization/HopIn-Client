@@ -1,5 +1,6 @@
 import { Job } from "./job";
 import { ProjectMember } from "./projectMember";
+import { Skill } from "./skill";
 
 export interface Project {
   id: string;
@@ -9,6 +10,14 @@ export interface Project {
   job?: Job[];
   jobs?: Job[];
   members?: ProjectMember[];
+}
+
+export interface UpsertProjectPayload {
+  name: string;
+  description?: string;
+  repositoryUrl?: string;
+  jobs?: Array<{ id?: number; title: string; skills?: Skill[] }>;
+  members?: Array<{ userId: number; jobId?: number; role?: string }>;
 }
 
 export interface ProjectStatistics {
