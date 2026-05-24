@@ -31,9 +31,10 @@ const users = (usersData as StoredUser[]).map((user) => ({
 
 type ProjectTab = "members" | "statistics";
 
-const projectTabs = [
-  { label: "Team Members", value: "members" },
-] as const satisfies readonly { label: string; value: ProjectTab }[];
+const projectTabs = [{ label: "Team Members", value: "members" }] as const satisfies readonly {
+  label: string;
+  value: ProjectTab;
+}[];
 
 export function ProjectDetailsPage() {
   const { projectId = "" } = useParams();
@@ -44,6 +45,7 @@ export function ProjectDetailsPage() {
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const addMemberMutation = useAddMemberMutation();
   const role = useProjectRole(projectId, project?.members);
+
   const isAdmin = role === ProjectMemberRoles.ADMIN;
   const currentUserEmail = useAuthStore((state) => state.currentUserEmail);
 
