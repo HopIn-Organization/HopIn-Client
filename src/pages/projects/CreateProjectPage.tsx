@@ -1,8 +1,9 @@
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 import { useCreateProjectMutation } from "@/features/projects/hooks";
 import { useProfileQuery } from "@/features/profile/hooks";
 import { ProjectForm, ProjectFormValues } from "@/features/projects/components/ProjectForm";
 import { ProjectMemberRoles } from "@/types/projectMember";
+import { documentsApi } from "@/features/projects/services/documents.api";
 
 export function CreateProjectPage() {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ export function CreateProjectPage() {
       skills: [],
     };
 
-    const jobs = [managerJob];
+    const jobs = [managerJob, ...values.jobs];
 
     const members = profile
       ? [
@@ -26,13 +27,35 @@ export function CreateProjectPage() {
         ]
       : [];
 
-    await mutation.mutateAsync({
+    const project = await mutation.mutateAsync({
       name: values.name,
       description: values.description,
       repositoryUrl: values.repositoryUrl,
       jobs,
       members,
     });
+
+    // Upload project-level documents if any were selected
+    if (values.pendingFiles.length > 0) {
+      await documentsApi.uploadDocuments(project.id, values.pendingFiles);
+    }
+
+    // Upload job-level documents
+    // After creation, the project response includes jobs with their IDs
+    const createdJobs = project.jobs ?? project.job ?? [];
+    for (const [indexStr, files] of Object.entries(values.jobPendingFiles)) {
+      if (files.length === 0) continue;
+      const index = Number(indexStr);
+      const jobTitle = values.jobs[index]?.title;
+      if (!jobTitle) continue;
+
+      // Match by title to find the created job's ID
+      const createdJob = createdJobs.find((j) => j.title === jobTitle);
+      if (createdJob?.id) {
+        await documentsApi.uploadJobDocuments(project.id, String(createdJob.id), files);
+      }
+    }
+
     navigate("/projects");
   }
 
