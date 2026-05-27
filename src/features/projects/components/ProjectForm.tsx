@@ -1,16 +1,20 @@
-import { FormEvent, useState } from "react";
+﻿import { FormEvent, useState } from "react";
 import { ArrowLeft, Link2, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { CreateJob } from "@/pages/projects/CreateJob";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 import { Input } from "@/ui/Input";
+import { DocumentUpload } from "./DocumentUpload";
+import { ProjectDocument } from "@/types/document";
 
 export interface ProjectFormValues {
   name: string;
   description: string;
   repositoryUrl: string;
   jobs: Array<{ id?: string; title: string; skills: Array<{ name: string }> }>;
+  pendingFiles: File[];
+  jobPendingFiles: Record<number, File[]>;
 }
 
 interface ProjectFormProps {
@@ -24,6 +28,10 @@ interface ProjectFormProps {
     repositoryUrl?: string;
     jobs?: Array<{ id?: string; title: string; skills: string[] }>;
   };
+  existingDocuments?: ProjectDocument[];
+  existingJobDocuments?: Record<string, ProjectDocument[]>;
+  onDeleteDocument?: (documentId: number) => void;
+  isDeletingDocument?: boolean;
   isPending: boolean;
   submitLabel: string;
   onSubmit: (values: ProjectFormValues) => Promise<void>;
@@ -35,6 +43,10 @@ export function ProjectForm({
   heading,
   subheading,
   defaultValues,
+  existingDocuments = [],
+  existingJobDocuments = {},
+  onDeleteDocument,
+  isDeletingDocument,
   isPending,
   submitLabel,
   onSubmit,
@@ -42,6 +54,8 @@ export function ProjectForm({
   const [jobs, setJobs] = useState<Array<{ id?: string; title: string; skills: string[] }>>(
     () => defaultValues?.jobs ?? [{ title: "", skills: [] }],
   );
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [jobPendingFiles, setJobPendingFiles] = useState<Record<number, File[]>>({});
 
   function handleAddJob() {
     setJobs([...jobs, { title: "", skills: [] }]);
@@ -61,6 +75,42 @@ export function ProjectForm({
 
   function handleRemoveJob(index: number) {
     setJobs((current) => current.filter((_, i) => i !== index));
+    setJobPendingFiles((prev) => {
+      const updated = { ...prev };
+      delete updated[index];
+      const reindexed: Record<number, File[]> = {};
+      for (const [key, value] of Object.entries(updated)) {
+        const k = Number(key);
+        if (k > index) {
+          reindexed[k - 1] = value;
+        } else {
+          reindexed[k] = value;
+        }
+      }
+      return reindexed;
+    });
+  }
+
+  function handleAddJobFiles(index: number, files: File[]) {
+    setJobPendingFiles((prev) => ({
+      ...prev,
+      [index]: [...(prev[index] ?? []), ...files],
+    }));
+  }
+
+  function handleRemoveJobPendingFile(jobIndex: number, fileIndex: number) {
+    setJobPendingFiles((prev) => ({
+      ...prev,
+      [jobIndex]: (prev[jobIndex] ?? []).filter((_, i) => i !== fileIndex),
+    }));
+  }
+
+  function handleAddFiles(files: File[]) {
+    setPendingFiles((prev) => [...prev, ...files]);
+  }
+
+  function handleRemovePending(index: number) {
+    setPendingFiles((prev) => prev.filter((_, i) => i !== index));
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -76,6 +126,8 @@ export function ProjectForm({
         title: job.title,
         skills: job.skills.map((skill) => ({ name: skill })),
       })),
+      pendingFiles,
+      jobPendingFiles,
     });
   }
 
@@ -167,9 +219,25 @@ export function ProjectForm({
                 skills={job.skills}
                 onSkillsChange={(skills) => handleUpdateJobSkills(index, skills)}
                 onRemove={() => handleRemoveJob(index)}
+                pendingFiles={jobPendingFiles[index] ?? []}
+                onAddFiles={(files) => handleAddJobFiles(index, files)}
+                onRemovePendingFile={(fileIndex) => handleRemoveJobPendingFile(index, fileIndex)}
+                existingDocuments={job.id ? (existingJobDocuments[job.id] ?? []) : []}
+                onDeleteExistingDocument={onDeleteDocument}
               />
             ))}
           </div>
+        </Card>
+
+        <Card className="space-y-5 p-6">
+          <DocumentUpload
+            existingDocuments={existingDocuments}
+            pendingFiles={pendingFiles}
+            onAddFiles={handleAddFiles}
+            onRemovePending={handleRemovePending}
+            onDeleteExisting={onDeleteDocument ?? (() => {})}
+            isDeleting={isDeletingDocument}
+          />
         </Card>
 
         <div className="flex justify-end">

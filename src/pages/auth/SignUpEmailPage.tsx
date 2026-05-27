@@ -28,7 +28,6 @@ export function SignUpEmailPage() {
       setEmail(email);
       navigate("/register/profile");
     } catch {
-      // registerMutation.isError displays the error
     }
   }
 

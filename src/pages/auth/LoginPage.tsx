@@ -2,7 +2,10 @@ import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { AuthLayout } from "@/components/auth/AuthLayout";
-import { useLoginMutation, useLoginWithGoogleMutation } from "@/features/auth/hooks/useAuthMutations";
+import {
+  useLoginMutation,
+  useLoginWithGoogleMutation,
+} from "@/features/auth/hooks/useAuthMutations";
 import { useAuthStore } from "@/store/auth.store";
 import { Card } from "@/ui/Card";
 import { Input } from "@/ui/Input";
@@ -14,7 +17,7 @@ export function LoginPage() {
   const setCurrentUserEmail = useAuthStore((state) => state.setCurrentUserEmail);
   const loginMutation = useLoginMutation();
   const googleMutation = useLoginWithGoogleMutation();
-  const [googleError, setGoogleError] = useState('');
+  const [googleError, setGoogleError] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -30,9 +33,7 @@ export function LoginPage() {
       setAccessToken(accessToken);
       setCurrentUserEmail(email);
       navigate("/projects");
-    } catch {
-      // loginMutation.isError displays the error message
-    }
+    } catch {}
   }
 
   return (
@@ -87,20 +88,20 @@ export function LoginPage() {
           <GoogleLogin
             onSuccess={(credentialResponse) => {
               if (!credentialResponse.credential) return;
-              setGoogleError('');
+              setGoogleError("");
               googleMutation.mutate(
-                { token: credentialResponse.credential, mode: 'login' },
+                { token: credentialResponse.credential, mode: "login" },
                 {
                   onSuccess: (data) => {
                     setAccessToken(data.accessToken);
                     setCurrentUserEmail(data.user.email);
-                    navigate('/projects');
+                    navigate("/projects");
                   },
-                  onError: (err) => setGoogleError(err.message ?? 'Google login failed'),
-                }
+                  onError: (err) => setGoogleError(err.message ?? "Google login failed"),
+                },
               );
             }}
-            onError={() => setGoogleError('Google login failed')}
+            onError={() => setGoogleError("Google login failed")}
           />
         </div>
         {googleError && <p className="mt-2 text-sm text-red-500 text-center">{googleError}</p>}

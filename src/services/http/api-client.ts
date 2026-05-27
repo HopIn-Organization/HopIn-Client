@@ -8,7 +8,6 @@ export const apiClient = axios.create({
   withCredentials: true,
 });
 
-// Attach access token to every request
 apiClient.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken;
   if (token) {
@@ -17,7 +16,6 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 responses — attempt token refresh once
 let refreshPromise: Promise<string> | null = null;
 
 apiClient.interceptors.response.use(
@@ -25,7 +23,6 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Don't retry auth endpoints or already-retried requests
     if (
       !error.response ||
       error.response.status !== 401 ||
@@ -39,7 +36,6 @@ apiClient.interceptors.response.use(
     originalRequest._retry = true;
 
     try {
-      // Deduplicate concurrent refresh calls
       if (!refreshPromise) {
         refreshPromise = apiClient
           .post<{ accessToken: string }>("/auth/refresh")
@@ -54,7 +50,6 @@ apiClient.interceptors.response.use(
       originalRequest.headers.Authorization = `Bearer ${newToken}`;
       return apiClient(originalRequest);
     } catch {
-      // Refresh failed — force logout
       useAuthStore.getState().signOut();
       window.location.href = "/login";
       return Promise.reject(new Error("Session expired"));
