@@ -71,7 +71,6 @@ export const onboardingMockGateway: OnboardingGateway = {
   async upsertTask(payload: UpsertTaskPayload) {
     await mockDelay();
     if ("id" in payload) {
-      // First check if the ID belongs to a subtask on any parent task
       for (const plan of onboardingPlans) {
         for (const task of plan.tasks) {
           if (!task.subtasks) continue;
@@ -84,7 +83,7 @@ export const onboardingMockGateway: OnboardingGateway = {
           }
         }
       }
-      // Otherwise update as a top-level task
+
       for (const plan of onboardingPlans) {
         const idx = plan.tasks.findIndex((t) => t.id === payload.id);
         if (idx >= 0) {

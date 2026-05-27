@@ -56,7 +56,6 @@ export function useWorkExperienceInput() {
     return { title, years };
   }
 
-  // Returns true if the submit should be blocked (unsaved inputs), false if it can proceed.
   function checkUnsaved(): boolean {
     const hasUnsaved = jobTitleInput.trim() !== "" || yearsInput.trim() !== "";
     if (!hasUnsaved) return false;
@@ -90,7 +89,6 @@ export function useSkillInput(onAdd: (skill: string) => void, existingSkills?: s
     setWarnedSkill(false);
   }
 
-  // Returns true if the submit should be blocked (unsaved skill text), false if it can proceed.
   function checkUnsavedSkill(): boolean {
     if (!skillInput.trim()) return false;
     if (!warnedSkill) {

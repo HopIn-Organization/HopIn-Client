@@ -26,7 +26,6 @@ export function ProjectSettingsPage() {
   const jobs = project?.jobs ?? project?.job ?? [];
   const jobIds = jobs.map((j) => String(j.id)).filter(Boolean);
 
-  // Fetch documents for each job
   const { data: jobDocumentsMap = {} } = useQuery({
     queryKey: ["jobDocuments", projectId, jobIds],
     queryFn: async () => {
@@ -59,12 +58,10 @@ export function ProjectSettingsPage() {
   async function handleSubmit(values: ProjectFormValues) {
     await mutation.mutateAsync({ id: project!.id, ...values });
 
-    // Upload project-level documents
     if (values.pendingFiles.length > 0) {
       await uploadMutation.mutateAsync(values.pendingFiles);
     }
 
-    // Upload job-level documents
     const existingJobs = project!.jobs ?? project!.job ?? [];
     for (const [indexStr, files] of Object.entries(values.jobPendingFiles)) {
       if (files.length === 0) continue;
@@ -72,11 +69,9 @@ export function ProjectSettingsPage() {
       const jobData = values.jobs[index];
       if (!jobData) continue;
 
-      // For existing jobs, use their ID directly
       if (jobData.id) {
         await documentsApi.uploadJobDocuments(projectId, jobData.id, files);
       } else {
-        // For new jobs, match by title
         const matched = existingJobs.find((j) => j.title === jobData.title);
         if (matched?.id) {
           await documentsApi.uploadJobDocuments(projectId, String(matched.id), files);

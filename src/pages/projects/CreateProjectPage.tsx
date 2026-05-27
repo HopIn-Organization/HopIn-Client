@@ -35,13 +35,10 @@ export function CreateProjectPage() {
       members,
     });
 
-    // Upload project-level documents if any were selected
     if (values.pendingFiles.length > 0) {
       await documentsApi.uploadDocuments(project.id, values.pendingFiles);
     }
 
-    // Upload job-level documents
-    // After creation, the project response includes jobs with their IDs
     const createdJobs = project.jobs ?? project.job ?? [];
     for (const [indexStr, files] of Object.entries(values.jobPendingFiles)) {
       if (files.length === 0) continue;
@@ -49,7 +46,6 @@ export function CreateProjectPage() {
       const jobTitle = values.jobs[index]?.title;
       if (!jobTitle) continue;
 
-      // Match by title to find the created job's ID
       const createdJob = createdJobs.find((j) => j.title === jobTitle);
       if (createdJob?.id) {
         await documentsApi.uploadJobDocuments(project.id, String(createdJob.id), files);

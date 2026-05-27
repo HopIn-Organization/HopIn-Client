@@ -78,7 +78,6 @@ export function ProjectForm({
     setJobPendingFiles((prev) => {
       const updated = { ...prev };
       delete updated[index];
-      // Re-index keys above the removed index
       const reindexed: Record<number, File[]> = {};
       for (const [key, value] of Object.entries(updated)) {
         const k = Number(key);
