@@ -12,7 +12,7 @@ export interface ProjectFormValues {
   name: string;
   description: string;
   repositoryUrl: string;
-  jobs: Array<{ id?: string; title: string; skills: Array<{ name: string }> }>;
+  jobs: Array<{ id?: number; title: string; skills: Array<{ name: string }> }>;
   pendingFiles: File[];
   jobPendingFiles: Record<number, File[]>;
 }
@@ -122,7 +122,7 @@ export function ProjectForm({
       description: String(formData.get("description") ?? ""),
       repositoryUrl: String(formData.get("repositoryUrl") ?? ""),
       jobs: jobs.map((job) => ({
-        id: job.id,
+        id: Number(job.id),
         title: job.title,
         skills: job.skills.map((skill) => ({ name: skill })),
       })),

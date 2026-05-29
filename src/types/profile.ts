@@ -1,7 +1,7 @@
 import { WorkExperienceItem } from "@/types/auth";
 
 export interface UserProfile {
-  id: string;
+  id: number;
   fullName: string;
   email: string;
   birthDate: string;

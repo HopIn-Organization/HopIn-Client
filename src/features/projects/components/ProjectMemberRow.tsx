@@ -2,7 +2,10 @@ import { useRef, useState } from "react";
 import { Check, Loader2, MoreVertical, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { useGeneratePlanMutation, useOnboardingPlansByProjectQuery } from "@/features/onboarding/hooks/useOnboardingData";
+import {
+  useGeneratePlanMutation,
+  useOnboardingPlansByProjectQuery,
+} from "@/features/onboarding/hooks/useOnboardingData";
 import { FullProjectMember, ProjectMemberRole, ProjectMemberRoles } from "@/types/projectMember";
 import { Job } from "@/types/job";
 import { classNames } from "@/utils/className";
@@ -37,7 +40,12 @@ function formatProjectRole(role: ProjectMemberRole) {
   return role === ProjectMemberRoles.ADMIN ? "Admin" : "Trainee";
 }
 
-export function ProjectMemberRow({ member, projectJobs, isAdmin, currentUserEmail }: ProjectMemberRowProps) {
+export function ProjectMemberRow({
+  member,
+  projectJobs,
+  isAdmin,
+  currentUserEmail,
+}: ProjectMemberRowProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { mutate: updateRole, isPending } = useUpdateMemberRoleMutation();
   const { mutate: removeMember, isPending: isRemoving } = useRemoveMemberMutation();
@@ -53,7 +61,18 @@ export function ProjectMemberRow({ member, projectJobs, isAdmin, currentUserEmai
 
   const existingPlan = onboardingPlans?.find((p) => p.user.id === member.user.id); // TODO fix the progress bar
 
-  async function handleGenerateOnboarding({ daysDuration, jobId }: { daysDuration: number; jobId: number }) {
+  async function handleGenerateOnboarding({
+    daysDuration,
+    jobId,
+  }: {
+    daysDuration: number;
+    jobId: number;
+  }) {
+    if (isOwnRow) {
+      toast.error("You cannot generate onboarding for yourself.");
+      return;
+    }
+
     try {
       await generatePlan({
         userId: member.user.id,
@@ -125,7 +144,7 @@ export function ProjectMemberRow({ member, projectJobs, isAdmin, currentUserEmai
         <div className="text-xs text-text-secondary">{existingPlan?.progress ?? 0}%</div>
       </div>
       <div className="flex items-center justify-end gap-2 justify-self-end">
-        {isAdmin ? (
+        {isAdmin && !isOwnRow ? (
           <>
             <MemberBoardButton
               hasOnboarding={!!existingPlan}
@@ -155,7 +174,11 @@ export function ProjectMemberRow({ member, projectJobs, isAdmin, currentUserEmai
                     disabled={isRemoving}
                     className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-red-500 transition hover:bg-surface-muted"
                   >
-                    {isRemoving ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                    {isRemoving ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <Trash2 size={14} />
+                    )}
                     Remove Member
                   </button>
                   <button
@@ -164,7 +187,11 @@ export function ProjectMemberRow({ member, projectJobs, isAdmin, currentUserEmai
                     disabled={isPending}
                     onClick={updateMemberRole}
                   >
-                    {isPending ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+                    {isPending ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <Check size={14} />
+                    )}
                     Change role to{" "}
                     {member.role === ProjectMemberRoles.ADMIN
                       ? ProjectMemberRoles.TRAINEE
@@ -174,21 +201,22 @@ export function ProjectMemberRow({ member, projectJobs, isAdmin, currentUserEmai
               )}
             </div>
           </>
-        ) : isOwnRow && existingPlan ? (
-          <button
-            type="button"
-            onClick={handleViewBoard}
-            className="h-9 rounded-xl border border-border px-4 text-xs font-medium text-text-primary transition hover:bg-surface-muted"
-          >
-            View Board
-          </button>
         ) : isOwnRow ? (
-          <span className="text-xs text-text-secondary italic">
-            Contact your manager to create onboarding
-          </span>
+          existingPlan ? (
+            <button
+              type="button"
+              onClick={handleViewBoard}
+              className="h-9 rounded-xl border border-border px-4 text-xs font-medium text-text-primary transition hover:bg-surface-muted"
+            >
+              View Board
+            </button>
+          ) : (
+            <span className="text-xs text-text-secondary italic">
+              Contact an admin to create onboarding
+            </span>
+          )
         ) : null}
       </div>
-
     </div>
   );
 }
