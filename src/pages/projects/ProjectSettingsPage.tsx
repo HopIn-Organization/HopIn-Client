@@ -58,31 +58,36 @@ export function ProjectSettingsPage() {
   async function handleSubmit(values: ProjectFormValues) {
     await mutation.mutateAsync({ id: project!.id, ...values });
 
-    if (values.pendingFiles.length > 0) {
-      await uploadMutation.mutateAsync(values.pendingFiles);
-    }
+    try {
+      if (values.pendingFiles.length > 0) {
+        await uploadMutation.mutateAsync(values.pendingFiles);
+      }
 
-    const existingJobs = project!.jobs ?? project!.job ?? [];
-    for (const [indexStr, files] of Object.entries(values.jobPendingFiles)) {
-      if (files.length === 0) continue;
-      const index = Number(indexStr);
-      const jobData = values.jobs[index];
-      if (!jobData) continue;
+      const existingJobs = project!.jobs ?? project!.job ?? [];
+      for (const [indexStr, files] of Object.entries(values.jobPendingFiles)) {
+        if (files.length === 0) continue;
+        const index = Number(indexStr);
+        const jobData = values.jobs[index];
+        if (!jobData) continue;
 
-      if (jobData.id) {
-        await documentsApi.uploadJobDocuments(projectId, jobData.id, files);
-      } else {
-        const matched = existingJobs.find((j) => j.title === jobData.title);
-        if (matched?.id) {
-          await documentsApi.uploadJobDocuments(projectId, String(matched.id), files);
+        if (jobData.id) {
+          await documentsApi.uploadJobDocuments(projectId, String(jobData.id), files);
+        } else {
+          const matched = existingJobs.find((j) => j.title === jobData.title);
+          if (matched?.id) {
+            await documentsApi.uploadJobDocuments(projectId, String(matched.id), files);
+          }
         }
       }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload documents");
+      return;
     }
 
     navigate(`/projects/${project!.id}/details`);
   }
 
-  const existingJobs = (project.jobs ?? project.job ?? []).map((job) => ({
+  const existingJobs = (project?.jobs ?? project?.job ?? []).map((job) => ({
     ...(job.id !== undefined && { id: String(job.id) }),
     title: job.title,
     skills: job.skills?.map((s) => s.name) ?? [],
