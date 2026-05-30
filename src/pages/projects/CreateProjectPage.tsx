@@ -1,4 +1,5 @@
 ﻿import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useCreateProjectMutation } from "@/features/projects/hooks";
 import { useProfileQuery } from "@/features/profile/hooks";
 import { ProjectForm, ProjectFormValues } from "@/features/projects/components/ProjectForm";
@@ -35,21 +36,26 @@ export function CreateProjectPage() {
       members,
     });
 
-    if (values.pendingFiles.length > 0) {
-      await documentsApi.uploadDocuments(project.id, values.pendingFiles);
-    }
-
-    const createdJobs = project.jobs ?? project.job ?? [];
-    for (const [indexStr, files] of Object.entries(values.jobPendingFiles)) {
-      if (files.length === 0) continue;
-      const index = Number(indexStr);
-      const jobTitle = values.jobs[index]?.title;
-      if (!jobTitle) continue;
-
-      const createdJob = createdJobs.find((j) => j.title === jobTitle);
-      if (createdJob?.id) {
-        await documentsApi.uploadJobDocuments(project.id, String(createdJob.id), files);
+    try {
+      if (values.pendingFiles.length > 0) {
+        await documentsApi.uploadDocuments(project.id, values.pendingFiles);
       }
+
+      const createdJobs = project.jobs ?? project.job ?? [];
+      for (const [indexStr, files] of Object.entries(values.jobPendingFiles)) {
+        if (files.length === 0) continue;
+        const index = Number(indexStr);
+        const jobTitle = values.jobs[index]?.title;
+        if (!jobTitle) continue;
+
+        const createdJob = createdJobs.find((j) => j.title === jobTitle);
+        if (createdJob?.id) {
+          await documentsApi.uploadJobDocuments(project.id, String(createdJob.id), files);
+        }
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload documents");
+      return;
     }
 
     navigate("/projects");
