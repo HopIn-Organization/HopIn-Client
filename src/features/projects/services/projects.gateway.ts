@@ -19,4 +19,5 @@ export interface ProjectsGateway {
     jobId: string,
     role: string,
   ): Promise<ProjectMember>;
+  deleteProject(id: string): Promise<void>;
 }

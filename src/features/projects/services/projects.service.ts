@@ -17,4 +17,5 @@ export const projectsService = {
   removeMember: (projectId: string, memberId: string) => gateway.removeMember(projectId, memberId),
   addMember: (projectId: string, memberId: string, jobId: string, role: string) =>
     gateway.addMember(projectId, memberId, jobId, role),
+  deleteProject: (id: string) => gateway.deleteProject(id),
 };

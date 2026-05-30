@@ -63,4 +63,10 @@ export const projectsMockGateway: ProjectsGateway = {
     await mockDelay();
     return statistics;
   },
+  async deleteProject(id: string) {
+    await mockDelay();
+    const index = projects.findIndex((p) => p.id === id);
+    if (index === -1) throw new Error(`Project ${id} not found`);
+    projects.splice(index, 1);
+  },
 };
