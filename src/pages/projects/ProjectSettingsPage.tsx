@@ -58,15 +58,13 @@ export function ProjectSettingsPage() {
   }
 
   async function handleDeleteProject() {
-    await deleteMutation.mutateAsync(projectId, {
-      onSuccess: () => {
-        toast.success("Project deleted successfully.");
-        navigate("/projects");
-      },
-      onError: () => {
-        toast.error("Failed to delete project.");
-      },
-    });
+    try {
+      await deleteMutation.mutateAsync(projectId);
+      toast.success("Project deleted successfully.");
+      navigate("/projects", { replace: true });
+    } catch {
+      toast.error("Failed to delete project.");
+    }
   }
 
   async function handleSubmit(values: ProjectFormValues) {
