@@ -45,4 +45,7 @@ export const projectsApiGateway: ProjectsGateway = {
 
     return data;
   },
+  async deleteProject(id: string) {
+    await apiClient.delete(`/projects/${id}`);
+  },
 };

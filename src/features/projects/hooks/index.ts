@@ -46,3 +46,14 @@ export function useProjectStatisticsQuery() {
     queryFn: projectsService.getProjectStatistics,
   });
 }
+
+export function useDeleteProjectMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => projectsService.deleteProject(id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: projectKeys.all });
+    },
+  });
+}

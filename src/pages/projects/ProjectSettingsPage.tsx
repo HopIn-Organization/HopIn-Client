@@ -1,7 +1,7 @@
-﻿import { useEffect } from "react";
+﻿import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useProjectQuery, useUpdateProjectMutation } from "@/features/projects/hooks";
+import { useProjectQuery, useUpdateProjectMutation, useDeleteProjectMutation } from "@/features/projects/hooks";
 import { ProjectForm, ProjectFormValues } from "@/features/projects/components/ProjectForm";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { ProjectMemberRoles } from "@/types/projectMember";
@@ -18,10 +18,12 @@ export function ProjectSettingsPage() {
   const { data: project, isLoading, isError } = useProjectQuery(projectId);
   const navigate = useNavigate();
   const mutation = useUpdateProjectMutation();
+  const deleteMutation = useDeleteProjectMutation();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const role = useProjectRole(projectId, project?.members);
   const { data: documents = [] } = useProjectDocumentsQuery(projectId);
   const uploadMutation = useUploadDocumentsMutation(projectId);
-  const deleteMutation = useDeleteDocumentMutation(projectId);
+  const deleteDocumentMutation = useDeleteDocumentMutation(projectId);
 
   const jobs = project?.jobs ?? project?.job ?? [];
   const jobIds = jobs.map((j) => String(j.id)).filter(Boolean);
@@ -53,6 +55,18 @@ export function ProjectSettingsPage() {
 
   if (isLoading) {
     return <p className="text-sm text-text-secondary">Loading project...</p>;
+  }
+
+  async function handleDeleteProject() {
+    await deleteMutation.mutateAsync(projectId, {
+      onSuccess: () => {
+        toast.success("Project deleted successfully.");
+        navigate("/projects");
+      },
+      onError: () => {
+        toast.error("Failed to delete project.");
+      },
+    });
   }
 
   async function handleSubmit(values: ProjectFormValues) {
@@ -91,25 +105,59 @@ export function ProjectSettingsPage() {
   return (
     !isError &&
     project && (
-      <ProjectForm
-        backTo={`/projects/${project.id}/details`}
-        backLabel="Back to Project"
-        heading="Project Settings"
-        subheading={`Update the details for ${project.name}.`}
-        defaultValues={{
-          name: project.name,
-          description: project.description ?? "",
-          repositoryUrl: project.repositoryUrl ?? "",
-          jobs: existingJobs,
-        }}
-        existingDocuments={documents}
-        existingJobDocuments={jobDocumentsMap}
-        onDeleteDocument={(docId) => deleteMutation.mutate(docId)}
-        isDeletingDocument={deleteMutation.isPending}
-        isPending={mutation.isPending}
-        submitLabel="Save Changes"
-        onSubmit={handleSubmit}
-      />
+      <div>
+        <ProjectForm
+          backTo={`/projects/${project.id}/details`}
+          backLabel="Back to Project"
+          heading="Project Settings"
+          subheading={`Update the details for ${project.name}.`}
+          defaultValues={{
+            name: project.name,
+            description: project.description ?? "",
+            repositoryUrl: project.repositoryUrl ?? "",
+            jobs: existingJobs,
+          }}
+          existingDocuments={documents}
+          existingJobDocuments={jobDocumentsMap}
+          onDeleteDocument={(docId) => deleteDocumentMutation.mutate(docId)}
+          isDeletingDocument={deleteDocumentMutation.isPending}
+          isPending={mutation.isPending}
+          submitLabel="Save Changes"
+          onSubmit={handleSubmit}
+        />
+
+        <div className="mx-auto mt-8 max-w-2xl rounded-2xl border border-red-200 bg-red-50 p-6">
+          <h3 className="mb-1 text-sm font-semibold text-red-700">Danger Zone</h3>
+          <p className="mb-4 text-sm text-red-600">
+            Deleting this project is permanent and cannot be undone. All members, jobs, and documents will be removed.
+          </p>
+          {showDeleteConfirm ? (
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-red-700">Are you sure?</span>
+              <button
+                onClick={handleDeleteProject}
+                disabled={deleteMutation.isPending}
+                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleteMutation.isPending ? "Deleting..." : "Yes, delete project"}
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100"
+            >
+              Delete Project
+            </button>
+          )}
+        </div>
+      </div>
     )
   );
 }
