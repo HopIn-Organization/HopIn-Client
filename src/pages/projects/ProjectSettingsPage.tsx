@@ -41,11 +41,11 @@ export function ProjectSettingsPage() {
   });
 
   useEffect(() => {
-    if (isError) {
+    if (isError && !deleteMutation.isSuccess) {
       toast.error("Failed to load project.");
       navigate("/projects");
     }
-  }, [isError, navigate]);
+  }, [isError, deleteMutation.isSuccess, navigate]);
 
   useEffect(() => {
     if (!isLoading && role !== null && role !== ProjectMemberRoles.ADMIN) {
