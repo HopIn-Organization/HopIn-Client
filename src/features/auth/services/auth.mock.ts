@@ -27,7 +27,9 @@ export const authMockGateway: AuthGateway = {
     await mockDelay(100);
   },
 
-  async googleLogin(_token: string, _mode: 'register' | 'login') {
+  async googleLogin(token: string, mode: 'register' | 'login') {
+    void token;
+    void mode;
     await mockDelay(220);
     return {
       accessToken: 'mock-google-access-token',

@@ -53,6 +53,7 @@ export function OnboardingPlanPage() {
 
         {canEdit && (
           <TaskModal
+            key={String(addModalOpen)}
             open={addModalOpen}
             onClose={() => setAddModalOpen(false)}
             onboardingId={plan.id}

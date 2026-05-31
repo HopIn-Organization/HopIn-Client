@@ -1,5 +1,5 @@
 import { Check, ChevronDown, Circle, GripVertical, Pencil, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { DndContext, DragEndEvent, PointerSensor, closestCenter, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -23,7 +23,9 @@ function toTopLevel(allTasks: PlanTask[]): PlanTask[] {
 }
 
 export function PlanTimeline({ plan, isReadonly = false, projectId }: PlanTimelineProps) {
-  const [tasks, setTasks] = useState<PlanTask[]>(toTopLevel(plan.tasks));
+  const baseTasks = useMemo(() => toTopLevel(plan.tasks), [plan.tasks]);
+  const [tasksOverride, setTasksOverride] = useState<PlanTask[] | null>(null);
+  const tasks = tasksOverride ?? baseTasks;
   const [editingTask, setEditingTask] = useState<PlanTask | null>(null);
   const { mutateAsync: reorderTask } = useReorderTaskMutation();
 
@@ -31,15 +33,11 @@ export function PlanTimeline({ plan, isReadonly = false, projectId }: PlanTimeli
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
   );
 
-  useEffect(() => {
-    setTasks(toTopLevel(plan.tasks));
-  }, [plan.tasks]);
-
   const completedCount = tasks.filter((t) => t.isCompleted).length;
   const progressPercent = plan.progress;
 
   function handleTaskComplete(updatedTask: PlanTask) {
-    setTasks((prev) => prev.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
+    setTasksOverride((prev) => (prev ?? baseTasks).map((t) => (t.id === updatedTask.id ? updatedTask : t)));
   }
 
   async function handleDragEnd(event: DragEndEvent) {
@@ -52,7 +50,7 @@ export function PlanTimeline({ plan, isReadonly = false, projectId }: PlanTimeli
     if (oldIndex === -1 || newIndex === -1 || !movedTask) return;
     const previousTasks = tasks;
     const reordered = arrayMove(tasks, oldIndex, newIndex);
-    setTasks(reordered);
+    setTasksOverride(reordered);
 
     // All tasks in the affected range shift by ±1; the moved task lands at newIndex.
     // Slice that range from the reordered array and assign each its new 1-based order.
@@ -68,7 +66,7 @@ export function PlanTimeline({ plan, isReadonly = false, projectId }: PlanTimeli
     try {
       await Promise.all(updates);
     } catch {
-      setTasks(previousTasks);
+      setTasksOverride(previousTasks);
     }
   }
 
@@ -115,6 +113,7 @@ export function PlanTimeline({ plan, isReadonly = false, projectId }: PlanTimeli
 
       {!isReadonly && editingTask && (
         <TaskModal
+          key={editingTask.id}
           open={true}
           onClose={() => setEditingTask(null)}
           onboardingId={plan.id}

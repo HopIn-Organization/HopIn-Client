@@ -48,7 +48,7 @@ export function OnboardingGenerationWatcher() {
         { duration: 8000 }
       );
     }
-  }, [data, generatingOnboardingId, navigate, queryClient, setGeneratingOnboardingId]);
+  }, [data, generatingOnboardingId, navigate, queryClient, setGeneratingOnboardingId, setGeneratingForUserId]);
 
   return null;
 }

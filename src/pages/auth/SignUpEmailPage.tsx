@@ -28,6 +28,7 @@ export function SignUpEmailPage() {
       setEmail(email);
       navigate("/register/profile");
     } catch {
+      // handled by mutation error state
     }
   }
 

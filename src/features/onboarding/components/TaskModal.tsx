@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Pencil, Plus, Trash2, X } from "lucide-react";
 import { useUpsertTaskMutation } from "@/features/onboarding/hooks/useOnboardingData";
 import { PlanTask, UpsertTaskPayload } from "@/types/onboarding";
@@ -28,32 +28,22 @@ export function TaskModal({ open, onClose, onboardingId, projectId = "", task, n
   const isSubtask = !!task?.parentId;
   const { mutateAsync: upsertTask, isPending } = useUpsertTaskMutation();
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [estimatedDays, setEstimatedDays] = useState("");
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [links, setLinks] = useState<string[]>([]);
+  const [title, setTitle] = useState(task?.title ?? "");
+  const [description, setDescription] = useState(task?.description ?? "");
+  const [estimatedDays, setEstimatedDays] = useState(
+    task?.estimatedDays != null ? String(task.estimatedDays) : "",
+  );
+  const [isCompleted, setIsCompleted] = useState(task?.isCompleted ?? false);
+  const [links, setLinks] = useState<string[]>(task?.links ?? []);
   const [linkInput, setLinkInput] = useState("");
-  const [parentId, setParentId] = useState("");
+  const parentId = task?.parentId != null ? String(task.parentId) : "";
   type SubtaskDraft = { id: number | null; title: string; isCompleted: boolean };
-  const [subtasks, setSubtasks] = useState<SubtaskDraft[]>([]);
+  const [subtasks, setSubtasks] = useState<SubtaskDraft[]>(
+    task?.subtasks?.map((s) => ({ id: s.id, title: s.title, isCompleted: s.isCompleted })) ?? [],
+  );
   const [subtaskInput, setSubtaskInput] = useState("");
   const [editingSubtaskIndex, setEditingSubtaskIndex] = useState<number | null>(null);
   const [editingSubtaskTitle, setEditingSubtaskTitle] = useState("");
-
-  useEffect(() => {
-    if (!open) return;
-    setTitle(task?.title ?? "");
-    setDescription(task?.description ?? "");
-    setEstimatedDays(task?.estimatedDays != null ? String(task.estimatedDays) : "");
-    setIsCompleted(task?.isCompleted ?? false);
-    setLinks(task?.links ?? []);
-    setLinkInput("");
-    setParentId(task?.parentId != null ? String(task.parentId) : "");
-    setSubtasks(task?.subtasks?.map((s) => ({ id: s.id, title: s.title, isCompleted: s.isCompleted })) ?? []);
-    setSubtaskInput("");
-    setEditingSubtaskIndex(null);
-  }, [open, task?.id]);
 
   function handleAddLink() {
     const trimmed = linkInput.trim();

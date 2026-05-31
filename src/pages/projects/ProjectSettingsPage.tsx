@@ -11,6 +11,7 @@ import {
   useDeleteDocumentMutation,
 } from "@/features/projects/hooks/documents";
 import { documentsApi } from "@/features/projects/services/documents.api";
+import { ProjectDocument } from "@/types/document";
 import { useQuery } from "@tanstack/react-query";
 
 export function ProjectSettingsPage() {
@@ -31,7 +32,7 @@ export function ProjectSettingsPage() {
   const { data: jobDocumentsMap = {} } = useQuery({
     queryKey: ["jobDocuments", projectId, jobIds],
     queryFn: async () => {
-      const result: Record<string, any[]> = {};
+      const result: Record<string, ProjectDocument[]> = {};
       for (const jobId of jobIds) {
         result[jobId] = await documentsApi.getJobDocuments(projectId, jobId);
       }
@@ -68,13 +69,14 @@ export function ProjectSettingsPage() {
   }
 
   async function handleSubmit(values: ProjectFormValues) {
-    await mutation.mutateAsync({ id: project!.id, ...values });
+    if (!project) return;
+    await mutation.mutateAsync({ id: project.id, ...values });
 
     if (values.pendingFiles.length > 0) {
       await uploadMutation.mutateAsync(values.pendingFiles);
     }
 
-    const existingJobs = project!.jobs ?? project!.job ?? [];
+    const existingJobs = project.jobs ?? project.job ?? [];
     for (const [indexStr, files] of Object.entries(values.jobPendingFiles)) {
       if (files.length === 0) continue;
       const index = Number(indexStr);
@@ -91,7 +93,7 @@ export function ProjectSettingsPage() {
       }
     }
 
-    navigate(`/projects/${project!.id}/details`);
+    navigate(`/projects/${project.id}/details`);
   }
 
   if (!project) return null;

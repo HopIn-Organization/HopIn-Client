@@ -33,7 +33,9 @@ export function LoginPage() {
       setAccessToken(accessToken);
       setCurrentUserEmail(email);
       navigate("/projects");
-    } catch {}
+    } catch {
+      // handled by mutation error state
+    }
   }
 
   return (

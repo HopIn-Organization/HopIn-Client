@@ -14,7 +14,7 @@ export function useLogoutMutation() {
 }
 
 export function useStartRegistrationMutation() {
-  return useMutation({ mutationFn: async (_payload: { email: string }) => {} });
+  return useMutation({ mutationFn: async (payload: { email: string }) => { void payload; } });
 }
 
 export function useLoginWithGoogleMutation() {
