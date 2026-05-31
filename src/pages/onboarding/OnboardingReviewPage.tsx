@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGeneratePlanMutation } from "@/features/onboarding/hooks/useOnboardingData";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
@@ -7,6 +7,7 @@ import { Input } from "@/ui/Input";
 
 export function OnboardingReviewPage() {
   const navigate = useNavigate();
+  const { projectId = "" } = useParams<{ projectId: string }>();
   const generatePlanMutation = useGeneratePlanMutation();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -19,7 +20,7 @@ export function OnboardingReviewPage() {
     const documentsRaw = String(formData.get("documents") ?? "").trim();
     const documents = documentsRaw ? [documentsRaw] : [];
 
-    await generatePlanMutation.mutateAsync({ userId, jobId, daysDuration, documents });
+    await generatePlanMutation.mutateAsync({ userId, jobId, projectId, daysDuration, documents });
 
     navigate('/projects');
   }

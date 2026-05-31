@@ -3,7 +3,7 @@ import { OnboardingGenerationJob, OnboardingStatusResult } from "@/types/onboard
 export interface GenerateOnboardingPayload {
   userId: number;
   jobId: number;
-  projectId: string;
+  projectId?: string;
   daysDuration: number;
   documents?: string[];
 }

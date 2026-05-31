@@ -82,7 +82,7 @@ export function ProjectSettingsPage() {
       if (!jobData) continue;
 
       if (jobData.id) {
-        await documentsApi.uploadJobDocuments(projectId, jobData.id, files);
+        await documentsApi.uploadJobDocuments(projectId, String(jobData.id), files);
       } else {
         const matched = existingJobs.find((j) => j.title === jobData.title);
         if (matched?.id) {
@@ -94,6 +94,7 @@ export function ProjectSettingsPage() {
     navigate(`/projects/${project!.id}/details`);
   }
 
+  if (!project) return null;
   const existingJobs = (project.jobs ?? project.job ?? []).map((job) => ({
     ...(job.id !== undefined && { id: String(job.id) }),
     title: job.title,

@@ -23,3 +23,19 @@ export function useLoginWithGoogleMutation() {
       authService.googleLogin(token, mode),
   });
 }
+
+export function useVerifyEmailMutation() {
+  return useMutation({
+    mutationFn: async (payload: { email: string; code: string }) => {
+      void payload;
+    },
+  });
+}
+
+export function useSetPasswordMutation() {
+  return useMutation({
+    mutationFn: async (payload: { email: string; password: string }) => {
+      void payload;
+    },
+  });
+}

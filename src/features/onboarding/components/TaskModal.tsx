@@ -18,11 +18,12 @@ interface TaskModalProps {
   open: boolean;
   onClose: () => void;
   onboardingId: number;
+  projectId?: string;
   task?: TaskModalTask;
   nextOrder?: number;
 }
 
-export function TaskModal({ open, onClose, onboardingId, task, nextOrder }: TaskModalProps) {
+export function TaskModal({ open, onClose, onboardingId, projectId = "", task, nextOrder }: TaskModalProps) {
   const isEdit = task !== undefined;
   const isSubtask = !!task?.parentId;
   const { mutateAsync: upsertTask, isPending } = useUpsertTaskMutation();
@@ -69,8 +70,8 @@ export function TaskModal({ open, onClose, onboardingId, task, nextOrder }: Task
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const payload: UpsertTaskPayload = isEdit
-      ? { id: task.id, title, description, estimatedDays: Number(estimatedDays), isCompleted, links, onboardingId, parentId: parentId ? Number(parentId) : null }
-      : { order: nextOrder ?? 1, title, description, estimatedDays: Number(estimatedDays), isCompleted, links, onboardingId, parentId: parentId ? Number(parentId) : null };
+      ? { id: task.id, projectId, title, description, estimatedDays: Number(estimatedDays), isCompleted, links, onboardingId, parentId: parentId ? Number(parentId) : null }
+      : { projectId, order: nextOrder ?? 1, title, description, estimatedDays: Number(estimatedDays), isCompleted, links, onboardingId, parentId: parentId ? Number(parentId) : null };
     const subtasksPayload = isEdit
       ? subtasks.map((s, i) => (s.id !== null
           ? { id: s.id, title: s.title, description: "", order: i + 1, estimatedDays: 1, isCompleted: s.isCompleted }

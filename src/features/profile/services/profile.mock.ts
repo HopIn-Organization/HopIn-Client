@@ -3,10 +3,17 @@ import { mockDelay } from "@/services/mock-delay";
 import { UpdateUserProfilePayload, UserProfile } from "@/types/profile";
 import { ProfileGateway } from "./profile.gateway";
 
+const rawProfile = profileData as Record<string, unknown>;
 let profile: UserProfile = {
-  ...(profileData as UserProfile),
-  keySkills: [...(profileData as UserProfile).keySkills],
-  workExperience: [...(profileData as UserProfile).workExperience],
+  id: typeof rawProfile.id === "number" ? rawProfile.id : 1,
+  fullName: String(rawProfile.fullName ?? ""),
+  email: String(rawProfile.email ?? ""),
+  birthDate: String(rawProfile.birthDate ?? ""),
+  avatarInitials: String(rawProfile.avatarInitials ?? ""),
+  keySkills: Array.isArray(rawProfile.keySkills) ? (rawProfile.keySkills as string[]) : [],
+  workExperience: Array.isArray(rawProfile.workExperience)
+    ? (rawProfile.workExperience as UserProfile["workExperience"])
+    : [],
 };
 
 export const profileMockGateway: ProfileGateway = {

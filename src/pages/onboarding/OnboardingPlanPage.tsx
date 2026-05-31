@@ -6,7 +6,6 @@ import { PlanTimeline } from "@/features/onboarding/components/PlanTimeline";
 import { useOnboardingPlanQuery } from "@/features/onboarding/hooks/useOnboardingData";
 import { useProjectQuery } from "@/features/projects/hooks";
 import { useProjectRole } from "@/hooks/useProjectRole";
-import { useAuthStore } from "@/store/auth.store";
 import { ProjectMemberRoles } from "@/types/projectMember";
 import { Button } from "@/ui/Button";
 
@@ -50,13 +49,14 @@ export function OnboardingPlanPage() {
           )}
         </header>
 
-        <PlanTimeline plan={plan} isReadonly={!canEdit} />
+        <PlanTimeline plan={plan} isReadonly={!canEdit} projectId={String(plan.project.id)} />
 
         {canEdit && (
           <TaskModal
             open={addModalOpen}
             onClose={() => setAddModalOpen(false)}
             onboardingId={plan.id}
+            projectId={String(plan.project.id)}
             nextOrder={(plan.tasks.at(-1)?.order || 0) + 1}
           />
         )}

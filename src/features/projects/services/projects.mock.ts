@@ -2,6 +2,7 @@ import projectsData from "@/mocks/projects.json";
 import statisticsData from "@/mocks/statistics.json";
 import { mockDelay } from "@/services/mock-delay";
 import { Project, ProjectStatistics } from "@/types/project";
+import { ProjectMember } from "@/types/projectMember";
 import { ProjectsGateway } from "./projects.gateway";
 
 const projects = projectsData as Project[];
@@ -29,12 +30,8 @@ export const projectsMockGateway: ProjectsGateway = {
     const newProject: Project = {
       id: `p_${projects.length + 1}`,
       name: payload.name,
-      membersCount: 1,
+      ...(payload.description !== undefined && { description: payload.description }),
     };
-
-    if (payload.description) {
-      newProject.description = payload.description;
-    }
 
     projects.unshift(newProject);
     return newProject;
@@ -51,9 +48,9 @@ export const projectsMockGateway: ProjectsGateway = {
     const updated: Project = {
       ...projects[index]!,
       name: payload.name,
-      description: payload.description,
-      repositoryUrl: payload.repositoryUrl,
-      job: payload.jobs,
+      ...(payload.description !== undefined && { description: payload.description }),
+      ...(payload.repositoryUrl !== undefined && { repositoryUrl: payload.repositoryUrl }),
+      ...(payload.jobs !== undefined && { job: payload.jobs }),
     };
 
     projects[index] = updated;
@@ -68,5 +65,19 @@ export const projectsMockGateway: ProjectsGateway = {
     const index = projects.findIndex((p) => p.id === id);
     if (index === -1) throw new Error(`Project ${id} not found`);
     projects.splice(index, 1);
+  },
+  async updateMemberRole(projectId: string, memberId: string, role: string): Promise<ProjectMember> {
+    void projectId; void memberId; void role;
+    await mockDelay();
+    throw new Error("updateMemberRole not implemented in mock");
+  },
+  async removeMember(projectId: string, memberId: string): Promise<void> {
+    void projectId; void memberId;
+    await mockDelay();
+  },
+  async addMember(projectId: string, memberId: string, jobId: string, role: string): Promise<ProjectMember> {
+    void projectId; void memberId; void jobId; void role;
+    await mockDelay();
+    throw new Error("addMember not implemented in mock");
   },
 };

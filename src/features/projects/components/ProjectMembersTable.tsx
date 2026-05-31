@@ -40,7 +40,7 @@ export function ProjectMembersTable({ searchValue, projectMembers, projectJobs, 
       </div>
       <div className="divide-y divide-border">
         {filteredEmployees.map((employee) => (
-          <ProjectMemberRow key={employee.user.id} member={employee} projectJobs={projectJobs} isAdmin={isAdmin} currentUserEmail={currentUserEmail} />
+          <ProjectMemberRow key={employee.user.id} member={employee} projectJobs={projectJobs} isAdmin={isAdmin} currentUserEmail={currentUserEmail ?? null} />
         ))}
       </div>
 

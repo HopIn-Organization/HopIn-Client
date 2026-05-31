@@ -1,6 +1,5 @@
 import { useCallback, useRef, useState } from "react";
 import { FileText, Upload, X, Loader2 } from "lucide-react";
-import { Button } from "@/ui/Button";
 import { ProjectDocument } from "@/types/document";
 
 const MAX_FILES = 10;

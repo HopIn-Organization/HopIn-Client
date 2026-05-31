@@ -14,6 +14,7 @@ import { Checkbox } from "@/ui/Checkbox";
 interface PlanTimelineProps {
   plan: OnboardingPlan;
   isReadonly?: boolean;
+  projectId?: string;
 }
 
 function toTopLevel(allTasks: PlanTask[]): PlanTask[] {
@@ -21,7 +22,7 @@ function toTopLevel(allTasks: PlanTask[]): PlanTask[] {
   return allTasks.filter((t) => !subtaskIds.has(t.id));
 }
 
-export function PlanTimeline({ plan, isReadonly = false }: PlanTimelineProps) {
+export function PlanTimeline({ plan, isReadonly = false, projectId }: PlanTimelineProps) {
   const [tasks, setTasks] = useState<PlanTask[]>(toTopLevel(plan.tasks));
   const [editingTask, setEditingTask] = useState<PlanTask | null>(null);
   const { mutateAsync: reorderTask } = useReorderTaskMutation();
@@ -59,9 +60,10 @@ export function PlanTimeline({ plan, isReadonly = false }: PlanTimelineProps) {
       ? [oldIndex, newIndex]   // dragged down: tasks above moved task shift back
       : [newIndex, oldIndex];  // dragged up: tasks below moved task shift forward
 
+    const resolvedProjectId = projectId ?? String(plan.project.id);
     const updates = reordered
       .slice(rangeStart, rangeEnd + 1)
-      .map((task, i) => reorderTask({ id: task.id, order: rangeStart + i + 1, onboardingId: plan.id }));
+      .map((task, i) => reorderTask({ id: task.id, order: rangeStart + i + 1, onboardingId: plan.id, projectId: resolvedProjectId }));
 
     try {
       await Promise.all(updates);
@@ -100,6 +102,7 @@ export function PlanTimeline({ plan, isReadonly = false }: PlanTimelineProps) {
                 key={task.id}
                 task={task}
                 onboardingId={plan.id}
+                projectId={projectId ?? String(plan.project.id)}
                 onComplete={handleTaskComplete}
                 onEdit={() => setEditingTask(task)}
                 isCurrent={task.id === currentTaskId}
@@ -115,6 +118,7 @@ export function PlanTimeline({ plan, isReadonly = false }: PlanTimelineProps) {
           open={true}
           onClose={() => setEditingTask(null)}
           onboardingId={plan.id}
+          projectId={projectId ?? String(plan.project.id)}
           task={editingTask}
         />
       )}
@@ -122,7 +126,7 @@ export function PlanTimeline({ plan, isReadonly = false }: PlanTimelineProps) {
   );
 }
 
-function SortableTaskRow(props: { task: PlanTask; onboardingId: number; onComplete: (t: PlanTask) => void; onEdit: () => void; isCurrent: boolean; isReadonly?: boolean }) {
+function SortableTaskRow(props: { task: PlanTask; onboardingId: number; projectId: string; onComplete: (t: PlanTask) => void; onEdit: () => void; isCurrent: boolean; isReadonly?: boolean }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: props.task.id });
 
   if (props.isReadonly) {
@@ -143,6 +147,7 @@ function SortableTaskRow(props: { task: PlanTask; onboardingId: number; onComple
 function TaskRow({
   task,
   onboardingId,
+  projectId,
   onComplete,
   onEdit,
   isCurrent,
@@ -151,6 +156,7 @@ function TaskRow({
 }: {
   task: PlanTask;
   onboardingId: number;
+  projectId: string;
   onComplete: (task: PlanTask) => void;
   onEdit: () => void;
   isCurrent: boolean;
@@ -169,7 +175,7 @@ function TaskRow({
   }
 
   async function handleDelete() {
-    await deleteTask(task.id);
+    await deleteTask({ taskId: task.id, projectId });
     setConfirmDelete(false);
   }
 
@@ -230,7 +236,7 @@ function TaskRow({
                       <Checkbox
                         checked={subtask.isCompleted}
                         onChange={async () => {
-                          const updated = await upsertTask({ id: Number(subtask.id), isCompleted: !subtask.isCompleted, onboardingId });
+                          const updated = await upsertTask({ id: Number(subtask.id), isCompleted: !subtask.isCompleted, onboardingId, projectId });
                           onComplete({ ...task, subtasks: task.subtasks!.map((s) =>
                             s.id === subtask.id ? { ...s, isCompleted: updated.isCompleted } : s,
                           )});

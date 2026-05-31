@@ -223,7 +223,7 @@ export function ProjectForm({
                 onAddFiles={(files) => handleAddJobFiles(index, files)}
                 onRemovePendingFile={(fileIndex) => handleRemoveJobPendingFile(index, fileIndex)}
                 existingDocuments={job.id ? (existingJobDocuments[job.id] ?? []) : []}
-                onDeleteExistingDocument={onDeleteDocument}
+                {...(onDeleteDocument !== undefined && { onDeleteExistingDocument: onDeleteDocument })}
               />
             ))}
           </div>
@@ -236,7 +236,7 @@ export function ProjectForm({
             onAddFiles={handleAddFiles}
             onRemovePending={handleRemovePending}
             onDeleteExisting={onDeleteDocument ?? (() => {})}
-            isDeleting={isDeletingDocument}
+            {...(isDeletingDocument !== undefined && { isDeleting: isDeletingDocument })}
           />
         </Card>
 
