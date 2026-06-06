@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useProjectQuery, useUpdateProjectMutation, useDeleteProjectMutation } from "@/features/projects/hooks";
@@ -21,6 +21,7 @@ export function ProjectSettingsPage() {
   const mutation = useUpdateProjectMutation();
   const deleteMutation = useDeleteProjectMutation();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const isDeletingRef = useRef(false);
   const role = useProjectRole(projectId, project?.members);
   const { data: documents = [] } = useProjectDocumentsQuery(projectId);
   const uploadMutation = useUploadDocumentsMutation(projectId);
@@ -42,11 +43,11 @@ export function ProjectSettingsPage() {
   });
 
   useEffect(() => {
-    if (isError && !deleteMutation.isSuccess) {
+    if (isError && !isDeletingRef.current) {
       toast.error("Failed to load project.");
       navigate("/projects");
     }
-  }, [isError, deleteMutation.isSuccess, navigate]);
+  }, [isError, navigate]);
 
   useEffect(() => {
     if (!isLoading && role !== null && role !== ProjectMemberRoles.ADMIN) {
@@ -60,10 +61,12 @@ export function ProjectSettingsPage() {
 
   async function handleDeleteProject() {
     try {
+      isDeletingRef.current = true;
       await deleteMutation.mutateAsync(projectId);
       toast.success("Project deleted successfully.");
       navigate("/projects", { replace: true });
     } catch {
+      isDeletingRef.current = false;
       toast.error("Failed to delete project.");
     }
   }

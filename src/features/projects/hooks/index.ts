@@ -52,8 +52,9 @@ export function useDeleteProjectMutation() {
 
   return useMutation({
     mutationFn: (id: string) => projectsService.deleteProject(id),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: projectKeys.all });
+    onSuccess: (_data, id) => {
+      queryClient.removeQueries({ queryKey: projectKeys.byId(id) });
+      void queryClient.invalidateQueries({ queryKey: projectKeys.all });
     },
   });
 }
