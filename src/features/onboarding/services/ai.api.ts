@@ -6,7 +6,10 @@ export const aiApiGateway: AiGateway = {
   async generatePlan(payload) {
     const { data } = await apiClient.post<{ onboardingId: number }>(
       "/onboarding/generate",
-      payload,
+      {
+        ...payload,
+        projectId: payload.projectId != null ? Number(payload.projectId) : undefined,
+      },
     );
     return { onboardingId: data.onboardingId };
   },
