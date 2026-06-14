@@ -1,4 +1,4 @@
-import { Project, ProjectStatistics, UpsertProjectPayload } from "@/types/project";
+import { Project, ProjectStatistics, DetailedProjectStatistics, UpsertProjectPayload } from "@/types/project";
 import { ProjectMember } from "@/types/projectMember";
 
 export interface ProjectsGateway {
@@ -11,6 +11,7 @@ export interface ProjectsGateway {
     } & UpsertProjectPayload,
   ): Promise<Project>;
   getProjectStatistics(): Promise<ProjectStatistics[]>;
+  getDetailedStatistics(projectId: string): Promise<DetailedProjectStatistics>;
   updateMemberRole(projectId: string, memberId: string, role: string): Promise<ProjectMember>;
   removeMember(projectId: string, memberId: string): Promise<void>;
   addMember(

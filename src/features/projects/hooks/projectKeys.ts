@@ -4,4 +4,6 @@ export const projectKeys = {
   byId: (id: string) => ["projects", id] as const,
 
   statistics: () => ["project-statistics"] as const,
+
+  detailedStatistics: (projectId: string) => ["project-detailed-statistics", projectId] as const,
 };

@@ -1,12 +1,14 @@
 import projectsData from "@/mocks/projects.json";
 import statisticsData from "@/mocks/statistics.json";
+import detailedStatisticsData from "@/mocks/detailed-statistics.json";
 import { mockDelay } from "@/services/mock-delay";
-import { Project, ProjectStatistics } from "@/types/project";
+import { Project, ProjectStatistics, DetailedProjectStatistics } from "@/types/project";
 import { ProjectMember } from "@/types/projectMember";
 import { ProjectsGateway } from "./projects.gateway";
 
 const projects = projectsData as Project[];
 const statistics = statisticsData as ProjectStatistics[];
+const detailedStatistics = detailedStatisticsData as DetailedProjectStatistics[];
 
 export const projectsMockGateway: ProjectsGateway = {
   async getProjects() {
@@ -59,6 +61,12 @@ export const projectsMockGateway: ProjectsGateway = {
   async getProjectStatistics() {
     await mockDelay();
     return statistics;
+  },
+  async getDetailedStatistics(projectId: string) {
+    await mockDelay();
+    const stat = detailedStatistics.find((s) => s.projectId === projectId);
+    if (!stat) throw new Error(`Statistics for project ${projectId} not found`);
+    return stat;
   },
   async deleteProject(id: string) {
     await mockDelay();

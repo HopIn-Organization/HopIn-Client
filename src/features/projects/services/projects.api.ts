@@ -1,5 +1,5 @@
 import { apiClient } from "@/services/http/api-client";
-import { Project, ProjectStatistics } from "@/types/project";
+import { Project, ProjectStatistics, DetailedProjectStatistics } from "@/types/project";
 import { ProjectsGateway } from "./projects.gateway";
 import { ProjectMemberRole } from "@/types/projectMember";
 
@@ -22,6 +22,12 @@ export const projectsApiGateway: ProjectsGateway = {
   },
   async getProjectStatistics() {
     const { data } = await apiClient.get<ProjectStatistics[]>("/projects/statistics");
+    return data;
+  },
+  async getDetailedStatistics(projectId: string) {
+    const { data } = await apiClient.get<DetailedProjectStatistics>(
+      `/projects/${projectId}/statistics/detailed`,
+    );
     return data;
   },
   async updateMemberRole(projectId: string, memberId: string, role: ProjectMemberRole) {

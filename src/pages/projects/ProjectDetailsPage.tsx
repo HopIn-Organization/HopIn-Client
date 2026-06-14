@@ -10,6 +10,7 @@ import { User } from "@/types/user";
 import { Tabs } from "@/ui/Tabs";
 import { ProjectMembersTable } from "@/features/projects/components/ProjectMembersTable";
 import { AddMemberModal } from "@/features/projects/components/AddMemberModal";
+import { ProjectStatisticsTab } from "@/features/projects/components/ProjectStatisticsTab";
 import { useAddMemberMutation } from "@/features/projects/hooks/members";
 import { env } from "@/utils/env";
 import { useProjectQuery } from "@/features/projects/hooks";
@@ -31,7 +32,10 @@ const users = (usersData as StoredUser[]).map((user) => ({
 
 type ProjectTab = "members" | "statistics";
 
-const projectTabs = [{ label: "Team Members", value: "members" }] as const satisfies readonly {
+const projectTabs = [
+  { label: "Team Members", value: "members" },
+  { label: "Statistics", value: "statistics" },
+] as const satisfies readonly {
   label: string;
   value: ProjectTab;
 }[];
@@ -124,9 +128,13 @@ export function ProjectDetailsPage() {
           )}
         </header>
 
-        <Tabs items={projectTabs} value={activeTab} onValueChange={setActiveTab} />
+        <Tabs
+          items={isAdmin ? projectTabs : projectTabs.filter((t) => t.value !== "statistics")}
+          value={activeTab}
+          onValueChange={setActiveTab}
+        />
 
-        {projectMembers ? (
+        {activeTab === "members" && projectMembers ? (
           <div className="space-y-6">
             <label className="relative block max-w-sm">
               <Search
@@ -149,8 +157,12 @@ export function ProjectDetailsPage() {
               currentUserEmail={currentUserEmail}
             />
           </div>
-        ) : (
+        ) : activeTab === "members" ? (
           <div className="text-sm text-text-secondary">No team members found yet.</div>
+        ) : null}
+
+        {activeTab === "statistics" && isAdmin && (
+          <ProjectStatisticsTab projectId={projectId} />
         )}
 
         {isAdmin && (

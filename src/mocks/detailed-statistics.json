@@ -1,0 +1,45 @@
+[
+  {
+    "projectId": "p_1",
+    "avgOnboardDays": 14,
+    "slowestTasks": [
+      { "name": "Learn Figma", "duration": "2 days", "percentage": 100, "color": "#F87171" },
+      { "name": "React", "duration": "1 day", "percentage": 50, "color": "#FBBF24" },
+      { "name": "SystemConfig", "duration": "5 hours", "percentage": 25, "color": "#34D399" }
+    ],
+    "overdueCount": 2,
+    "overdueMembers": [
+      { "initials": "JD", "label": "1 week over" },
+      { "initials": "SC", "label": "2 days over" }
+    ],
+    "employeeProgress": [
+      { "name": "Sarah", "planned": 21, "actual": 11 },
+      { "name": "Mike", "planned": 25, "actual": 5 },
+      { "name": "Jessica", "planned": 18, "actual": 17 }
+    ],
+    "jobDistribution": [
+      { "label": "Development", "value": 45, "color": "#F87171" },
+      { "label": "DevOps", "value": 25, "color": "#34D399" },
+      { "label": "SRE", "value": 18, "color": "#FBBF24" },
+      { "label": "UX", "value": 12, "color": "#9CA3AF" }
+    ]
+  },
+  {
+    "projectId": "p_2",
+    "avgOnboardDays": 10,
+    "slowestTasks": [
+      { "name": "Data Modeling", "duration": "3 days", "percentage": 100, "color": "#F87171" },
+      { "name": "SQL Basics", "duration": "1 day", "percentage": 33, "color": "#FBBF24" }
+    ],
+    "overdueCount": 0,
+    "overdueMembers": [],
+    "employeeProgress": [
+      { "name": "Alex", "planned": 15, "actual": 12 },
+      { "name": "Dana", "planned": 20, "actual": 18 }
+    ],
+    "jobDistribution": [
+      { "label": "Development", "value": 50, "color": "#F87171" },
+      { "label": "DevOps", "value": 50, "color": "#34D399" }
+    ]
+  }
+]
