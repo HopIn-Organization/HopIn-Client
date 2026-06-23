@@ -19,12 +19,12 @@ export function OverdueCard({ overdueCount, overdueMembers }: OverdueCardProps) 
     const remainingCount = overdueMembers.length - MAX_VISIBLE;
 
     return (
-        <Card className="p-5" aria-label="Overdue members">
+        <Card className="p-6" aria-label="Overdue members">
             <div className="mb-4 flex items-center gap-2">
                 <div className="grid h-8 w-8 place-items-center rounded-lg bg-amber-50 text-amber-500">
                     <AlertTriangle size={16} />
                 </div>
-                <h3 className="text-sm font-semibold text-text-primary">Overdue</h3>
+                <h3 className="text-lg font-semibold text-text-primary">Overdue</h3>
                 {hasOverdue && (
                     <span className="ml-auto text-xs font-medium text-text-secondary">
                         {overdueCount} member{overdueCount !== 1 ? "s" : ""}

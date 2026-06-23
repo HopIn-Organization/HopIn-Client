@@ -45,7 +45,7 @@ export function JobDistributionChart({ data }: JobDistributionChartProps) {
     if (data.length === 0) {
         return (
             <Card className="p-6">
-                <h3 className="mb-4 text-base font-semibold text-text-primary">Job Distribution</h3>
+                <h3 className="mb-4 text-lg font-semibold text-text-primary">Job Distribution</h3>
                 <StatisticsEmptyState message="No job distribution data" />
             </Card>
         );
@@ -71,7 +71,7 @@ export function JobDistributionChart({ data }: JobDistributionChartProps) {
 
     return (
         <Card className="p-6">
-            <h3 className="mb-4 text-base font-semibold text-text-primary">Job Distribution</h3>
+            <h3 className="mb-4 text-lg font-semibold text-text-primary">Job Distribution</h3>
             <div className="flex flex-col items-center gap-6 lg:flex-row lg:items-start">
                 <div className="shrink-0">
                     <PieChart width={200} height={200}>

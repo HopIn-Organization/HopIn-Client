@@ -10,7 +10,7 @@ interface JobAvgOnboardChartProps {
 
 const COLLAPSED_LIMIT = 6;
 const LABEL_MAX_LENGTH = 24;
-const BAR_COLOR = "#6366F1";
+const BAR_COLOR = "#F87171";
 
 function truncateLabel(label: string): string {
     if (label.length <= LABEL_MAX_LENGTH) return label;

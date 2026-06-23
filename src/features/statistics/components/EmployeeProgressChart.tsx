@@ -17,7 +17,7 @@ import { StatisticsEmptyState } from "./StatisticsEmptyState";
 const PAGE_SIZE = 8;
 const CHART_HEIGHT = 180;
 const PLANNED_COLOR = "#9CA3AF"; // gray-400
-const ACTUAL_COLOR = "rgb(255, 102, 102)"; // primary
+const ACTUAL_COLOR = "#F87171"; // primary red
 
 interface EmployeeProgressChartProps {
     data: EmployeeProgress[];
@@ -34,16 +34,16 @@ export function EmployeeProgressChart({ data }: EmployeeProgressChartProps) {
 
     if (data.length === 0) {
         return (
-            <Card className="p-5">
-                <h3 className="mb-3 text-sm font-semibold text-text-primary">Employee Progress</h3>
+            <Card className="p-6">
+                <h3 className="mb-4 text-lg font-semibold text-text-primary">Employee Progress</h3>
                 <StatisticsEmptyState message="No employee progress data" />
             </Card>
         );
     }
 
     return (
-        <Card className="p-5">
-            <h3 className="mb-3 text-sm font-semibold text-text-primary">Employee Progress</h3>
+        <Card className="p-6">
+            <h3 className="mb-4 text-lg font-semibold text-text-primary">Employee Progress</h3>
             <ResponsiveContainer width="100%" height={CHART_HEIGHT}>
                 <BarChart data={pageItems} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
