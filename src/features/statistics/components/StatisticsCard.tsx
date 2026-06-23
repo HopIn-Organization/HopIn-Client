@@ -1,4 +1,5 @@
 import { ArrowRight, BarChart3 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Project, ProjectStatistics } from "@/types/project";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
@@ -9,6 +10,12 @@ interface StatisticsCardProps {
 }
 
 export function StatisticsCard({ project, statistics }: StatisticsCardProps) {
+  const navigate = useNavigate();
+
+  const handleNavigate = () => {
+    navigate(`/statistics/${project.id}`);
+  };
+
   return (
     <Card className="p-7 shadow-soft">
       <div className="mb-8 flex items-start justify-between">
@@ -17,6 +24,7 @@ export function StatisticsCard({ project, statistics }: StatisticsCardProps) {
         </div>
         <button
           type="button"
+          onClick={handleNavigate}
           className="grid h-8 w-8 place-items-center rounded-full bg-surface-muted text-text-primary"
           aria-label={`Open ${project.name} statistics`}
         >
@@ -33,7 +41,7 @@ export function StatisticsCard({ project, statistics }: StatisticsCardProps) {
       </div>
 
       <div className="my-7 h-px bg-border" />
-      <Button variant="outline" className="w-full">
+      <Button variant="outline" className="w-full" onClick={handleNavigate}>
         View Detailed Statistics
       </Button>
     </Card>

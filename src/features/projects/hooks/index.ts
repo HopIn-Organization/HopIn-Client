@@ -52,6 +52,8 @@ export function useDetailedStatisticsQuery(projectId: string) {
     queryKey: projectKeys.detailedStatistics(projectId),
     queryFn: () => projectsService.getDetailedStatistics(projectId),
     enabled: Boolean(projectId),
+    retry: false,
+    staleTime: 30000,
   });
 }
 

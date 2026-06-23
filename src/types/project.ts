@@ -27,12 +27,9 @@ export interface ProjectStatistics {
   completionRate: number;
 }
 
-export interface SlowestTask {
-  name: string;
-  duration: string;
-  /** 0–100 relative bar width */
-  percentage: number;
-  color: string;
+export interface AvgOnboardByJob {
+  jobTitle: string;
+  avgDays: number;
 }
 
 export interface OverdueMember {
@@ -55,7 +52,7 @@ export interface JobDistribution {
 export interface DetailedProjectStatistics {
   projectId: string;
   avgOnboardDays: number;
-  slowestTasks: SlowestTask[];
+  avgOnboardDaysByJob: AvgOnboardByJob[];
   overdueCount: number;
   overdueMembers: OverdueMember[];
   employeeProgress: EmployeeProgress[];

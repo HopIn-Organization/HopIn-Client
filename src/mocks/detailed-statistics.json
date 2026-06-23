@@ -2,44 +2,192 @@
   {
     "projectId": "p_1",
     "avgOnboardDays": 14,
-    "slowestTasks": [
-      { "name": "Learn Figma", "duration": "2 days", "percentage": 100, "color": "#F87171" },
-      { "name": "React", "duration": "1 day", "percentage": 50, "color": "#FBBF24" },
-      { "name": "SystemConfig", "duration": "5 hours", "percentage": 25, "color": "#34D399" }
+    "avgOnboardDaysByJob": [
+      {
+        "jobTitle": "Frontend Developer",
+        "avgDays": 18
+      },
+      {
+        "jobTitle": "Backend Developer",
+        "avgDays": 21
+      },
+      {
+        "jobTitle": "DevOps Engineer",
+        "avgDays": 16
+      },
+      {
+        "jobTitle": "UX Designer",
+        "avgDays": 10
+      },
+      {
+        "jobTitle": "QA Engineer",
+        "avgDays": 12
+      },
+      {
+        "jobTitle": "Data Analyst",
+        "avgDays": 14
+      },
+      {
+        "jobTitle": "Product Manager",
+        "avgDays": 8
+      },
+      {
+        "jobTitle": "SRE",
+        "avgDays": 19
+      },
+      {
+        "jobTitle": "Security Engineer",
+        "avgDays": 22
+      }
     ],
-    "overdueCount": 2,
+    "overdueCount": 7,
     "overdueMembers": [
-      { "initials": "JD", "label": "1 week over" },
-      { "initials": "SC", "label": "2 days over" }
+      {
+        "initials": "JD",
+        "label": "1 week over"
+      },
+      {
+        "initials": "SC",
+        "label": "2 days over"
+      },
+      {
+        "initials": "MR",
+        "label": "4 days over"
+      },
+      {
+        "initials": "AL",
+        "label": "3 days over"
+      },
+      {
+        "initials": "TK",
+        "label": "5 days over"
+      },
+      {
+        "initials": "RB",
+        "label": "1 day over"
+      },
+      {
+        "initials": "NP",
+        "label": "6 days over"
+      }
     ],
     "employeeProgress": [
-      { "name": "Sarah", "planned": 21, "actual": 11 },
-      { "name": "Mike", "planned": 25, "actual": 5 },
-      { "name": "Jessica", "planned": 18, "actual": 17 }
+      {
+        "name": "Sarah",
+        "planned": 21,
+        "actual": 11
+      },
+      {
+        "name": "Mike",
+        "planned": 25,
+        "actual": 5
+      },
+      {
+        "name": "Jessica",
+        "planned": 18,
+        "actual": 17
+      },
+      {
+        "name": "David",
+        "planned": 22,
+        "actual": 14
+      },
+      {
+        "name": "Emma",
+        "planned": 16,
+        "actual": 12
+      },
+      {
+        "name": "James",
+        "planned": 20,
+        "actual": 19
+      },
+      {
+        "name": "Olivia",
+        "planned": 24,
+        "actual": 8
+      },
+      {
+        "name": "Daniel",
+        "planned": 19,
+        "actual": 15
+      },
+      {
+        "name": "Sophia",
+        "planned": 23,
+        "actual": 20
+      },
+      {
+        "name": "Liam",
+        "planned": 17,
+        "actual": 10
+      }
     ],
     "jobDistribution": [
-      { "label": "Development", "value": 45, "color": "#F87171" },
-      { "label": "DevOps", "value": 25, "color": "#34D399" },
-      { "label": "SRE", "value": 18, "color": "#FBBF24" },
-      { "label": "UX", "value": 12, "color": "#9CA3AF" }
+      {
+        "label": "Development",
+        "value": 45,
+        "color": "#F87171"
+      },
+      {
+        "label": "DevOps",
+        "value": 25,
+        "color": "#34D399"
+      },
+      {
+        "label": "SRE",
+        "value": 18,
+        "color": "#FBBF24"
+      },
+      {
+        "label": "UX",
+        "value": 12,
+        "color": "#9CA3AF"
+      }
     ]
   },
   {
     "projectId": "p_2",
     "avgOnboardDays": 10,
-    "slowestTasks": [
-      { "name": "Data Modeling", "duration": "3 days", "percentage": 100, "color": "#F87171" },
-      { "name": "SQL Basics", "duration": "1 day", "percentage": 33, "color": "#FBBF24" }
+    "avgOnboardDaysByJob": [
+      {
+        "jobTitle": "Backend Developer",
+        "avgDays": 12
+      },
+      {
+        "jobTitle": "Data Engineer",
+        "avgDays": 9
+      },
+      {
+        "jobTitle": "DevOps Engineer",
+        "avgDays": 11
+      }
     ],
     "overdueCount": 0,
     "overdueMembers": [],
     "employeeProgress": [
-      { "name": "Alex", "planned": 15, "actual": 12 },
-      { "name": "Dana", "planned": 20, "actual": 18 }
+      {
+        "name": "Alex",
+        "planned": 15,
+        "actual": 12
+      },
+      {
+        "name": "Dana",
+        "planned": 20,
+        "actual": 18
+      }
     ],
     "jobDistribution": [
-      { "label": "Development", "value": 50, "color": "#F87171" },
-      { "label": "DevOps", "value": 50, "color": "#34D399" }
+      {
+        "label": "Development",
+        "value": 50,
+        "color": "#F87171"
+      },
+      {
+        "label": "DevOps",
+        "value": 50,
+        "color": "#34D399"
+      }
     ]
   }
 ]
