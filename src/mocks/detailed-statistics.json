@@ -1,7 +1,6 @@
 [
   {
     "projectId": "p_1",
-    "avgOnboardDays": 14,
     "avgOnboardDaysByJob": [
       {
         "jobTitle": "Frontend Developer",
@@ -148,7 +147,6 @@
   },
   {
     "projectId": "p_2",
-    "avgOnboardDays": 10,
     "avgOnboardDaysByJob": [
       {
         "jobTitle": "Backend Developer",

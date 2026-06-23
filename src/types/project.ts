@@ -51,7 +51,6 @@ export interface JobDistribution {
 
 export interface DetailedProjectStatistics {
   projectId: string;
-  avgOnboardDays: number;
   avgOnboardDaysByJob: AvgOnboardByJob[];
   overdueCount: number;
   overdueMembers: OverdueMember[];
