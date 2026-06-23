@@ -26,7 +26,7 @@ export function JobAvgOnboardChart({ data }: JobAvgOnboardChartProps) {
                 <h3 className="mb-4 text-lg font-semibold text-text-primary">
                     Avg. Onboard Time by Role
                 </h3>
-                <StatisticsEmptyState message="No job roles configured" />
+                <StatisticsEmptyState message="No completed onboardings yet" />
             </Card>
         );
     }

@@ -3,7 +3,6 @@ import { ArrowLeft } from "lucide-react";
 import { useDetailedStatisticsQuery, useProjectQuery } from "@/features/projects/hooks";
 import { StatisticsSkeleton } from "@/features/statistics/components/StatisticsSkeleton";
 import { StatisticsError } from "@/features/statistics/components/StatisticsError";
-import { AvgOnboardTimeCard } from "@/features/statistics/components/AvgOnboardTimeCard";
 import { OverdueCard } from "@/features/statistics/components/OverdueCard";
 import { JobAvgOnboardChart } from "@/features/statistics/components/JobAvgOnboardChart";
 import { EmployeeProgressChart } from "@/features/statistics/components/EmployeeProgressChart";
@@ -67,18 +66,17 @@ export function DetailedStatisticsPage() {
                 </h1>
             </header>
 
-            {/* Top row: metric cards */}
+            {/* Top row: Per-Job Avg Onboard Time | Overdue */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                <AvgOnboardTimeCard avgDays={data?.avgOnboardDays ?? null} />
+                <JobAvgOnboardChart data={data?.avgOnboardDaysByJob ?? []} />
                 <OverdueCard
                     overdueCount={data?.overdueCount ?? 0}
                     overdueMembers={data?.overdueMembers ?? []}
                 />
             </div>
 
-            {/* Charts grid */}
+            {/* Bottom row: Employee Progress | Job Distribution */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                <JobAvgOnboardChart data={data?.avgOnboardDaysByJob ?? []} />
                 <EmployeeProgressChart data={data?.employeeProgress ?? []} />
                 <JobDistributionChart data={data?.jobDistribution ?? []} />
             </div>
