@@ -26,3 +26,34 @@ export interface ProjectStatistics {
   averageProgress: number;
   completionRate: number;
 }
+
+export interface AvgOnboardByJob {
+  jobTitle: string;
+  avgDays: number;
+}
+
+export interface OverdueMember {
+  initials: string;
+  label: string;
+}
+
+export interface EmployeeProgress {
+  name: string;
+  planned: number;
+  actual: number;
+}
+
+export interface JobDistribution {
+  label: string;
+  value: number;
+  color: string;
+}
+
+export interface DetailedProjectStatistics {
+  projectId: string;
+  avgOnboardDaysByJob: AvgOnboardByJob[];
+  overdueCount: number;
+  overdueMembers: OverdueMember[];
+  employeeProgress: EmployeeProgress[];
+  jobDistribution: JobDistribution[];
+}

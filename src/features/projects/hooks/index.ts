@@ -47,6 +47,16 @@ export function useProjectStatisticsQuery() {
   });
 }
 
+export function useDetailedStatisticsQuery(projectId: string) {
+  return useQuery({
+    queryKey: projectKeys.detailedStatistics(projectId),
+    queryFn: () => projectsService.getDetailedStatistics(projectId),
+    enabled: Boolean(projectId),
+    retry: false,
+    staleTime: 30000,
+  });
+}
+
 export function useDeleteProjectMutation() {
   const queryClient = useQueryClient();
 

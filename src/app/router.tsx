@@ -15,6 +15,7 @@ import { ProjectDetailsPage } from "@/pages/projects/ProjectDetailsPage";
 import { ProjectSettingsPage } from "@/pages/projects/ProjectSettingsPage";
 import { ProjectsPage } from "@/pages/projects/ProjectsPage";
 import { StatisticsPage } from "@/pages/projects/StatisticsPage";
+import { DetailedStatisticsPage } from "@/pages/projects/DetailedStatisticsPage";
 
 export function AppRouter() {
   return (
@@ -40,6 +41,7 @@ export function AppRouter() {
           <Route path="/projects/:projectId/details" element={<ProjectDetailsPage />} />
           <Route path="/projects/:projectId/settings" element={<ProjectSettingsPage />} />
           <Route path="/statistics" element={<StatisticsPage />} />
+          <Route path="/statistics/:projectId" element={<DetailedStatisticsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/onboarding/start" element={<OnboardingStartPage />} />
           <Route path="/onboarding/review" element={<OnboardingReviewPage />} />
