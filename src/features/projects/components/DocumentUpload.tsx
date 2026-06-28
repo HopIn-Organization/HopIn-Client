@@ -1,20 +1,12 @@
 import { useCallback, useRef, useState } from "react";
 import { FileText, Upload, X, Loader2 } from "lucide-react";
 import { ProjectDocument } from "@/types/document";
+import {
+  ACCEPTED_EXTENSIONS,
+  isAcceptedDocument,
+} from "@/features/projects/utils/documentValidation";
 
 const MAX_FILES = 10;
-
-const ACCEPTED_TYPES = [
-  "text/plain",
-  "text/markdown",
-  "text/csv",
-  "application/pdf",
-  "application/json",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-];
-
-const ACCEPTED_EXTENSIONS = ".txt,.md,.csv,.pdf,.json,.doc,.docx";
 
 interface DocumentUploadProps {
   existingDocuments: ProjectDocument[];
@@ -43,7 +35,7 @@ export function DocumentUpload({
     (fileList: FileList | null) => {
       if (!fileList) return;
 
-      const validFiles = Array.from(fileList).filter((f) => ACCEPTED_TYPES.includes(f.type));
+      const validFiles = Array.from(fileList).filter((f) => isAcceptedDocument(f));
 
       const toAdd = validFiles.slice(0, remainingSlots);
       if (toAdd.length > 0) {

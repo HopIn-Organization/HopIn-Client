@@ -4,20 +4,12 @@ import { TechnologyChips } from "@/features/onboarding/components/TechnologyChip
 import { Button } from "@/ui/Button";
 import { Input } from "@/ui/Input";
 import { ProjectDocument } from "@/types/document";
+import {
+  ACCEPTED_EXTENSIONS,
+  isAcceptedDocument,
+} from "@/features/projects/utils/documentValidation";
 
 const MAX_JOB_FILES = 10;
-
-const ACCEPTED_TYPES = [
-  "text/plain",
-  "text/markdown",
-  "text/csv",
-  "application/pdf",
-  "application/json",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-];
-
-const ACCEPTED_EXTENSIONS = ".txt,.md,.csv,.pdf,.json,.doc,.docx";
 
 interface CreateJobProps {
   jobTitle: string;
@@ -54,7 +46,7 @@ export function CreateJob({
   const handleFiles = useCallback(
     (fileList: FileList | null) => {
       if (!fileList || !onAddFiles) return;
-      const validFiles = Array.from(fileList).filter((f) => ACCEPTED_TYPES.includes(f.type));
+      const validFiles = Array.from(fileList).filter((f) => isAcceptedDocument(f));
       const toAdd = validFiles.slice(0, remainingSlots);
       if (toAdd.length > 0) {
         onAddFiles(toAdd);
@@ -173,7 +165,9 @@ export function CreateJob({
             >
               <Upload size={16} className="text-text-secondary" />
               <p className="text-[11px] text-text-secondary">Drop files or click to browse</p>
-              <p className="text-[10px] text-text-secondary">.txt, .md, .csv, .pdf, .json, .doc, .docx</p>
+              <p className="text-[10px] text-text-secondary">
+                .txt, .md, .csv, .pdf, .json, .doc, .docx
+              </p>
               <input
                 ref={inputRef}
                 type="file"
@@ -198,7 +192,9 @@ export function CreateJob({
                 >
                   <div className="flex items-center gap-1.5 overflow-hidden">
                     <FileText size={12} className="shrink-0 text-text-secondary" />
-                    <span className="truncate text-[11px] text-text-primary">{doc.originalName}</span>
+                    <span className="truncate text-[11px] text-text-primary">
+                      {doc.originalName}
+                    </span>
                   </div>
                   {onDeleteExistingDocument && (
                     <button
