@@ -22,12 +22,12 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setCurrentUserEmail: (email: string) => {
     localStorage.setItem("current_user_email", email);
-    set({ currentUserEmail: email });
+    set({ currentUserEmail: email.toLowerCase() });
   },
 
   signIn: (user: { email: string }) => {
     localStorage.setItem("current_user_email", user.email);
-    set({ currentUserEmail: user.email });
+    set({ currentUserEmail: user.email.toLowerCase() });
   },
 
   signOut: () => {
