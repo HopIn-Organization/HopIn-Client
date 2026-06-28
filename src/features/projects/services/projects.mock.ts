@@ -6,16 +6,16 @@ import { Project, ProjectStatistics, DetailedProjectStatistics } from "@/types/p
 import { ProjectMember } from "@/types/projectMember";
 import { ProjectsGateway } from "./projects.gateway";
 
-const projects = projectsData as Project[];
-const statistics = statisticsData as ProjectStatistics[];
-const detailedStatistics = detailedStatisticsData as DetailedProjectStatistics[];
+const projects = projectsData as unknown as Project[];
+const statistics = statisticsData as unknown as ProjectStatistics[];
+const detailedStatistics = detailedStatisticsData as unknown as DetailedProjectStatistics[];
 
 export const projectsMockGateway: ProjectsGateway = {
   async getProjects() {
     await mockDelay();
     return projects;
   },
-  async getProjectById(id: string) {
+  async getProjectById(id: number) {
     await mockDelay();
 
     const project = projects.find((item) => item.id === id);
@@ -30,7 +30,7 @@ export const projectsMockGateway: ProjectsGateway = {
     await mockDelay();
 
     const newProject: Project = {
-      id: `p_${projects.length + 1}`,
+      id: projects.length + 1,
       name: payload.name,
       ...(payload.description !== undefined && { description: payload.description }),
     };
@@ -62,29 +62,44 @@ export const projectsMockGateway: ProjectsGateway = {
     await mockDelay();
     return statistics;
   },
-  async getDetailedStatistics(projectId: string) {
+  async getDetailedStatistics(projectId: number) {
     await mockDelay();
-    const stat = detailedStatistics.find((s) => s.projectId === projectId);
+    const stat = detailedStatistics.find((s) => Number(s.projectId) === Number(projectId));
     if (!stat) throw new Error(`Statistics for project ${projectId} not found`);
     return stat;
   },
-  async deleteProject(id: string) {
+  async deleteProject(id: number) {
     await mockDelay();
     const index = projects.findIndex((p) => p.id === id);
     if (index === -1) throw new Error(`Project ${id} not found`);
     projects.splice(index, 1);
   },
-  async updateMemberRole(projectId: string, memberId: string, role: string): Promise<ProjectMember> {
-    void projectId; void memberId; void role;
+  async updateMemberRole(
+    projectId: number,
+    memberId: string,
+    role: string,
+  ): Promise<ProjectMember> {
+    void projectId;
+    void memberId;
+    void role;
     await mockDelay();
     throw new Error("updateMemberRole not implemented in mock");
   },
-  async removeMember(projectId: string, memberId: string): Promise<void> {
-    void projectId; void memberId;
+  async removeMember(projectId: number, memberId: string): Promise<void> {
+    void projectId;
+    void memberId;
     await mockDelay();
   },
-  async addMember(projectId: string, memberId: string, jobId: string, role: string): Promise<ProjectMember> {
-    void projectId; void memberId; void jobId; void role;
+  async addMember(
+    projectId: number,
+    memberId: string,
+    jobId: string,
+    role: string,
+  ): Promise<ProjectMember> {
+    void projectId;
+    void memberId;
+    void jobId;
+    void role;
     await mockDelay();
     throw new Error("addMember not implemented in mock");
   },

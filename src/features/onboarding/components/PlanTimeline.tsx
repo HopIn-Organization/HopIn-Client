@@ -1,9 +1,26 @@
 import { Check, ChevronDown, Circle, GripVertical, Pencil, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { DndContext, DragEndEvent, PointerSensor, closestCenter, useSensor, useSensors } from "@dnd-kit/core";
-import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useCompleteTaskMutation, useDeleteTaskMutation, useReorderTaskMutation, useUpsertTaskMutation } from "@/features/onboarding/hooks/useOnboardingData";
+import {
+  useCompleteTaskMutation,
+  useDeleteTaskMutation,
+  useReorderTaskMutation,
+  useUpsertTaskMutation,
+} from "@/features/onboarding/hooks/useOnboardingData";
 import { OnboardingPlan, PlanTask } from "@/types/onboarding";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
@@ -14,7 +31,7 @@ import { Checkbox } from "@/ui/Checkbox";
 interface PlanTimelineProps {
   plan: OnboardingPlan;
   isReadonly?: boolean;
-  projectId?: string;
+  projectId?: number;
 }
 
 function toTopLevel(allTasks: PlanTask[]): PlanTask[] {
@@ -29,15 +46,15 @@ export function PlanTimeline({ plan, isReadonly = false, projectId }: PlanTimeli
   const [editingTask, setEditingTask] = useState<PlanTask | null>(null);
   const { mutateAsync: reorderTask } = useReorderTaskMutation();
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-  );
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
   const completedCount = tasks.filter((t) => t.isCompleted).length;
   const progressPercent = plan.progress;
 
   function handleTaskComplete(updatedTask: PlanTask) {
-    setTasksOverride((prev) => (prev ?? baseTasks).map((t) => (t.id === updatedTask.id ? updatedTask : t)));
+    setTasksOverride((prev) =>
+      (prev ?? baseTasks).map((t) => (t.id === updatedTask.id ? updatedTask : t)),
+    );
   }
 
   async function handleDragEnd(event: DragEndEvent) {
@@ -54,14 +71,20 @@ export function PlanTimeline({ plan, isReadonly = false, projectId }: PlanTimeli
 
     // All tasks in the affected range shift by ±1; the moved task lands at newIndex.
     // Slice that range from the reordered array and assign each its new 1-based order.
-    const [rangeStart, rangeEnd] = oldIndex < newIndex
-      ? [oldIndex, newIndex]   // dragged down: tasks above moved task shift back
-      : [newIndex, oldIndex];  // dragged up: tasks below moved task shift forward
+    const [rangeStart, rangeEnd] =
+      oldIndex < newIndex
+        ? [oldIndex, newIndex] // dragged down: tasks above moved task shift back
+        : [newIndex, oldIndex]; // dragged up: tasks below moved task shift forward
 
-    const resolvedProjectId = projectId ?? String(plan.project.id);
-    const updates = reordered
-      .slice(rangeStart, rangeEnd + 1)
-      .map((task, i) => reorderTask({ id: task.id, order: rangeStart + i + 1, onboardingId: plan.id, projectId: resolvedProjectId }));
+    const resolvedProjectId = Number(projectId ?? plan.project.id);
+    const updates = reordered.slice(rangeStart, rangeEnd + 1).map((task, i) =>
+      reorderTask({
+        id: task.id,
+        order: rangeStart + i + 1,
+        onboardingId: plan.id,
+        projectId: resolvedProjectId,
+      }),
+    );
 
     try {
       await Promise.all(updates);
@@ -87,12 +110,18 @@ export function PlanTimeline({ plan, isReadonly = false, projectId }: PlanTimeli
         </div>
 
         <p className="mt-3 flex items-center justify-between text-xs text-text-secondary">
-          <span>{completedCount} of {tasks.length} tasks completed</span>
+          <span>
+            {completedCount} of {tasks.length} tasks completed
+          </span>
           <span>{tasks.length - completedCount} remaining</span>
         </p>
       </Card>
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={isReadonly ? () => {} : handleDragEnd}>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={isReadonly ? () => {} : handleDragEnd}
+      >
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           <div className="relative ml-5 border-l-2 border-primary-soft pl-6">
             {tasks.map((task) => (
@@ -100,7 +129,7 @@ export function PlanTimeline({ plan, isReadonly = false, projectId }: PlanTimeli
                 key={task.id}
                 task={task}
                 onboardingId={plan.id}
-                projectId={projectId ?? String(plan.project.id)}
+                projectId={Number(projectId ?? plan.project.id)}
                 onComplete={handleTaskComplete}
                 onEdit={() => setEditingTask(task)}
                 isCurrent={task.id === currentTaskId}
@@ -117,7 +146,7 @@ export function PlanTimeline({ plan, isReadonly = false, projectId }: PlanTimeli
           open={true}
           onClose={() => setEditingTask(null)}
           onboardingId={plan.id}
-          projectId={projectId ?? String(plan.project.id)}
+          projectId={Number(projectId ?? plan.project.id)}
           task={editingTask}
         />
       )}
@@ -125,8 +154,18 @@ export function PlanTimeline({ plan, isReadonly = false, projectId }: PlanTimeli
   );
 }
 
-function SortableTaskRow(props: { task: PlanTask; onboardingId: number; projectId: string; onComplete: (t: PlanTask) => void; onEdit: () => void; isCurrent: boolean; isReadonly?: boolean }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: props.task.id });
+function SortableTaskRow(props: {
+  task: PlanTask;
+  onboardingId: number;
+  projectId: number;
+  onComplete: (t: PlanTask) => void;
+  onEdit: () => void;
+  isCurrent: boolean;
+  isReadonly?: boolean;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: props.task.id,
+  });
 
   if (props.isReadonly) {
     return <TaskRow {...props} />;
@@ -135,7 +174,11 @@ function SortableTaskRow(props: { task: PlanTask; onboardingId: number; projectI
   return (
     <div
       ref={setNodeRef}
-      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+      }}
       {...attributes}
     >
       <TaskRow {...props} dragHandleListeners={listeners} />
@@ -155,7 +198,7 @@ function TaskRow({
 }: {
   task: PlanTask;
   onboardingId: number;
-  projectId: string;
+  projectId: number;
   onComplete: (task: PlanTask) => void;
   onEdit: () => void;
   isCurrent: boolean;
@@ -195,7 +238,10 @@ function TaskRow({
       </div>
 
       <Card className={isExpanded ? "border-primary/30 p-5" : "p-5"}>
-        <div className="flex cursor-pointer items-start justify-between" onClick={() => setIsExpanded((prev) => !prev)}>
+        <div
+          className="flex cursor-pointer items-start justify-between"
+          onClick={() => setIsExpanded((prev) => !prev)}
+        >
           <h3 className="text-lg font-semibold text-text-primary">{task.title}</h3>
           <div className="mt-1 flex items-center gap-2">
             {!isReadonly && (
@@ -208,7 +254,10 @@ function TaskRow({
                 <GripVertical size={14} />
               </button>
             )}
-            <ChevronDown size={16} className={`text-text-secondary transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+            <ChevronDown
+              size={16}
+              className={`text-text-secondary transition-transform ${isExpanded ? "rotate-180" : ""}`}
+            />
           </div>
         </div>
         <p className="mt-3 text-sm text-text-secondary">{task.description}</p>
@@ -219,7 +268,13 @@ function TaskRow({
               <div className="space-y-1 text-sm">
                 <p className="font-medium text-text-primary">Relevant Links:</p>
                 {task.links.map((link) => (
-                  <a key={link} href={link} className="block text-primary underline" target="_blank" rel="noreferrer">
+                  <a
+                    key={link}
+                    href={link}
+                    className="block text-primary underline"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     {link}
                   </a>
                 ))}
@@ -228,20 +283,32 @@ function TaskRow({
 
             {!!task.subtasks?.length && (
               <div className="rounded-xl border border-border bg-surface-muted p-4">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-text-secondary">Subtasks</p>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                  Subtasks
+                </p>
                 <ul className="space-y-2 text-sm text-text-secondary">
                   {task.subtasks.map((subtask) => (
                     <li key={subtask.id} className="flex items-center gap-2">
                       <Checkbox
                         checked={subtask.isCompleted}
                         onChange={async () => {
-                          const updated = await upsertTask({ id: Number(subtask.id), isCompleted: !subtask.isCompleted, onboardingId, projectId });
-                          onComplete({ ...task, subtasks: task.subtasks!.map((s) =>
-                            s.id === subtask.id ? { ...s, isCompleted: updated.isCompleted } : s,
-                          )});
+                          const updated = await upsertTask({
+                            id: Number(subtask.id),
+                            isCompleted: !subtask.isCompleted,
+                            onboardingId,
+                            projectId,
+                          });
+                          onComplete({
+                            ...task,
+                            subtasks: task.subtasks!.map((s) =>
+                              s.id === subtask.id ? { ...s, isCompleted: updated.isCompleted } : s,
+                            ),
+                          });
                         }}
                       />
-                      <span className={subtask.isCompleted ? "line-through opacity-50" : ""}>{subtask.title}</span>
+                      <span className={subtask.isCompleted ? "line-through opacity-50" : ""}>
+                        {subtask.title}
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -277,9 +344,16 @@ function TaskRow({
       </Card>
 
       {!isReadonly && (
-        <Modal open={confirmDelete} onClose={() => setConfirmDelete(false)} title="Delete Task" className="p-6">
+        <Modal
+          open={confirmDelete}
+          onClose={() => setConfirmDelete(false)}
+          title="Delete Task"
+          className="p-6"
+        >
           <p className="mb-6 text-sm text-text-secondary">
-            Are you sure you want to delete <span className="font-semibold text-text-primary">"{task.title}"</span>? This action cannot be undone.
+            Are you sure you want to delete{" "}
+            <span className="font-semibold text-text-primary">"{task.title}"</span>? This action
+            cannot be undone.
           </p>
           <div className="flex justify-end gap-3">
             <Button type="button" variant="outline" onClick={() => setConfirmDelete(false)}>

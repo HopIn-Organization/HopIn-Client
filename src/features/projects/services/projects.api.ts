@@ -8,7 +8,7 @@ export const projectsApiGateway: ProjectsGateway = {
     const { data } = await apiClient.get<Project[]>("/projects");
     return data;
   },
-  async getProjectById(id: string) {
+  async getProjectById(id: number) {
     const { data } = await apiClient.get<Project>(`/projects/${id}`);
     return data;
   },
@@ -24,25 +24,25 @@ export const projectsApiGateway: ProjectsGateway = {
     const { data } = await apiClient.get<ProjectStatistics[]>("/projects/statistics");
     return data;
   },
-  async getDetailedStatistics(projectId: string) {
+  async getDetailedStatistics(projectId: number) {
     const { data } = await apiClient.get<DetailedProjectStatistics>(
       `/projects/${projectId}/statistics/detailed`,
     );
     return data;
   },
-  async updateMemberRole(projectId: string, memberId: string, role: ProjectMemberRole) {
+  async updateMemberRole(projectId: number, memberId: string, role: ProjectMemberRole) {
     const { data } = await apiClient.patch(`/projects/${projectId}/members/${memberId}/role`, {
       role,
     });
 
     return data;
   },
-  async removeMember(projectId: string, memberId: string) {
+  async removeMember(projectId: number, memberId: string) {
     const { data } = await apiClient.delete(`/projects/${projectId}/members/${memberId}`);
 
     return data;
   },
-  async addMember(projectId: string, memberId: string, jobId: string, role: string) {
+  async addMember(projectId: number, memberId: string, jobId: string, role: string) {
     const { data } = await apiClient.post(`/projects/${projectId}/members`, {
       userId: Number(memberId),
       jobId: Number(jobId),
@@ -51,7 +51,7 @@ export const projectsApiGateway: ProjectsGateway = {
 
     return data;
   },
-  async deleteProject(id: string) {
+  async deleteProject(id: number) {
     await apiClient.delete(`/projects/${id}`);
   },
 };

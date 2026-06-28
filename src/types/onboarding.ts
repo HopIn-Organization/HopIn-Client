@@ -18,7 +18,7 @@ export type TechLevel = "Beginner" | "Intermediate" | "Advanced";
 
 export interface TeamLeadRequirement {
   id: string;
-  projectId: string;
+  projectId: number;
   roleTitle: string;
   desiredTechnologies: Array<{
     name: string;
@@ -39,7 +39,7 @@ export interface PlanTask {
 }
 
 export interface CreateTaskPayload {
-  projectId: string;
+  projectId: number;
   order: number;
   title: string;
   description: string;
@@ -52,7 +52,7 @@ export interface CreateTaskPayload {
 
 export interface UpdateTaskPayload {
   id: number;
-  projectId: string;
+  projectId: number;
   order?: number;
   title?: string;
   description?: string;

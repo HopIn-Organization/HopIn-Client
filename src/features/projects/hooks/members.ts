@@ -13,7 +13,7 @@ export function useUpdateMemberRoleMutation() {
       memberId,
       role,
     }: {
-      projectId: string;
+      projectId: number;
       memberId: string;
       role: ProjectMemberRole;
     }) => projectsService.updateMemberRole(projectId, memberId, role),
@@ -36,12 +36,12 @@ export function useRemoveMemberMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ projectId, memberId }: { projectId: string; memberId: string }) =>
+    mutationFn: ({ projectId, memberId }: { projectId: number; memberId: string }) =>
       projectsService.removeMember(projectId, memberId),
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: projectKeys.byId(String(variables.projectId)),
+        queryKey: projectKeys.byId(variables.projectId),
       });
     },
   });
@@ -57,7 +57,7 @@ export function useAddMemberMutation() {
       jobId,
       role,
     }: {
-      projectId: string;
+      projectId: number;
       memberId: string;
       jobId: string;
       role: string;

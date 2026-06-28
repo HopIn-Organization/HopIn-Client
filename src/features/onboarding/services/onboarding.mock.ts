@@ -2,13 +2,18 @@ import employeeProfilesData from "@/mocks/employee-profiles.json";
 import plansData from "@/mocks/onboarding-plans.json";
 import teamLeadRequirementsData from "@/mocks/team-lead-requirements.json";
 import { mockDelay } from "@/services/mock-delay";
-import { OnboardingPlan, PlanTask, TeamLeadRequirement, UpsertTaskPayload } from "@/types/onboarding";
+import {
+  OnboardingPlan,
+  PlanTask,
+  TeamLeadRequirement,
+  UpsertTaskPayload,
+} from "@/types/onboarding";
 import { EmployeeProfile } from "@/types/user";
 import { OnboardingGateway } from "./onboarding.gateway";
 
 const employeeProfiles = employeeProfilesData as EmployeeProfile[];
-const teamLeadRequirements = teamLeadRequirementsData as TeamLeadRequirement[];
-const onboardingPlans = plansData as OnboardingPlan[];
+const teamLeadRequirements = teamLeadRequirementsData as unknown as TeamLeadRequirement[];
+const onboardingPlans = plansData as unknown as OnboardingPlan[];
 
 export const onboardingMockGateway: OnboardingGateway = {
   async getEmployeeProfiles() {
@@ -47,9 +52,9 @@ export const onboardingMockGateway: OnboardingGateway = {
     await mockDelay();
     return onboardingPlans;
   },
-  async getOnboardingPlansByProject(projectId: string) {
+  async getOnboardingPlansByProject(projectId: number) {
     await mockDelay();
-    return onboardingPlans.filter((p) => String(p.project.id) === String(projectId));
+    return onboardingPlans.filter((p) => Number(p.project.id) === Number(projectId));
   },
   async getOnboardingPlanById(planId: number) {
     await mockDelay();
@@ -77,7 +82,10 @@ export const onboardingMockGateway: OnboardingGateway = {
           const subIdx = task.subtasks.findIndex((s) => s.id === payload.id);
           if (subIdx >= 0) {
             const existing = task.subtasks[subIdx] as PlanTask;
-            const updated: PlanTask = { ...existing, isCompleted: payload.isCompleted ?? existing.isCompleted };
+            const updated: PlanTask = {
+              ...existing,
+              isCompleted: payload.isCompleted ?? existing.isCompleted,
+            };
             task.subtasks[subIdx] = updated;
             return updated;
           }
@@ -87,8 +95,17 @@ export const onboardingMockGateway: OnboardingGateway = {
       for (const plan of onboardingPlans) {
         const idx = plan.tasks.findIndex((t) => t.id === payload.id);
         if (idx >= 0) {
-          const { id: _id, onboardingId: _oid, subtasks: _sub, parentId: _pid, ...topLevelFields } = payload as typeof payload & { subtasks?: unknown };
-          void _id; void _oid; void _sub; void _pid;
+          const {
+            id: _id,
+            onboardingId: _oid,
+            subtasks: _sub,
+            parentId: _pid,
+            ...topLevelFields
+          } = payload as typeof payload & { subtasks?: unknown };
+          void _id;
+          void _oid;
+          void _sub;
+          void _pid;
           plan.tasks[idx] = { ...plan.tasks[idx], ...topLevelFields } as PlanTask;
           return plan.tasks[idx];
         }
@@ -110,7 +127,7 @@ export const onboardingMockGateway: OnboardingGateway = {
     plan.tasks.push(newTask);
     return newTask;
   },
-  async deleteTask(taskId: number, projectId: string) {
+  async deleteTask(taskId: number, projectId: number) {
     void projectId;
     await mockDelay();
     for (const plan of onboardingPlans) {

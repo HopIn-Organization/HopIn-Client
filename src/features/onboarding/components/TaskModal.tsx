@@ -18,12 +18,19 @@ interface TaskModalProps {
   open: boolean;
   onClose: () => void;
   onboardingId: number;
-  projectId?: string;
+  projectId?: number;
   task?: TaskModalTask;
   nextOrder?: number;
 }
 
-export function TaskModal({ open, onClose, onboardingId, projectId = "", task, nextOrder }: TaskModalProps) {
+export function TaskModal({
+  open,
+  onClose,
+  onboardingId,
+  projectId,
+  task,
+  nextOrder,
+}: TaskModalProps) {
   const isEdit = task !== undefined;
   const isSubtask = !!task?.parentId;
   const { mutateAsync: upsertTask, isPending } = useUpsertTaskMutation();
@@ -59,15 +66,60 @@ export function TaskModal({ open, onClose, onboardingId, projectId = "", task, n
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    const resolvedProjectId = Number(projectId);
+    if (!Number.isFinite(resolvedProjectId)) {
+      onClose();
+      return;
+    }
+
     const payload: UpsertTaskPayload = isEdit
-      ? { id: task.id, projectId, title, description, estimatedDays: Number(estimatedDays), isCompleted, links, onboardingId, parentId: parentId ? Number(parentId) : null }
-      : { projectId, order: nextOrder ?? 1, title, description, estimatedDays: Number(estimatedDays), isCompleted, links, onboardingId, parentId: parentId ? Number(parentId) : null };
+      ? {
+          id: task.id,
+          projectId: resolvedProjectId,
+          title,
+          description,
+          estimatedDays: Number(estimatedDays),
+          isCompleted,
+          links,
+          onboardingId,
+          parentId: parentId ? Number(parentId) : null,
+        }
+      : {
+          projectId: resolvedProjectId,
+          order: nextOrder ?? 1,
+          title,
+          description,
+          estimatedDays: Number(estimatedDays),
+          isCompleted,
+          links,
+          onboardingId,
+          parentId: parentId ? Number(parentId) : null,
+        };
     const subtasksPayload = isEdit
-      ? subtasks.map((s, i) => (s.id !== null
-          ? { id: s.id, title: s.title, description: "", order: i + 1, estimatedDays: 1, isCompleted: s.isCompleted }
-          : { title: s.title, description: "", order: i + 1, estimatedDays: 1, isCompleted: s.isCompleted }))
+      ? subtasks.map((s, i) =>
+          s.id !== null
+            ? {
+                id: s.id,
+                title: s.title,
+                description: "",
+                order: i + 1,
+                estimatedDays: 1,
+                isCompleted: s.isCompleted,
+              }
+            : {
+                title: s.title,
+                description: "",
+                order: i + 1,
+                estimatedDays: 1,
+                isCompleted: s.isCompleted,
+              },
+        )
       : undefined;
-    await upsertTask({ ...payload, ...(subtasksPayload !== undefined ? { subtasks: subtasksPayload } : {}) } as UpsertTaskPayload);
+    await upsertTask({
+      ...payload,
+      ...(subtasksPayload !== undefined ? { subtasks: subtasksPayload } : {}),
+    } as UpsertTaskPayload);
     onClose();
   }
 
@@ -129,7 +181,10 @@ export function TaskModal({ open, onClose, onboardingId, projectId = "", task, n
           {links.length > 0 && (
             <ul className="space-y-1">
               {links.map((link, i) => (
-                <li key={i} className="flex items-center justify-between rounded-lg bg-surface-muted px-3 py-1.5 text-sm">
+                <li
+                  key={i}
+                  className="flex items-center justify-between rounded-lg bg-surface-muted px-3 py-1.5 text-sm"
+                >
                   <span className="truncate text-primary">{link}</span>
                   <button
                     type="button"
@@ -144,14 +199,16 @@ export function TaskModal({ open, onClose, onboardingId, projectId = "", task, n
           )}
         </div>
 
-
         {!isSubtask && (
           <div className="space-y-2">
             <span className="text-xs font-medium text-text-secondary">Subtasks</span>
             {subtasks.length > 0 && (
               <ul className="space-y-1">
                 {subtasks.map((subtask, i) => (
-                  <li key={i} className="flex items-center gap-2 rounded-lg bg-surface-muted px-3 py-1.5 text-sm">
+                  <li
+                    key={i}
+                    className="flex items-center gap-2 rounded-lg bg-surface-muted px-3 py-1.5 text-sm"
+                  >
                     {editingSubtaskIndex === i ? (
                       <>
                         <input
@@ -161,7 +218,11 @@ export function TaskModal({ open, onClose, onboardingId, projectId = "", task, n
                           onKeyDown={(e) => {
                             if (e.key === "Enter") {
                               e.preventDefault();
-                              setSubtasks((prev) => prev.map((s, idx) => idx === i ? { ...s, title: editingSubtaskTitle } : s));
+                              setSubtasks((prev) =>
+                                prev.map((s, idx) =>
+                                  idx === i ? { ...s, title: editingSubtaskTitle } : s,
+                                ),
+                              );
                               setEditingSubtaskIndex(null);
                             } else if (e.key === "Escape") {
                               setEditingSubtaskIndex(null);
@@ -169,17 +230,32 @@ export function TaskModal({ open, onClose, onboardingId, projectId = "", task, n
                           }}
                           className="flex-1 rounded-lg border border-primary bg-surface px-2 py-0.5 text-sm text-text-primary outline-none"
                         />
-                        <button type="button" onClick={() => {
-                          setSubtasks((prev) => prev.map((s, idx) => idx === i ? { ...s, title: editingSubtaskTitle } : s));
-                          setEditingSubtaskIndex(null);
-                        }} className="shrink-0 text-text-secondary hover:text-text-primary">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSubtasks((prev) =>
+                              prev.map((s, idx) =>
+                                idx === i ? { ...s, title: editingSubtaskTitle } : s,
+                              ),
+                            );
+                            setEditingSubtaskIndex(null);
+                          }}
+                          className="shrink-0 text-text-secondary hover:text-text-primary"
+                        >
                           <X size={14} />
                         </button>
                       </>
                     ) : (
                       <>
                         <span className="flex-1 text-text-primary">{subtask.title}</span>
-                        <button type="button" onClick={() => { setEditingSubtaskIndex(i); setEditingSubtaskTitle(subtask.title); }} className="shrink-0 text-text-secondary hover:text-text-primary">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingSubtaskIndex(i);
+                            setEditingSubtaskTitle(subtask.title);
+                          }}
+                          className="shrink-0 text-text-secondary hover:text-text-primary"
+                        >
                           <Pencil size={13} />
                         </button>
                         <button
@@ -206,16 +282,32 @@ export function TaskModal({ open, onClose, onboardingId, projectId = "", task, n
                   if (e.key === "Enter") {
                     e.preventDefault();
                     const trimmed = subtaskInput.trim();
-                    if (trimmed) { setSubtasks((prev) => [...prev, { id: null, title: trimmed, isCompleted: false }]); setSubtaskInput(""); }
+                    if (trimmed) {
+                      setSubtasks((prev) => [
+                        ...prev,
+                        { id: null, title: trimmed, isCompleted: false },
+                      ]);
+                      setSubtaskInput("");
+                    }
                   }
                 }}
                 placeholder="Add a subtask..."
                 className="h-11 flex-1 rounded-xl border border-border bg-surface px-3 text-sm text-text-primary outline-none transition placeholder:text-text-secondary/60 focus:border-primary"
               />
-              <Button type="button" variant="outline" onClick={() => {
-                const trimmed = subtaskInput.trim();
-                if (trimmed) { setSubtasks((prev) => [...prev, { id: null, title: trimmed, isCompleted: false }]); setSubtaskInput(""); }
-              }}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  const trimmed = subtaskInput.trim();
+                  if (trimmed) {
+                    setSubtasks((prev) => [
+                      ...prev,
+                      { id: null, title: trimmed, isCompleted: false },
+                    ]);
+                    setSubtaskInput("");
+                  }
+                }}
+              >
                 <Plus size={16} />
               </Button>
             </div>
@@ -223,11 +315,7 @@ export function TaskModal({ open, onClose, onboardingId, projectId = "", task, n
         )}
 
         {isEdit && (
-          <Checkbox
-            checked={isCompleted}
-            onChange={setIsCompleted}
-            label="Mark as completed"
-          />
+          <Checkbox checked={isCompleted} onChange={setIsCompleted} label="Mark as completed" />
         )}
 
         <div className="flex justify-end gap-3">

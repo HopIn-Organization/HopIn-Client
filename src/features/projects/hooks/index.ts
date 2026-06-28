@@ -9,11 +9,11 @@ export function useProjectsQuery() {
   });
 }
 
-export function useProjectQuery(id: string) {
+export function useProjectQuery(id: number | undefined) {
   return useQuery({
     queryKey: projectKeys.byId(id),
-    queryFn: () => projectsService.getProjectById(id),
-    enabled: Boolean(id),
+    queryFn: () => projectsService.getProjectById(id!),
+    enabled: id != null,
   });
 }
 
@@ -47,11 +47,11 @@ export function useProjectStatisticsQuery() {
   });
 }
 
-export function useDetailedStatisticsQuery(projectId: string) {
+export function useDetailedStatisticsQuery(projectId: number | undefined) {
   return useQuery({
     queryKey: projectKeys.detailedStatistics(projectId),
-    queryFn: () => projectsService.getDetailedStatistics(projectId),
-    enabled: Boolean(projectId),
+    queryFn: () => projectsService.getDetailedStatistics(projectId!),
+    enabled: projectId != null,
     retry: false,
     staleTime: 30000,
   });
@@ -61,7 +61,7 @@ export function useDeleteProjectMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => projectsService.deleteProject(id),
+    mutationFn: (id: number) => projectsService.deleteProject(id),
     onSuccess: (_data, id) => {
       queryClient.removeQueries({ queryKey: projectKeys.byId(id) });
       void queryClient.invalidateQueries({ queryKey: projectKeys.all });

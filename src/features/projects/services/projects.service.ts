@@ -6,17 +6,17 @@ const gateway = env.dataSource === "api" ? projectsApiGateway : projectsMockGate
 
 export const projectsService = {
   getProjects: () => gateway.getProjects(),
-  getProjectById: (id: string) => gateway.getProjectById(id),
+  getProjectById: (id: number) => gateway.getProjectById(id),
   createProject: (payload: Parameters<typeof gateway.createProject>[0]) =>
     gateway.createProject(payload),
   updateProject: (payload: Parameters<typeof gateway.updateProject>[0]) =>
     gateway.updateProject(payload),
   getProjectStatistics: () => gateway.getProjectStatistics(),
-  getDetailedStatistics: (projectId: string) => gateway.getDetailedStatistics(projectId),
-  updateMemberRole: (projectId: string, memberId: string, role: string) =>
+  getDetailedStatistics: (projectId: number) => gateway.getDetailedStatistics(projectId),
+  updateMemberRole: (projectId: number, memberId: string, role: string) =>
     gateway.updateMemberRole(projectId, memberId, role),
-  removeMember: (projectId: string, memberId: string) => gateway.removeMember(projectId, memberId),
-  addMember: (projectId: string, memberId: string, jobId: string, role: string) =>
+  removeMember: (projectId: number, memberId: string) => gateway.removeMember(projectId, memberId),
+  addMember: (projectId: number, memberId: string, jobId: string, role: string) =>
     gateway.addMember(projectId, memberId, jobId, role),
-  deleteProject: (id: string) => gateway.deleteProject(id),
+  deleteProject: (id: number) => gateway.deleteProject(id),
 };
