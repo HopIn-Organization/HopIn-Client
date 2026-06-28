@@ -42,6 +42,7 @@ export function CreateProjectPage() {
       }
 
       const createdJobs = project.jobs ?? project.job ?? [];
+
       for (const [indexStr, files] of Object.entries(values.jobPendingFiles)) {
         if (files.length === 0) continue;
         const index = Number(indexStr);
