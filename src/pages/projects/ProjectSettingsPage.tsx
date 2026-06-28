@@ -1,7 +1,11 @@
 ﻿import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useProjectQuery, useUpdateProjectMutation, useDeleteProjectMutation } from "@/features/projects/hooks";
+import {
+  useProjectQuery,
+  useUpdateProjectMutation,
+  useDeleteProjectMutation,
+} from "@/features/projects/hooks";
 import { ProjectForm, ProjectFormValues } from "@/features/projects/components/ProjectForm";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { ProjectMemberRoles } from "@/types/projectMember";
@@ -15,7 +19,8 @@ import { ProjectDocument } from "@/types/document";
 import { useQuery } from "@tanstack/react-query";
 
 export function ProjectSettingsPage() {
-  const { projectId = "" } = useParams();
+  const { projectId: projectIdParam } = useParams<{ projectId: string }>();
+  const projectId = projectIdParam ? Number(projectIdParam) : undefined;
   const { data: project, isLoading, isError } = useProjectQuery(projectId);
   const navigate = useNavigate();
   const mutation = useUpdateProjectMutation();
@@ -33,13 +38,15 @@ export function ProjectSettingsPage() {
   const { data: jobDocumentsMap = {} } = useQuery({
     queryKey: ["jobDocuments", projectId, jobIds],
     queryFn: async () => {
+      if (projectId == null) return {};
+
       const result: Record<string, ProjectDocument[]> = {};
       for (const jobId of jobIds) {
         result[jobId] = await documentsApi.getJobDocuments(projectId, jobId);
       }
       return result;
     },
-    enabled: jobIds.length > 0,
+    enabled: projectId != null && jobIds.length > 0,
   });
 
   useEffect(() => {
@@ -60,6 +67,8 @@ export function ProjectSettingsPage() {
   }
 
   async function handleDeleteProject() {
+    if (projectId == null) return;
+
     try {
       isDeletingRef.current = true;
       await deleteMutation.mutateAsync(projectId);
@@ -72,7 +81,7 @@ export function ProjectSettingsPage() {
   }
 
   async function handleSubmit(values: ProjectFormValues) {
-    if (!project) return;
+    if (!project || projectId == null) return;
     await mutation.mutateAsync({ id: project.id, ...values });
 
     if (values.pendingFiles.length > 0) {
@@ -133,7 +142,8 @@ export function ProjectSettingsPage() {
         <div className="mx-auto mt-8 max-w-2xl rounded-2xl border border-red-200 bg-red-50 p-6">
           <h3 className="mb-1 text-sm font-semibold text-red-700">Danger Zone</h3>
           <p className="mb-4 text-sm text-red-600">
-            Deleting this project is permanent and cannot be undone. All members, jobs, and documents will be removed.
+            Deleting this project is permanent and cannot be undone. All members, jobs, and
+            documents will be removed.
           </p>
           {showDeleteConfirm ? (
             <div className="flex items-center gap-3">

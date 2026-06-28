@@ -3,7 +3,7 @@ import { ProjectMember } from "./projectMember";
 import { Skill } from "./skill";
 
 export interface Project {
-  id: string;
+  id: number;
   name: string;
   description?: string;
   repositoryUrl?: string;
@@ -21,7 +21,7 @@ export interface UpsertProjectPayload {
 }
 
 export interface ProjectStatistics {
-  projectId: string;
+  projectId: number;
   teamMembers: number;
   averageProgress: number;
   completionRate: number;
@@ -50,7 +50,7 @@ export interface JobDistribution {
 }
 
 export interface DetailedProjectStatistics {
-  projectId: string;
+  projectId: number;
   avgOnboardDaysByJob: AvgOnboardByJob[];
   overdueCount: number;
   overdueMembers: OverdueMember[];

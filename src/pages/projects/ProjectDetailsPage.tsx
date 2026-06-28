@@ -4,7 +4,8 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import usersData from "@/mocks/users.json";
 import skillsData from "@/mocks/skills.json";
-import { FullProjectMember, ProjectMemberRoles } from "@/types/projectMember";
+import { FullProjectMember, ProjectMemberRole, ProjectMemberRoles } from "@/types/projectMember";
+import { Job } from "@/types/job";
 import { Skill } from "@/types/skill";
 import { User } from "@/types/user";
 import { Tabs } from "@/ui/Tabs";
@@ -18,12 +19,22 @@ import { useProjectRole } from "@/hooks/useProjectRole";
 import { useAuthStore } from "@/store/auth.store";
 import { Button } from "@/ui/Button";
 
-interface StoredUser extends Omit<User, "skills"> {
+interface StoredUser {
+  id: number;
+  name: string;
+  email: string | null;
+  experienceYears: number | null;
   skillIds: number[];
+  projectMemberships?: Array<{
+    id: number;
+    projectId: string | number;
+    role: string;
+    progress?: number;
+  }>;
 }
 
 const skills = skillsData as Skill[];
-const users = (usersData as StoredUser[]).map((user) => ({
+const users = (usersData as unknown as StoredUser[]).map((user) => ({
   ...user,
   skills: user.skillIds
     .map((skillId) => skills.find((skill) => skill.id === skillId))
@@ -41,7 +52,8 @@ const projectTabs = [
 }[];
 
 export function ProjectDetailsPage() {
-  const { projectId = "" } = useParams();
+  const { projectId: projectIdParam } = useParams<{ projectId: string }>();
+  const projectId = projectIdParam ? Number(projectIdParam) : undefined;
   const navigate = useNavigate();
   const { data: project, isLoading, isError } = useProjectQuery(projectId);
   const [activeTab, setActiveTab] = useState<ProjectTab>("members");
@@ -69,10 +81,19 @@ export function ProjectDetailsPage() {
           }))
         : users.flatMap((user) =>
             (user.projectMemberships ?? [])
-              .filter((membership) => membership.projectId === projectId)
+              .filter((membership) => Number(membership.projectId) === projectId)
               .map((membership) => ({
                 ...membership,
-                user,
+                user: {
+                  id: user.id,
+                  name: user.name,
+                  email: user.email,
+                  experienceYears: user.experienceYears,
+                  skills: user.skills,
+                } as User,
+                projectId: Number(membership.projectId),
+                role: membership.role as ProjectMemberRole,
+                job: { title: "General" } as Job,
                 progress: membership.progress ?? 0,
               })),
           ),
@@ -161,7 +182,7 @@ export function ProjectDetailsPage() {
           <div className="text-sm text-text-secondary">No team members found yet.</div>
         ) : null}
 
-        {activeTab === "statistics" && isAdmin && (
+        {activeTab === "statistics" && isAdmin && projectId != null && (
           <ProjectStatisticsTab projectId={projectId} />
         )}
 
@@ -172,6 +193,8 @@ export function ProjectDetailsPage() {
             jobs={project.jobs ?? []}
             isPending={addMemberMutation.isPending}
             onSubmit={({ memberId, jobId, role }) => {
+              if (projectId == null) return;
+
               addMemberMutation.mutate(
                 { projectId, memberId, jobId, role },
                 {

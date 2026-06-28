@@ -32,7 +32,7 @@ export const onboardingApiGateway: OnboardingGateway = {
     const { data } = await apiClient.get<OnboardingPlan[]>("/onboarding/plans");
     return data;
   },
-  async getOnboardingPlansByProject(projectId: string) {
+  async getOnboardingPlansByProject(projectId: number) {
     const { data } = await apiClient.get<OnboardingPlan[]>(`/onboarding/project/${projectId}`);
     return data;
   },
@@ -66,7 +66,7 @@ export const onboardingApiGateway: OnboardingGateway = {
   async upsertTask(payload: UpsertTaskPayload) {
     type TaskData = {
       id: number;
-      projectId: string;
+      projectId: number;
       order: number;
       title: string;
       description: string;
@@ -87,7 +87,7 @@ export const onboardingApiGateway: OnboardingGateway = {
     const { task } = data;
     return { ...task, subtasks: task.subtasks ?? [] } as PlanTask;
   },
-  async deleteTask(taskId: number, projectId: string) {
+  async deleteTask(taskId: number, projectId: number) {
     await apiClient.delete(`/tasks/${taskId}`, {
       data: { projectId },
     });

@@ -13,14 +13,19 @@ export function OnboardingPlanPage() {
   const { planId } = useParams<{ planId: string }>();
   const { data: plan } = useOnboardingPlanQuery(planId ? Number(planId) : undefined);
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const { data: project } = useProjectQuery(plan?.project.id ?? "");
-  const role = useProjectRole(plan?.project.id ?? "", project?.members);
+  const projectId = plan?.project.id != null ? Number(plan.project.id) : undefined;
+  const { data: project } = useProjectQuery(projectId);
+  const role = useProjectRole(projectId, project?.members);
 
   const isAdmin = role === ProjectMemberRoles.ADMIN;
   const canEdit = isAdmin;
 
   if (!plan) {
-    return <p className="text-sm text-text-secondary">No onboarding plan found. Please generate one first.</p>;
+    return (
+      <p className="text-sm text-text-secondary">
+        No onboarding plan found. Please generate one first.
+      </p>
+    );
   }
 
   return (
@@ -49,7 +54,7 @@ export function OnboardingPlanPage() {
           )}
         </header>
 
-        <PlanTimeline plan={plan} isReadonly={!canEdit} projectId={String(plan.project.id)} />
+        <PlanTimeline plan={plan} isReadonly={!canEdit} projectId={Number(plan.project.id)} />
 
         {canEdit && (
           <TaskModal
@@ -57,7 +62,7 @@ export function OnboardingPlanPage() {
             open={addModalOpen}
             onClose={() => setAddModalOpen(false)}
             onboardingId={plan.id}
-            projectId={String(plan.project.id)}
+            projectId={Number(plan.project.id)}
             nextOrder={(plan.tasks.at(-1)?.order || 0) + 1}
           />
         )}

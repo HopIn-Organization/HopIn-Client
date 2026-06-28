@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
 interface UiState {
-  selectedProjectId: string | null;
-  setSelectedProjectId: (projectId: string | null) => void;
+  selectedProjectId: number | null;
+  setSelectedProjectId: (projectId: number | null) => void;
   generatingOnboardingId: number | null;
   setGeneratingOnboardingId: (id: number | null) => void;
   generatingForUserId: number | null;

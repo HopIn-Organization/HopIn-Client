@@ -2,12 +2,12 @@ import { apiClient } from "@/services/http/api-client";
 import { ProjectDocument } from "@/types/document";
 
 export const documentsApi = {
-  async getDocuments(projectId: string): Promise<ProjectDocument[]> {
+  async getDocuments(projectId: number): Promise<ProjectDocument[]> {
     const { data } = await apiClient.get<ProjectDocument[]>(`/projects/${projectId}/documents`);
     return data;
   },
 
-  async uploadDocuments(projectId: string, files: File[]): Promise<ProjectDocument[]> {
+  async uploadDocuments(projectId: number, files: File[]): Promise<ProjectDocument[]> {
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
 
@@ -22,18 +22,18 @@ export const documentsApi = {
     return data;
   },
 
-  async deleteDocument(projectId: string, documentId: number): Promise<void> {
+  async deleteDocument(projectId: number, documentId: number): Promise<void> {
     await apiClient.delete(`/projects/${projectId}/documents/${documentId}`);
   },
 
-  async getDownloadUrl(projectId: string, documentId: number): Promise<string> {
+  async getDownloadUrl(projectId: number, documentId: number): Promise<string> {
     const { data } = await apiClient.get<{ url: string }>(
       `/projects/${projectId}/documents/${documentId}/download`,
     );
     return data.url;
   },
 
-  async getJobDocuments(projectId: string, jobId: string): Promise<ProjectDocument[]> {
+  async getJobDocuments(projectId: number, jobId: string): Promise<ProjectDocument[]> {
     const { data } = await apiClient.get<ProjectDocument[]>(
       `/projects/${projectId}/jobs/${jobId}/documents`,
     );
@@ -41,7 +41,7 @@ export const documentsApi = {
   },
 
   async uploadJobDocuments(
-    projectId: string,
+    projectId: number,
     jobId: string,
     files: File[],
   ): Promise<ProjectDocument[]> {
@@ -59,7 +59,7 @@ export const documentsApi = {
     return data;
   },
 
-  async deleteJobDocument(projectId: string, jobId: string, documentId: number): Promise<void> {
+  async deleteJobDocument(projectId: number, jobId: string, documentId: number): Promise<void> {
     await apiClient.delete(`/projects/${projectId}/jobs/${jobId}/documents/${documentId}`);
   },
 };

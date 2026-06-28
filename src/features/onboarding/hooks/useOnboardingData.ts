@@ -10,11 +10,11 @@ export function useOnboardingPlansQuery() {
   });
 }
 
-export function useOnboardingPlansByProjectQuery(projectId: string) {
+export function useOnboardingPlansByProjectQuery(projectId: number | undefined) {
   return useQuery({
     queryKey: ["onboarding-plans", "project", projectId],
-    queryFn: () => onboardingService.getOnboardingPlansByProject(projectId),
-    enabled: !!projectId,
+    queryFn: () => onboardingService.getOnboardingPlansByProject(projectId!),
+    enabled: projectId != null,
   });
 }
 
@@ -75,12 +75,12 @@ export function useGeneratePlanMutation() {
 
 export function useOnboardingStatusQuery(id: number | null) {
   return useQuery({
-    queryKey: ['onboarding-status', id],
+    queryKey: ["onboarding-status", id],
     queryFn: () => aiService.getOnboardingStatus(id!),
     enabled: id != null,
     refetchInterval: (query) => {
       const status = query.state.data?.status;
-      if (status === 'ready' || status === 'failed') return false;
+      if (status === "ready" || status === "failed") return false;
       return 3000;
     },
   });

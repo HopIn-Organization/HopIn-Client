@@ -11,7 +11,7 @@ export type ProjectMemberRole = (typeof ProjectMemberRoles)[keyof typeof Project
 export interface ProjectMember {
   id: number;
   user: User;
-  projectId: string;
+  projectId: number;
   role: ProjectMemberRole;
   job: Job;
   progress?: number;

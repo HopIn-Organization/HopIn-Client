@@ -1,24 +1,29 @@
-import { Project, ProjectStatistics, DetailedProjectStatistics, UpsertProjectPayload } from "@/types/project";
+import {
+  Project,
+  ProjectStatistics,
+  DetailedProjectStatistics,
+  UpsertProjectPayload,
+} from "@/types/project";
 import { ProjectMember } from "@/types/projectMember";
 
 export interface ProjectsGateway {
   getProjects(): Promise<Project[]>;
-  getProjectById(id: string): Promise<Project>;
+  getProjectById(id: number): Promise<Project>;
   createProject(payload: UpsertProjectPayload): Promise<Project>;
   updateProject(
     payload: {
-      id: string;
+      id: number;
     } & UpsertProjectPayload,
   ): Promise<Project>;
   getProjectStatistics(): Promise<ProjectStatistics[]>;
-  getDetailedStatistics(projectId: string): Promise<DetailedProjectStatistics>;
-  updateMemberRole(projectId: string, memberId: string, role: string): Promise<ProjectMember>;
-  removeMember(projectId: string, memberId: string): Promise<void>;
+  getDetailedStatistics(projectId: number): Promise<DetailedProjectStatistics>;
+  updateMemberRole(projectId: number, memberId: string, role: string): Promise<ProjectMember>;
+  removeMember(projectId: number, memberId: string): Promise<void>;
   addMember(
-    projectId: string,
+    projectId: number,
     memberId: string,
     jobId: string,
     role: string,
   ): Promise<ProjectMember>;
-  deleteProject(id: string): Promise<void>;
+  deleteProject(id: number): Promise<void>;
 }

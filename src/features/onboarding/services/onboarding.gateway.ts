@@ -12,9 +12,9 @@ export interface OnboardingGateway {
   getTeamLeadRequirements(): Promise<TeamLeadRequirement[]>;
   saveTeamLeadRequirement(requirement: TeamLeadRequirement): Promise<TeamLeadRequirement>;
   getOnboardingPlans(): Promise<OnboardingPlan[]>;
-  getOnboardingPlansByProject(projectId: string): Promise<OnboardingPlan[]>;
+  getOnboardingPlansByProject(projectId: number): Promise<OnboardingPlan[]>;
   getOnboardingPlanById(planId: number): Promise<OnboardingPlan>;
   completeTask(taskId: number): Promise<PlanTask>;
   upsertTask(payload: UpsertTaskPayload): Promise<PlanTask>;
-  deleteTask(taskId: number, projectId: string): Promise<void>;
+  deleteTask(taskId: number, projectId: number): Promise<void>;
 }
