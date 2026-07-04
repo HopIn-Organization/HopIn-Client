@@ -18,10 +18,15 @@ export interface GithubConnection {
 export type ConnectResult = { alreadyConnected: true } | { installUrl: string };
 
 export const githubApi = {
-  async getInstallUrl(projectId: number, repoOwner: string, repoName: string): Promise<ConnectResult> {
+  async getInstallUrl(
+    projectId: number,
+    repoOwner: string,
+    repoName: string,
+    from?: "create",
+  ): Promise<ConnectResult> {
     const { data } = await apiClient.post<ConnectResult>(
       `/projects/${projectId}/github/connect`,
-      { repoOwner, repoName },
+      { repoOwner, repoName, ...(from && { from }) },
     );
     return data;
   },

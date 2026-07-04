@@ -1,12 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertCircle, CheckCircle2, GitBranch, Loader2, RefreshCw, Unlink } from "lucide-react";
+import { AlertCircle, CheckCircle2, GitBranch, RefreshCw, Unlink } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { githubApi, GithubConnection, SyncStatus } from "../services/github.api";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 
 interface Props {
   projectId: number;
+  /** Flow context forwarded to the install round-trip ("create" = post-creation step). */
+  from?: "create";
 }
 
 const STATUS_LABELS: Record<SyncStatus, string> = {
@@ -17,7 +20,7 @@ const STATUS_LABELS: Record<SyncStatus, string> = {
   revoked: "Access revoked — reconnect to restore",
 };
 
-export function GitHubConnectionCard({ projectId }: Props) {
+export function GitHubConnectionCard({ projectId, from }: Props) {
   const queryClient = useQueryClient();
   const queryKey = ["github-connections", projectId];
 
@@ -33,13 +36,18 @@ export function GitHubConnectionCard({ projectId }: Props) {
   });
 
   const [connectError, setConnectError] = useState<string | null>(null);
+  const [formResetKey, setFormResetKey] = useState(0);
 
   const connectMutation = useMutation({
     mutationFn: ({ repoOwner, repoName }: { repoOwner: string; repoName: string }) =>
-      githubApi.getInstallUrl(projectId, repoOwner, repoName),
+      githubApi.getInstallUrl(projectId, repoOwner, repoName, from),
     onSuccess: (result) => {
       if ('alreadyConnected' in result) {
-        window.location.href = `/projects/${projectId}/settings?github=connected`;
+        // App already installed on the repo — no GitHub round-trip needed,
+        // the connection was created server-side. Stay on the page.
+        toast.success("GitHub repository connected successfully!");
+        void queryClient.invalidateQueries({ queryKey });
+        setFormResetKey((k) => k + 1);
       } else {
         window.location.href = result.installUrl;
       }
@@ -78,7 +86,7 @@ export function GitHubConnectionCard({ projectId }: Props) {
 
       {isLoading ? (
         <div className="flex items-center gap-2 text-sm text-text-secondary">
-          <Loader2 size={14} className="animate-spin" />
+          <img src="/github_loading_gif.gif" alt="Loading..." className="h-5 w-5" />
           Checking connections...
         </div>
       ) : (
@@ -122,6 +130,7 @@ export function GitHubConnectionCard({ projectId }: Props) {
 
           <div className="h-px bg-border" />
           <AddRepositoryForm
+            key={formResetKey}
             onConnect={(repoOwner, repoName) => {
               setConnectError(null);
               setReconnectingId(null);
@@ -170,7 +179,7 @@ function AddRepositoryForm({
           className="flex-1 rounded-md border border-border bg-background px-3 py-1.5 text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
         />
         <Button onClick={handleConnect} disabled={isLoading || !repo.trim()} className="shrink-0">
-          {isLoading ? <Loader2 size={14} className="animate-spin" /> : <GitBranch size={14} />}
+          {isLoading ? <img src="/github_loading_gif.gif" alt="" className="h-4 w-4" /> : <GitBranch size={14} />}
           {isLoading ? "Redirecting..." : "Add repository"}
         </Button>
       </div>
@@ -213,7 +222,7 @@ function ConnectionRow({
           ) : isError ? (
             <AlertCircle size={18} className="text-red-500" />
           ) : isActivelySyncing ? (
-            <Loader2 size={18} className="animate-spin text-primary" />
+            <img src="/github_loading_gif.gif" alt="Syncing..." className="h-5 w-5 shrink-0" />
           ) : (
             <CheckCircle2 size={18} className="text-green-500" />
           )}
@@ -234,7 +243,7 @@ function ConnectionRow({
               className="h-8 px-3 text-xs"
             >
               {isReconnecting ? (
-                <Loader2 size={12} className="animate-spin" />
+                <img src="/github_loading_gif.gif" alt="" className="h-3.5 w-3.5" />
               ) : (
                 <GitBranch size={12} />
               )}

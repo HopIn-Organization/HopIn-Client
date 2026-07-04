@@ -9,6 +9,7 @@ import { OnboardingPlanPage } from "@/pages/onboarding/OnboardingPlanPage";
 import { OnboardingReviewPage } from "@/pages/onboarding/OnboardingReviewPage";
 import { OnboardingStartPage } from "@/pages/onboarding/OnboardingStartPage";
 import { ProfilePage } from "@/pages/profile/ProfilePage";
+import { ConnectGithubPage } from "@/pages/projects/ConnectGithubPage";
 import { CreateProjectPage } from "@/pages/projects/CreateProjectPage";
 import { ProjectAccessPage } from "@/pages/projects/ProjectAccessPage";
 import { ProjectDetailsPage } from "@/pages/projects/ProjectDetailsPage";
@@ -40,6 +41,7 @@ export function AppRouter() {
           <Route path="/projects/:projectId" element={<ProjectAccessPage />} />
           <Route path="/projects/:projectId/details" element={<ProjectDetailsPage />} />
           <Route path="/projects/:projectId/settings" element={<ProjectSettingsPage />} />
+          <Route path="/projects/:projectId/github" element={<ConnectGithubPage />} />
           <Route path="/statistics" element={<StatisticsPage />} />
           <Route path="/statistics/:projectId" element={<DetailedStatisticsPage />} />
           <Route path="/profile" element={<ProfilePage />} />

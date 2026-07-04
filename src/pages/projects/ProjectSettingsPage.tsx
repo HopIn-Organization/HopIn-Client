@@ -9,7 +9,7 @@ import {
 import { ProjectForm, ProjectFormValues } from "@/features/projects/components/ProjectForm";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { ProjectMemberRoles } from "@/types/projectMember";
-import { GitHubConnectionCard } from "@/features/projects/components/GitHubConnectionCard";
+import { GitHubManageCard } from "@/features/projects/components/GitHubManageCard";
 import {
   useProjectDocumentsQuery,
   useUploadDocumentsMutation,
@@ -49,23 +49,6 @@ export function ProjectSettingsPage() {
     },
     enabled: projectId != null && jobIds.length > 0,
   });
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const githubParam = params.get("github");
-    if (githubParam === "connected") {
-      toast.success("GitHub repository connected successfully!");
-    } else if (githubParam === "error") {
-      const reason = params.get("reason") ?? "Failed to connect GitHub repository.";
-      toast.error(reason, { duration: 8000 });
-    }
-    if (githubParam) {
-      const url = new URL(window.location.href);
-      url.searchParams.delete("github");
-      url.searchParams.delete("reason");
-      window.history.replaceState({}, "", url.toString());
-    }
-  }, []);
 
   useEffect(() => {
     if (isError && !isDeletingRef.current) {
@@ -158,7 +141,7 @@ export function ProjectSettingsPage() {
 
         {projectId != null && (
           <div className="mx-auto mt-6 w-full max-w-5xl">
-            <GitHubConnectionCard projectId={projectId} />
+            <GitHubManageCard projectId={projectId} />
           </div>
         )}
 

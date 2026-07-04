@@ -1,19 +1,15 @@
-﻿import { useState } from "react";
-import toast from "react-hot-toast";
+﻿import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useCreateProjectMutation } from "@/features/projects/hooks";
 import { useProfileQuery } from "@/features/profile/hooks";
 import { ProjectForm, ProjectFormValues } from "@/features/projects/components/ProjectForm";
-import { GitHubConnectionCard } from "@/features/projects/components/GitHubConnectionCard";
 import { ProjectMemberRoles } from "@/types/projectMember";
 import { documentsApi } from "@/features/projects/services/documents.api";
-import { Button } from "@/ui/Button";
 
 export function CreateProjectPage() {
   const navigate = useNavigate();
   const mutation = useCreateProjectMutation();
   const { data: profile, isLoading: isProfileLoading } = useProfileQuery();
-  const [createdProjectId, setCreatedProjectId] = useState<number | null>(null);
 
   async function handleSubmit(values: ProjectFormValues) {
     try {
@@ -38,31 +34,12 @@ export function CreateProjectPage() {
         }
       }
 
-      setCreatedProjectId(project.id);
+      // The GitHub step lives on its own route so it survives the full-page
+      // redirect to GitHub and back (and plain refreshes).
+      navigate(`/projects/${project.id}/github?from=create`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to create project");
     }
-  }
-
-  if (createdProjectId != null) {
-    return (
-      <section className="mx-auto w-full max-w-5xl space-y-6">
-        <header className="space-y-1">
-          <h1 className="text-4xl font-semibold text-text-primary">Connect GitHub</h1>
-          <p className="text-lg text-text-secondary">
-            Optionally link a repository to enable code-aware onboarding plans.
-          </p>
-        </header>
-
-        <GitHubConnectionCard projectId={createdProjectId} />
-
-        <div className="flex justify-end">
-          <Button onClick={() => navigate("/projects")} className="px-8 py-3 text-base">
-            Done
-          </Button>
-        </div>
-      </section>
-    );
   }
 
   return (
