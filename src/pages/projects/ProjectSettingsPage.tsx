@@ -9,6 +9,7 @@ import {
 import { ProjectForm, ProjectFormValues } from "@/features/projects/components/ProjectForm";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { ProjectMemberRoles } from "@/types/projectMember";
+import { GitHubConnectionCard } from "@/features/projects/components/GitHubConnectionCard";
 import {
   useProjectDocumentsQuery,
   useUploadDocumentsMutation,
@@ -48,6 +49,23 @@ export function ProjectSettingsPage() {
     },
     enabled: projectId != null && jobIds.length > 0,
   });
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const githubParam = params.get("github");
+    if (githubParam === "connected") {
+      toast.success("GitHub repository connected successfully!");
+    } else if (githubParam === "error") {
+      const reason = params.get("reason") ?? "Failed to connect GitHub repository.";
+      toast.error(reason, { duration: 8000 });
+    }
+    if (githubParam) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("github");
+      url.searchParams.delete("reason");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, []);
 
   useEffect(() => {
     if (isError && !isDeletingRef.current) {
@@ -127,7 +145,6 @@ export function ProjectSettingsPage() {
           defaultValues={{
             name: project.name,
             description: project.description ?? "",
-            repositoryUrl: project.repositoryUrl ?? "",
             jobs: existingJobs,
           }}
           existingDocuments={documents}
@@ -138,6 +155,12 @@ export function ProjectSettingsPage() {
           submitLabel="Save Changes"
           onSubmit={handleSubmit}
         />
+
+        {projectId != null && (
+          <div className="mx-auto mt-6 w-full max-w-5xl">
+            <GitHubConnectionCard projectId={projectId} />
+          </div>
+        )}
 
         <div className="mx-auto mt-8 max-w-2xl rounded-2xl border border-red-200 bg-red-50 p-6">
           <h3 className="mb-1 text-sm font-semibold text-red-700">Danger Zone</h3>

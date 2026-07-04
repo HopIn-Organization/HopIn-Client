@@ -1,5 +1,5 @@
 ﻿import { FormEvent, useState } from "react";
-import { ArrowLeft, Link2, Plus } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { CreateJob } from "@/pages/projects/CreateJob";
 import { Button } from "@/ui/Button";
@@ -11,7 +11,6 @@ import { ProjectDocument } from "@/types/document";
 export interface ProjectFormValues {
   name: string;
   description: string;
-  repositoryUrl: string;
   jobs: Array<{ id?: number; title: string; skills: Array<{ name: string }> }>;
   pendingFiles: File[];
   jobPendingFiles: Record<number, File[]>;
@@ -25,7 +24,6 @@ interface ProjectFormProps {
   defaultValues?: {
     name?: string;
     description?: string;
-    repositoryUrl?: string;
     jobs?: Array<{ id?: string; title: string; skills: string[] }>;
   };
   existingDocuments?: ProjectDocument[];
@@ -120,7 +118,6 @@ export function ProjectForm({
     await onSubmit({
       name: String(formData.get("name") ?? ""),
       description: String(formData.get("description") ?? ""),
-      repositoryUrl: String(formData.get("repositoryUrl") ?? ""),
       jobs: jobs.map((job) => ({
         id: Number(job.id),
         title: job.title,
@@ -172,25 +169,7 @@ export function ProjectForm({
             />
           </label>
 
-          <label htmlFor="repositoryUrl" className="block space-y-2 text-sm">
-            <span className="text-xs font-medium text-text-secondary">
-              GitHub Repository (Optional)
-            </span>
-            <div className="relative">
-              <Link2
-                size={14}
-                className="pointer-events-none absolute left-3 top-3.5 text-text-secondary"
-              />
-              <input
-                id="repositoryUrl"
-                name="repositoryUrl"
-                className="h-11 w-full rounded-xl border border-border bg-surface pl-9 pr-3 text-sm outline-none focus:border-primary"
-                placeholder="https://github.com/org/repo"
-                defaultValue={defaultValues?.repositoryUrl ?? ""}
-                disabled={true}
-              />
-            </div>
-          </label>
+
         </Card>
 
         <Card className="space-y-5 p-6">
