@@ -6,6 +6,7 @@ export interface GithubConnectionStatus {
   syncStatus: SyncStatus;
   lastSyncedAt: string | null;
   lastCommitSha: string | null;
+  lastError: string | null;
   repoOwner: string;
   repoName: string;
 }

@@ -155,10 +155,13 @@ function ConnectedState({
   isDisconnecting: boolean;
   isReconnecting: boolean;
 }) {
-  const { syncStatus, repoOwner, repoName, lastSyncedAt } = status;
+  const { syncStatus, repoOwner, repoName, lastSyncedAt, lastError } = status;
   const isRevoked = syncStatus === "revoked";
   const isError = syncStatus === "error";
   const isActivelySyncing = syncStatus === "syncing" || syncStatus === "pending";
+  // Only block the button while a sync is actually running; "pending" means queued,
+  // and the user should be able to trigger a manual sync if needed.
+  const isSyncButtonDisabled = isSyncing || syncStatus === "syncing";
 
   return (
     <div className="space-y-3">
@@ -199,7 +202,7 @@ function ConnectedState({
           ) : (
             <Button
               onClick={onSync}
-              disabled={isSyncing || isActivelySyncing}
+              disabled={isSyncButtonDisabled}
               variant="outline"
               className="h-8 px-3 text-xs"
             >
@@ -223,6 +226,9 @@ function ConnectedState({
         <p className="text-xs text-text-secondary">
           Last synced: {new Date(lastSyncedAt).toLocaleString()}
         </p>
+      )}
+      {isError && lastError && (
+        <p className="text-xs text-red-500">{lastError}</p>
       )}
     </div>
   );
