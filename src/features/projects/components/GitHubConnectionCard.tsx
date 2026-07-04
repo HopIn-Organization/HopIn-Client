@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, CheckCircle2, GitBranch, Loader2, RefreshCw, Unlink } from "lucide-react";
 import { useState } from "react";
-import { githubApi, GithubConnectionStatus, SyncStatus } from "../services/github.api";
+import { githubApi, GithubConnection, SyncStatus } from "../services/github.api";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 
@@ -19,16 +19,20 @@ const STATUS_LABELS: Record<SyncStatus, string> = {
 
 export function GitHubConnectionCard({ projectId }: Props) {
   const queryClient = useQueryClient();
-  const queryKey = ["github-status", projectId];
+  const queryKey = ["github-connections", projectId];
 
-  const { data: status, isLoading } = useQuery({
+  const { data: connections = [], isLoading } = useQuery({
     queryKey,
-    queryFn: () => githubApi.getStatus(projectId),
+    queryFn: () => githubApi.listConnections(projectId),
     refetchInterval: (query) => {
-      const s = query.state.data?.syncStatus;
-      return s === "syncing" || s === "pending" ? 4000 : 30000;
+      const anyActive = (query.state.data ?? []).some(
+        (c) => c.syncStatus === "syncing" || c.syncStatus === "pending",
+      );
+      return anyActive ? 4000 : 30000;
     },
   });
+
+  const [connectError, setConnectError] = useState<string | null>(null);
 
   const connectMutation = useMutation({
     mutationFn: ({ repoOwner, repoName }: { repoOwner: string; repoName: string }) =>
@@ -40,60 +44,106 @@ export function GitHubConnectionCard({ projectId }: Props) {
         window.location.href = result.installUrl;
       }
     },
-  });
-
-  const disconnectMutation = useMutation({
-    mutationFn: () => githubApi.disconnect(projectId),
-    onSuccess: () => {
-      queryClient.setQueryData(queryKey, null);
+    onError: (err: unknown) => {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      setConnectError(
+        status === 409
+          ? "This repository is already connected to the project"
+          : "Could not start the GitHub connection. Please try again.",
+      );
     },
   });
 
-  const syncMutation = useMutation({
-    mutationFn: () => githubApi.triggerSync(projectId),
+  const disconnectMutation = useMutation({
+    mutationFn: (connectionId: number) => githubApi.disconnect(projectId, connectionId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey });
     },
   });
 
+  const syncMutation = useMutation({
+    mutationFn: (connectionId: number) => githubApi.triggerSync(projectId, connectionId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey });
+    },
+  });
+
+  // The connection id passed to the reconnect flow, so only that row's button spins
+  const [reconnectingId, setReconnectingId] = useState<number | null>(null);
+
   return (
     <Card className="space-y-5 p-6">
-      <h2 className="text-xl font-semibold text-text-primary">GitHub Repository</h2>
+      <h2 className="text-xl font-semibold text-text-primary">GitHub Repositories</h2>
       <div className="h-px bg-border" />
 
       {isLoading ? (
         <div className="flex items-center gap-2 text-sm text-text-secondary">
           <Loader2 size={14} className="animate-spin" />
-          Checking connection...
+          Checking connections...
         </div>
-      ) : status == null ? (
-        <NotConnectedState
-          onConnect={(repoOwner, repoName) => connectMutation.mutate({ repoOwner, repoName })}
-          isLoading={connectMutation.isPending}
-        />
       ) : (
-        <ConnectedState
-          status={status}
-          onSync={() => syncMutation.mutate()}
-          onDisconnect={() => disconnectMutation.mutate()}
-          onReconnect={() =>
-            connectMutation.mutate({ repoOwner: status.repoOwner, repoName: status.repoName })
-          }
-          isSyncing={syncMutation.isPending}
-          isDisconnecting={disconnectMutation.isPending}
-          isReconnecting={connectMutation.isPending}
-        />
+        <div className="space-y-4">
+          {connections.length === 0 ? (
+            <div className="flex items-start gap-3">
+              <GitBranch size={20} className="mt-0.5 shrink-0 text-text-secondary" />
+              <div>
+                <p className="text-sm font-medium text-text-primary">No repositories connected</p>
+                <p className="text-xs text-text-secondary">
+                  Connect GitHub repos to enable code-aware onboarding plans.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {connections.map((connection, index) => (
+                <div key={connection.id} className="space-y-4">
+                  {index > 0 && <div className="h-px bg-border" />}
+                  <ConnectionRow
+                    connection={connection}
+                    onSync={() => syncMutation.mutate(connection.id)}
+                    onDisconnect={() => disconnectMutation.mutate(connection.id)}
+                    onReconnect={() => {
+                      setReconnectingId(connection.id);
+                      connectMutation.mutate({
+                        repoOwner: connection.repoOwner,
+                        repoName: connection.repoName,
+                      });
+                    }}
+                    isSyncing={syncMutation.isPending && syncMutation.variables === connection.id}
+                    isDisconnecting={
+                      disconnectMutation.isPending && disconnectMutation.variables === connection.id
+                    }
+                    isReconnecting={connectMutation.isPending && reconnectingId === connection.id}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="h-px bg-border" />
+          <AddRepositoryForm
+            onConnect={(repoOwner, repoName) => {
+              setConnectError(null);
+              setReconnectingId(null);
+              connectMutation.mutate({ repoOwner, repoName });
+            }}
+            isLoading={connectMutation.isPending && reconnectingId === null}
+            serverError={connectError}
+          />
+        </div>
       )}
     </Card>
   );
 }
 
-function NotConnectedState({
+function AddRepositoryForm({
   onConnect,
   isLoading,
+  serverError,
 }: {
   onConnect: (repoOwner: string, repoName: string) => void;
   isLoading: boolean;
+  serverError: string | null;
 }) {
   const [repo, setRepo] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -109,16 +159,7 @@ function NotConnectedState({
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-start gap-3">
-        <GitBranch size={20} className="mt-0.5 shrink-0 text-text-secondary" />
-        <div>
-          <p className="text-sm font-medium text-text-primary">No repository connected</p>
-          <p className="text-xs text-text-secondary">
-            Connect a GitHub repo to enable code-aware onboarding plans.
-          </p>
-        </div>
-      </div>
+    <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <input
           type="text"
@@ -130,16 +171,16 @@ function NotConnectedState({
         />
         <Button onClick={handleConnect} disabled={isLoading || !repo.trim()} className="shrink-0">
           {isLoading ? <Loader2 size={14} className="animate-spin" /> : <GitBranch size={14} />}
-          {isLoading ? "Redirecting..." : "Connect GitHub"}
+          {isLoading ? "Redirecting..." : "Add repository"}
         </Button>
       </div>
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {(error ?? serverError) && <p className="text-xs text-red-500">{error ?? serverError}</p>}
     </div>
   );
 }
 
-function ConnectedState({
-  status,
+function ConnectionRow({
+  connection,
   onSync,
   onDisconnect,
   onReconnect,
@@ -147,7 +188,7 @@ function ConnectedState({
   isDisconnecting,
   isReconnecting,
 }: {
-  status: GithubConnectionStatus;
+  connection: GithubConnection;
   onSync: () => void;
   onDisconnect: () => void;
   onReconnect: () => void;
@@ -155,7 +196,7 @@ function ConnectedState({
   isDisconnecting: boolean;
   isReconnecting: boolean;
 }) {
-  const { syncStatus, repoOwner, repoName, lastSyncedAt, lastError } = status;
+  const { syncStatus, repoOwner, repoName, lastSyncedAt, lastError } = connection;
   const isRevoked = syncStatus === "revoked";
   const isError = syncStatus === "error";
   const isActivelySyncing = syncStatus === "syncing" || syncStatus === "pending";
