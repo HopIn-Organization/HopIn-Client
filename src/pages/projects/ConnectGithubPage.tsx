@@ -72,37 +72,49 @@ export function ConnectGithubPage() {
   if (!project) return null;
 
   return (
-    <section className="mx-auto w-full max-w-5xl space-y-6">
-      <header className="space-y-3">
+    <div className="mx-auto w-full max-w-5xl">
+      {/* Cover photo — GitHub logo as large background, title overlaid */}
+      <div className="relative h-60 overflow-hidden rounded-2xl bg-gray-50 dark:bg-gray-900">
         <img
           src="/github_logo_and_title.png"
-          alt="GitHub"
-          className="h-10 dark:invert"
+          alt=""
+          aria-hidden
+          className="h-full w-full select-none object-contain opacity-30 dark:invert dark:opacity-20"
         />
-        <p className="text-lg text-text-secondary">
-          {fromCreate
-            ? "Optionally link repositories to enable code-aware onboarding plans."
-            : `Manage the repositories connected to ${project.name}.`}
-        </p>
-      </header>
-
-      <GitHubConnectionCard projectId={projectId} from={fromCreate ? "create" : undefined} />
-
-      <div className="flex justify-end gap-3">
-        {fromCreate ? (
-          <Button onClick={() => navigate("/projects")} className="px-8 py-3 text-base">
-            Done
-          </Button>
-        ) : (
-          <Button
-            variant="outline"
-            onClick={() => navigate(`/projects/${projectId}/settings`)}
-            className="px-6 py-2"
-          >
-            Back to Settings
-          </Button>
-        )}
+        {/* Bottom gradient so title text stays readable */}
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-50/95 via-gray-50/20 to-transparent dark:from-gray-900/95 dark:via-gray-900/20" />
+        <div className="absolute bottom-0 left-0 right-0 px-10 pb-7">
+          <h1 className="text-3xl font-bold text-text-primary">
+            {fromCreate ? "Connect GitHub" : "GitHub Repositories"}
+          </h1>
+          <p className="mt-1 text-sm text-text-secondary">
+            {fromCreate
+              ? "Optionally link repositories to enable code-aware onboarding plans."
+              : `Manage the repositories connected to ${project.name}.`}
+          </p>
+        </div>
       </div>
-    </section>
+
+      {/* Card slides over the cover photo */}
+      <div className="relative z-10 -mt-4 space-y-5">
+        <GitHubConnectionCard projectId={projectId} {...(fromCreate && { from: "create" })} />
+
+        <div className="flex justify-end gap-3">
+          {fromCreate ? (
+            <Button onClick={() => navigate("/projects")} className="px-8 py-3 text-base">
+              Done
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              onClick={() => navigate(`/projects/${projectId}/settings`)}
+              className="px-6 py-2"
+            >
+              Back to Settings
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
