@@ -19,4 +19,6 @@ export const onboardingService = {
   upsertTask: (payload: Parameters<typeof gateway.upsertTask>[0]) => gateway.upsertTask(payload),
   deleteTask: ({ taskId, projectId }: { taskId: number; projectId: number }) =>
     gateway.deleteTask(taskId, projectId),
+  downloadRepoKnowledge: (onboardingId: number, connectionId: number) =>
+    gateway.downloadRepoKnowledge(onboardingId, connectionId),
 };

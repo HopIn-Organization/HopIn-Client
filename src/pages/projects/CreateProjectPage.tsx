@@ -13,49 +13,30 @@ export function CreateProjectPage() {
 
   async function handleSubmit(values: ProjectFormValues) {
     try {
-      const managerJob = {
-        title: "manager",
-        skills: [],
-      };
+      const jobs = [{ title: "manager", skills: [] }, ...values.jobs];
+      const members = profile ? [{ userId: profile.id, role: ProjectMemberRoles.ADMIN }] : [];
 
-      const jobs = [managerJob, ...values.jobs];
-
-      const members = profile
-        ? [
-            {
-              userId: profile.id,
-              role: ProjectMemberRoles.ADMIN,
-            },
-          ]
-        : [];
-
-      const project = await mutation.mutateAsync({
-        name: values.name,
-        description: values.description,
-        repositoryUrl: values.repositoryUrl,
-        jobs,
-        members,
-      });
+      const project = await mutation.mutateAsync({ name: values.name, description: values.description, jobs, members });
 
       if (values.pendingFiles.length > 0) {
         await documentsApi.uploadDocuments(project.id, values.pendingFiles);
       }
 
       const createdJobs = project.jobs ?? project.job ?? [];
-
       for (const [indexStr, files] of Object.entries(values.jobPendingFiles)) {
         if (files.length === 0) continue;
         const index = Number(indexStr);
         const jobTitle = values.jobs[index]?.title;
         if (!jobTitle) continue;
-
         const createdJob = createdJobs.find((j) => j.title === jobTitle);
         if (createdJob?.id) {
           await documentsApi.uploadJobDocuments(project.id, String(createdJob.id), files);
         }
       }
 
-      navigate("/projects");
+      // The GitHub step lives on its own route so it survives the full-page
+      // redirect to GitHub and back (and plain refreshes).
+      navigate(`/projects/${project.id}/github?from=create`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to create project");
     }

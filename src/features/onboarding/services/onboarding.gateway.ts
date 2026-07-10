@@ -17,4 +17,5 @@ export interface OnboardingGateway {
   completeTask(taskId: number): Promise<PlanTask>;
   upsertTask(payload: UpsertTaskPayload): Promise<PlanTask>;
   deleteTask(taskId: number, projectId: number): Promise<void>;
+  downloadRepoKnowledge(onboardingId: number, connectionId: number): Promise<Blob>;
 }

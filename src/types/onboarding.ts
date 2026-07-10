@@ -73,6 +73,25 @@ export interface UpdateTaskPayload {
 
 export type UpsertTaskPayload = CreateTaskPayload | UpdateTaskPayload;
 
+export type RepoKnowledgeStatus = "used" | "none" | "error";
+
+export interface RepoKnowledgeRepoRef {
+  connectionId: number;
+  repoOwner: string;
+  repoName: string;
+  repoUrl: string;
+  commitSha: string;
+}
+
+// Captures the knowledge sources that fed an onboarding's generation. Today it only
+// records GitHub repo knowledge, but this is intentionally named generically: in the
+// future it may also hold the documents, job skills, or anything else used to generate
+// the plan.
+export interface KnowledgeMeta {
+  status: RepoKnowledgeStatus;
+  repos: RepoKnowledgeRepoRef[];
+}
+
 export interface OnboardingPlan {
   id: number;
   user: User;
@@ -80,4 +99,5 @@ export interface OnboardingPlan {
   project: Project;
   tasks: PlanTask[];
   progress: number;
+  knowledgeMeta?: KnowledgeMeta | null;
 }
