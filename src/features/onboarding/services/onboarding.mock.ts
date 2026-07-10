@@ -139,4 +139,11 @@ export const onboardingMockGateway: OnboardingGateway = {
     }
     throw new Error(`Task ${taskId} not found`);
   },
+  async downloadRepoKnowledge(onboardingId: number, connectionId: number) {
+    await mockDelay();
+    return new Blob(
+      [JSON.stringify({ onboardingId, connectionId, mock: true }, null, 2)],
+      { type: "application/json" },
+    );
+  },
 };

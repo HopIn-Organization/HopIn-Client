@@ -92,4 +92,11 @@ export const onboardingApiGateway: OnboardingGateway = {
       data: { projectId },
     });
   },
+  async downloadRepoKnowledge(onboardingId: number, connectionId: number) {
+    const { data } = await apiClient.get<Blob>(
+      `/onboarding/${onboardingId}/repo-knowledge/${connectionId}/download`,
+      { responseType: "blob" },
+    );
+    return data;
+  },
 };

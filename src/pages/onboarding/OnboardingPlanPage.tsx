@@ -3,6 +3,7 @@ import { ArrowLeft, Plus } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { TaskModal } from "@/features/onboarding/components/TaskModal";
 import { PlanTimeline } from "@/features/onboarding/components/PlanTimeline";
+import { OnboardingSourceAlert } from "@/features/onboarding/components/OnboardingSourceAlert";
 import { useOnboardingPlanQuery } from "@/features/onboarding/hooks/useOnboardingData";
 import { useProjectQuery } from "@/features/projects/hooks";
 import { useProjectRole } from "@/hooks/useProjectRole";
@@ -53,6 +54,8 @@ export function OnboardingPlanPage() {
             </Button>
           )}
         </header>
+
+        <OnboardingSourceAlert plan={plan} isAdmin={isAdmin} />
 
         <PlanTimeline plan={plan} isReadonly={!canEdit} projectId={Number(plan.project.id)} />
 
