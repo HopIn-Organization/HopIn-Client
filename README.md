@@ -1,6 +1,5 @@
 # HopIn Client
 
-
 Production-ready React + TypeScript frontend for a multi-company onboarding platform.
 
 ## Stack
