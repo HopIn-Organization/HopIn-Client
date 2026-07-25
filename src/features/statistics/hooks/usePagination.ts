@@ -1,19 +1,24 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 
 const DEFAULT_PAGE_SIZE = 8;
 
 export function usePagination<T>(items: T[], pageSize = DEFAULT_PAGE_SIZE) {
     const [page, setPage] = useState(0);
+    const [prevItemsLength, setPrevItemsLength] = useState(items.length);
 
     const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
 
-    // Reset page when items change (e.g., filters applied, new data loaded)
-    useEffect(() => {
+    // Reset page when items change (e.g., filters applied, new data loaded).
+    // Done during render (not in an effect) to avoid an extra render pass —
+    let currentPageState = page;
+    if (items.length !== prevItemsLength) {
+        setPrevItemsLength(items.length);
+        currentPageState = 0;
         setPage(0);
-    }, [items.length]);
+    }
 
     // Clamp page if it becomes out of bounds (e.g., items shrink)
-    const safePage = Math.min(page, totalPages - 1);
+    const safePage = Math.min(currentPageState, totalPages - 1);
 
     const pageItems = useMemo(
         () => items.slice(safePage * pageSize, (safePage + 1) * pageSize),
