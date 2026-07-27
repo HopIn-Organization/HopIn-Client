@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PieChart, Pie, Cell, Tooltip, type TooltipProps } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, type TooltipContentProps } from "recharts";
 import { Card } from "@/ui/Card";
 import { JobDistribution } from "@/types/project";
 import { groupJobDistribution } from "../utils/groupJobDistribution";
@@ -9,16 +9,16 @@ interface JobDistributionChartProps {
     data: JobDistribution[];
 }
 
-interface OtherTooltipProps extends TooltipProps<number, string> {
+type OtherTooltipProps = Partial<TooltipContentProps<number, string>> & {
     originalData: JobDistribution[];
     groupedData: JobDistribution[];
-}
+};
 
 function OtherSegmentTooltip({ active, payload, originalData, groupedData }: OtherTooltipProps) {
     if (!active || !payload || payload.length === 0) return null;
 
     const entry = payload[0];
-    if (entry.name !== "Other") return null;
+    if (!entry || entry.name !== "Other") return null;
 
     // Find the roles grouped into "Other"
     const topLabels = new Set(groupedData.filter((d) => d.label !== "Other").map((d) => d.label));
