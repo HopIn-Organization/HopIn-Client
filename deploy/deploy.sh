@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Run this directly on the production machine (over SSH, or from a cron/systemd
-# timer) to deploy the latest prepare-prod. Requires a production .env already sitting
+# timer) to deploy the latest main. Requires a production .env already sitting
 # in the repo root (see DEPLOYMENT.md) — Vite bakes VITE_* vars from it into
 # the build at build time, this script never writes secrets itself.
 set -euo pipefail
@@ -12,10 +12,10 @@ if [ ! -f .env ]; then
   exit 1
 fi
 
-echo "==> Pulling latest prepare-prod"
-git fetch origin prepare-prod
-git checkout prepare-prod
-git pull --ff-only origin prepare-prod
+echo "==> Pulling latest main"
+git fetch origin main
+git checkout main
+git pull --ff-only origin main
 
 echo "==> Installing dependencies"
 npm ci
