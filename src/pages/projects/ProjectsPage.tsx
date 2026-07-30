@@ -2,10 +2,15 @@ import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ProjectCard } from "@/features/projects/components/ProjectCard";
 import { Grid } from "@/ui/Layout";
+import { LoadingOverlay } from "@/ui/LoadingOverlay";
 import { useProjectsQuery } from "@/features/projects/hooks";
 
 export function ProjectsPage() {
   const { data: projects = [], isLoading, isError } = useProjectsQuery();
+
+  if (isLoading) {
+    return <LoadingOverlay label="Loading projects..." />;
+  }
 
   return (
     <section className="space-y-8">
@@ -26,7 +31,6 @@ export function ProjectsPage() {
         </Link>
       </header>
 
-      {isLoading && <p className="text-sm text-text-secondary">Loading projects...</p>}
       {isError && <p className="text-sm text-red-500">Failed to load projects.</p>}
 
       <Grid>
