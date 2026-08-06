@@ -38,7 +38,8 @@ export function CreateProjectPage() {
       // redirect to GitHub and back (and plain refreshes).
       navigate(`/projects/${project.id}/github?from=create`);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to create project");
+      console.error("Failed to create project:", error);
+      toast.error("Failed to create project. Please try again.");
     }
   }
 
