@@ -16,8 +16,6 @@ export function Sidebar() {
   const { data: profile } = useProfileQuery();
 
   function handleSignOut() {
-    // Clear all cached server state so the next user to sign in doesn't
-    // briefly see data left over from this session (e.g. stale projects list).
     queryClient.clear();
     signOut();
   }
