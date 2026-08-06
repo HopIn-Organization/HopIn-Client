@@ -43,6 +43,7 @@ export function useRemoveMemberMutation() {
       queryClient.invalidateQueries({
         queryKey: projectKeys.byId(variables.projectId),
       });
+      queryClient.invalidateQueries({ queryKey: projectKeys.all });
     },
   });
 }
@@ -67,6 +68,7 @@ export function useAddMemberMutation() {
       queryClient.invalidateQueries({
         queryKey: projectKeys.byId(variables.projectId),
       });
+      queryClient.invalidateQueries({ queryKey: projectKeys.all });
     },
   });
 }
