@@ -16,7 +16,7 @@ export function Sidebar() {
   const { data: profile } = useProfileQuery();
 
   function handleSignOut() {
-    queryClient.removeQueries({ queryKey: ["profile"] });
+    queryClient.clear();
     signOut();
   }
 
