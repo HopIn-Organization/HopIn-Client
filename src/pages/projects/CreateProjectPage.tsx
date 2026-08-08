@@ -13,10 +13,15 @@ export function CreateProjectPage() {
 
   async function handleSubmit(values: ProjectFormValues) {
     try {
-      const jobs = [{ title: "manager", skills: [] }, ...values.jobs];
+      const jobs = [{ title: "Manager", skills: [] }, ...values.jobs];
       const members = profile ? [{ userId: profile.id, role: ProjectMemberRoles.ADMIN }] : [];
 
-      const project = await mutation.mutateAsync({ name: values.name, description: values.description, jobs, members });
+      const project = await mutation.mutateAsync({
+        name: values.name,
+        description: values.description,
+        jobs,
+        members,
+      });
 
       if (values.pendingFiles.length > 0) {
         await documentsApi.uploadDocuments(project.id, values.pendingFiles);

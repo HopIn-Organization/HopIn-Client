@@ -44,6 +44,9 @@ export function useRemoveMemberMutation() {
         queryKey: projectKeys.byId(variables.projectId),
       });
       queryClient.invalidateQueries({ queryKey: projectKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: ["onboarding-plans", "project", variables.projectId],
+      });
     },
   });
 }

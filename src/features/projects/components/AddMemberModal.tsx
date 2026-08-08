@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Modal } from "@/ui/Modal";
@@ -6,7 +6,7 @@ import { Button } from "@/ui/Button";
 import { Select } from "@/ui/Select";
 import { Job } from "@/types/job";
 import { User } from "@/types/user";
-import { ProjectMemberRoles } from "@/types/projectMember";
+import { ProjectMember, ProjectMemberRoles } from "@/types/projectMember";
 import { apiClient } from "@/services/http/api-client";
 import { useClickOutside } from "@/hooks/useClickOutside";
 
@@ -15,10 +15,18 @@ interface AddMemberModalProps {
   onClose: () => void;
   onSubmit: (data: { memberId: string; jobId: string; role: string }) => void;
   jobs: Job[];
+  existingMembers?: ProjectMember[];
   isPending?: boolean;
 }
 
-export function AddMemberModal({ open, onClose, onSubmit, jobs, isPending }: AddMemberModalProps) {
+export function AddMemberModal({
+  open,
+  onClose,
+  onSubmit,
+  jobs,
+  existingMembers,
+  isPending,
+}: AddMemberModalProps) {
   const [searchValue, setSearchValue] = useState("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [jobId, setJobId] = useState("");
@@ -37,15 +45,21 @@ export function AddMemberModal({ open, onClose, onSubmit, jobs, isPending }: Add
     enabled: open,
   });
 
+  const excludedUserIds = useMemo(
+    () => new Set(existingMembers?.map((member) => member.user.id) ?? []),
+    [existingMembers],
+  );
+
   const filteredUsers = useMemo(() => {
-    if (!searchValue.trim()) return users;
+    const availableUsers = users.filter((user) => !excludedUserIds.has(user.id));
+    if (!searchValue.trim()) return availableUsers;
     const query = searchValue.toLowerCase();
-    return users.filter(
+    return availableUsers.filter(
       (user) =>
         user.name.toLowerCase().startsWith(query) ||
         (user.email && user.email.toLowerCase().startsWith(query)),
     );
-  }, [users, searchValue]);
+  }, [users, searchValue, excludedUserIds]);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -59,14 +73,27 @@ export function AddMemberModal({ open, onClose, onSubmit, jobs, isPending }: Add
     setShowDropdown(false);
   }
 
-  function handleClose() {
+  function resetForm() {
     setSearchValue("");
     setSelectedUser(null);
     setJobId("");
     setRole(ProjectMemberRoles.TRAINEE);
     setShowDropdown(false);
+  }
+
+  function handleClose() {
+    resetForm();
     onClose();
   }
+
+  useEffect(() => {
+    if (!open) {
+      const timeout = window.setTimeout(resetForm, 0);
+      return () => window.clearTimeout(timeout);
+    }
+
+    return undefined;
+  }, [open]);
 
   return (
     <Modal open={open} onClose={handleClose} title="Add Member" subtitle="Find your new employee">
