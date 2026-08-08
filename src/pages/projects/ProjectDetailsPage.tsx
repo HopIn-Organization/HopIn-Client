@@ -191,6 +191,7 @@ export function ProjectDetailsPage() {
             open={isAddMemberOpen}
             onClose={() => setIsAddMemberOpen(false)}
             jobs={project.jobs ?? []}
+            existingMembers={project.members ?? []}
             isPending={addMemberMutation.isPending}
             onSubmit={({ memberId, jobId, role }) => {
               if (projectId == null) return;
